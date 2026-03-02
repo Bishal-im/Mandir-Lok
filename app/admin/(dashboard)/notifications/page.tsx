@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getAdminNotifications, markAdminNotificationRead } from "@/lib/actions/notifications";
 import { Bell, Check, ExternalLink, Inbox } from "lucide-react";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
+import { formatRelativeTime } from "@/lib/utils";
 
 export default function AdminNotificationsPage() {
     const [notifications, setNotifications] = useState<any[]>([]);
@@ -37,7 +37,7 @@ export default function AdminNotificationsPage() {
                     <h1 className="text-2xl font-display font-bold text-gray-900">Notifications</h1>
                     <p className="text-gray-500 text-sm">Stay updated with system activities</p>
                 </div>
-                <button 
+                <button
                     onClick={loadNotifications}
                     className="text-sm text-[#ff7f0a] hover:underline font-medium"
                 >
@@ -63,14 +63,12 @@ export default function AdminNotificationsPage() {
                     {notifications.map((notif) => (
                         <div
                             key={notif._id}
-                            className={`group bg-white rounded-2xl p-4 border transition-all duration-200 ${
-                                notif.read ? "border-gray-100 opacity-75" : "border-[#ff7f0a]/20 bg-orange-50/10 shadow-sm"
-                            }`}
+                            className={`group bg-white rounded-2xl p-4 border transition-all duration-200 ${notif.read ? "border-gray-100 opacity-75" : "border-[#ff7f0a]/20 bg-orange-50/10 shadow-sm"
+                                }`}
                         >
                             <div className="flex gap-4">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                                    notif.read ? "bg-gray-100 text-gray-400" : "bg-[#ff7f0a]/10 text-[#ff7f0a]"
-                                }`}>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notif.read ? "bg-gray-100 text-gray-400" : "bg-[#ff7f0a]/10 text-[#ff7f0a]"
+                                    }`}>
                                     <Bell size={20} />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -79,7 +77,7 @@ export default function AdminNotificationsPage() {
                                             {notif.title}
                                         </h3>
                                         <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
-                                            {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
+                                            {formatRelativeTime(new Date(notif.createdAt))}
                                         </span>
                                     </div>
                                     <p className="text-sm text-gray-600 mb-3 leading-relaxed">

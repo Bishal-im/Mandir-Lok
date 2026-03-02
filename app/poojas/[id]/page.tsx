@@ -47,7 +47,6 @@ export default function PoojaDetailPage() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedPackageIndex, setSelectedPackageIndex] = useState<number | null>(null);
   const [addedOfferings, setAddedOfferings] = useState<string[]>([]);
-  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     if (!id) return;
@@ -76,7 +75,6 @@ export default function PoojaDetailPage() {
 
   const handlePackageSelect = (index: number) => {
     setSelectedPackageIndex(prev => prev === index ? null : index);
-    if (index !== null) setQty(1); // Reset qty when package selected
   };
 
   if (loading) {
@@ -122,7 +120,6 @@ export default function PoojaDetailPage() {
   if (selectedPackageIndex !== null) {
     cartQuery.set("packageIndex", selectedPackageIndex.toString());
   }
-  cartQuery.set("qty", qty.toString());
   if (addedOfferings.length > 0) {
     cartQuery.set("offerings", addedOfferings.join(","));
   }
@@ -374,31 +371,7 @@ export default function PoojaDetailPage() {
                   Book This Pooja
                 </h3>
 
-                {/* Devotees */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#f0dcc8]">
-                  <span className="text-sm text-[#6b5b45]">
-                    Devotees / Family Members
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setQty((q) => Math.max(1, q - 1))}
-                      disabled={selectedPackageIndex !== null}
-                      className={`w-8 h-8 rounded-full border border-[#f0dcc8] flex items-center justify-center transition-colors ${selectedPackageIndex !== null ? "opacity-30 cursor-not-allowed" : "hover:border-[#ff7f0a] text-[#6b5b45] hover:text-[#ff7f0a]"}`}
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <span className={`font-semibold text-[#1a1209] w-4 text-center ${selectedPackageIndex !== null ? "opacity-50" : ""}`}>
-                      {qty}
-                    </span>
-                    <button
-                      onClick={() => setQty((q) => Math.min(10, q + 1))}
-                      disabled={selectedPackageIndex !== null}
-                      className={`w-8 h-8 rounded-full border border-[#f0dcc8] flex items-center justify-center transition-colors ${selectedPackageIndex !== null ? "opacity-30 cursor-not-allowed" : "hover:border-[#ff7f0a] text-[#6b5b45] hover:text-[#ff7f0a]"}`}
-                    >
-                      <Plus size={14} />
-                    </button>
-                  </div>
-                </div>
+
 
                 {/* Selected offerings summary */}
                 {addedOfferings.length > 0 && (
@@ -449,7 +422,7 @@ export default function PoojaDetailPage() {
                   )}
                   <div className="flex justify-between items-center text-lg font-bold text-[#ff7f0a] mt-2 pt-2 border-t border-[#ffd9a8]">
                     <span>Total Payable:</span>
-                    <span>₹{((selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : pooja.price * qty) + addedOfferings.reduce((sum, id) => {
+                    <span>₹{((selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : pooja.price) + addedOfferings.reduce((sum, id) => {
                       const o = offerings.find((x: any) => x._id === id);
                       return sum + (o ? o.price : 0);
                     }, 0)).toLocaleString()}</span>

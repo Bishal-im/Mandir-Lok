@@ -13,8 +13,20 @@ export async function GET(req: Request) {
     if (!pandit) return NextResponse.json({ success: false, message: "Pandit not found" }, { status: 404 });
 
     const payouts = await Payout.find({ panditId })
-      .sort({ createdAt: -1 })
-      .limit(10);
+      .sort({ createdAt: -1 });
+
+    const latestPayout = payouts[0];
+    const joinDate = new Date(pandit.createdAt);
+    const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+    let nextPayoutDate = new Date(joinDate.getTime() + ONE_WEEK);
+
+    if (latestPayout) {
+      const lastPayoutDate = new Date(latestPayout.createdAt);
+      nextPayoutDate = new Date(lastPayoutDate.getTime() + ONE_WEEK);
+    }
+
+    const canRequestPayout = new Date() >= nextPayoutDate;
 
     return NextResponse.json({
       success: true,
@@ -22,7 +34,9 @@ export async function GET(req: Request) {
         totalEarnings: pandit.totalEarnings,
         unpaidEarnings: pandit.unpaidEarnings,
         paidOut: pandit.totalEarnings - pandit.unpaidEarnings,
-        payouts: payouts
+        payouts: payouts.slice(0, 10),
+        nextPayoutDate,
+        canRequestPayout
       }
     });
   } catch (error: any) {

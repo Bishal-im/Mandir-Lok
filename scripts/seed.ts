@@ -12,7 +12,8 @@ import Temple from "../models/Temple";
 import Pooja from "../models/Pooja";
 import Chadhava from "../models/Chadhava";
 import * as dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
+import path from "path";
+dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/mandirlok";
 
@@ -233,15 +234,15 @@ async function seed() {
 
   // ── SEED CHADHAVA ─────────────────────────────────────────────────────────
   const chadhavaItems = await Chadhava.insertMany([
-    { name: "Bel Patra", templeId: getTemple("kashi-vishwanath"), emoji: "🌿", price: 51, description: "Sacred Bel leaves offered to Lord Shiva" },
-    { name: "Dhatura", templeId: getTemple("kashi-vishwanath"), emoji: "🌸", price: 51, description: "Sacred Dhatura flower offering" },
-    { name: "Flower Garland", templeId: getTemple("kashi-vishwanath"), emoji: "💐", price: 151, description: "Fresh flower garland for the deity" },
-    { name: "Prasad Thali", templeId: getTemple("kashi-vishwanath"), emoji: "🍱", price: 251, description: "Complete prasad thali offering" },
-    { name: "Panchamrit", templeId: getTemple("kashi-vishwanath"), emoji: "🥛", price: 251, description: "Sacred Panchamrit for abhishek" },
-    { name: "Pure Ghee Diya", templeId: getTemple("kashi-vishwanath"), emoji: "🪔", price: 251, description: "Pure ghee lamp offering" },
-    { name: "Lotus Flower", templeId: getTemple("tirupati-balaji"), emoji: "🪷", price: 201, description: "Sacred lotus offered to Lord Venkateswara" },
-    { name: "Tulsi Leaves", templeId: getTemple("tirupati-balaji"), emoji: "🌱", price: 51, description: "Holy Tulsi leaves offering" },
-    { name: "Modak Offering", templeId: getTemple("siddhivinayak"), emoji: "🥮", price: 251, description: "Lord Ganesha's favourite Modak" },
+    { name: "Bel Patra", templeId: getTemple("kashi-vishwanath"), category: "Flowers", emoji: "🌿", price: 51, description: "Sacred Bel leaves offered to Lord Shiva" },
+    { name: "Dhatura", templeId: getTemple("kashi-vishwanath"), category: "Flowers", emoji: "🌸", price: 51, description: "Sacred Dhatura flower offering" },
+    { name: "Flower Garland", templeId: getTemple("kashi-vishwanath"), category: "Flowers", emoji: "💐", price: 151, description: "Fresh flower garland for the deity" },
+    { name: "Prasad Thali", templeId: getTemple("kashi-vishwanath"), category: "Bhog", emoji: "🍱", price: 251, description: "Complete prasad thali offering" },
+    { name: "Panchamrit", templeId: getTemple("kashi-vishwanath"), category: "Bhog", emoji: "🥛", price: 251, description: "Sacred Panchamrit for abhishek" },
+    { name: "Pure Ghee Diya", templeId: getTemple("kashi-vishwanath"), category: "Deep Daan", emoji: "🪔", price: 251, description: "Pure ghee lamp offering" },
+    { name: "Lotus Flower", templeId: getTemple("tirupati-balaji"), category: "Flowers", emoji: "🪷", price: 201, description: "Sacred lotus offered to Lord Venkateswara" },
+    { name: "Tulsi Leaves", templeId: getTemple("tirupati-balaji"), category: "Flowers", emoji: "🌱", price: 51, description: "Holy Tulsi leaves offering" },
+    { name: "Modak Offering", templeId: getTemple("siddhivinayak"), category: "Bhog", emoji: "🥮", price: 251, description: "Lord Ganesha's favourite Modak" },
   ]);
   console.log(`✅ Seeded ${chadhavaItems.length} chadhava items`);
 

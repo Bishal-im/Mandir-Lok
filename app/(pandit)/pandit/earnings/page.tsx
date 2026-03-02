@@ -105,15 +105,26 @@ export default function EarningsPage() {
                 <div className="text-2xl font-bold text-gray-900 mb-1">{c.value}</div>
                 <div className="text-xs font-semibold text-[#6b5b45] uppercase tracking-wider">{c.label}</div>
                 {c.highlight && data?.unpaidEarnings > 0 && (
-                  <button
-                    onClick={() => {
-                      setShowPayoutModal(true)
-                      setPayoutAmount(data.unpaidEarnings.toString())
-                    }}
-                    className="mt-6 w-full btn-saffron py-3 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20"
-                  >
-                    <ArrowUpRight size={18} /> Request Payout
-                  </button>
+                  <div className="mt-6 space-y-3">
+                    <button
+                      onClick={() => {
+                        setShowPayoutModal(true)
+                        setPayoutAmount(data.unpaidEarnings.toString())
+                      }}
+                      disabled={!data?.canRequestPayout}
+                      className={`w-full py-3 flex items-center justify-center gap-2 rounded-xl font-bold transition-all shadow-lg ${data?.canRequestPayout
+                        ? 'bg-[#ff7f0a] text-white hover:bg-[#e66e00] shadow-orange-500/20'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none border border-gray-200'}`}
+                    >
+                      <ArrowUpRight size={18} /> {data?.canRequestPayout ? 'Request Payout' : 'Payout Locked'}
+                    </button>
+
+                    {!data?.canRequestPayout && data?.nextPayoutDate && (
+                      <p className="text-[10px] text-center font-bold text-orange-600 bg-orange-50 py-2 px-3 rounded-lg border border-orange-100 animate-pulse">
+                        🕒 Next payout available on {new Date(data.nextPayoutDate).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
@@ -154,9 +165,9 @@ export default function EarningsPage() {
                       </td>
                       <td className="px-8 py-4 text-right">
                         <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border ${p.status === 'paid' ? 'bg-green-50 text-green-600 border-green-100' :
-                            p.status === 'processing' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                              p.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-100' :
-                                'bg-yellow-50 text-yellow-600 border-yellow-100'
+                          p.status === 'processing' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                            p.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-100' :
+                              'bg-yellow-50 text-yellow-600 border-yellow-100'
                           }`}>
                           {p.status}
                         </span>
