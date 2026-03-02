@@ -22,7 +22,6 @@ export default function EditPoojaPage() {
         emoji: "🪔",
         description: "",
         about: "",
-        price: 0,
         duration: "45-60 Minutes",
         benefits: [] as string[],
         includes: [] as string[],
@@ -167,10 +166,7 @@ export default function EditPoojaPage() {
                         <input required name="deity" value={formData.deity} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border border-gray-200" />
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><IndianRupee size={12} /> Price (₹)</label>
-                        <input type="number" required name="price" value={formData.price} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border border-gray-200" />
-                    </div>
+
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><Clock size={12} /> Duration</label>

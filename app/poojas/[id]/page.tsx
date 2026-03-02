@@ -31,7 +31,6 @@ const dates = Array.from({ length: 7 }, (_, i) => {
     day: d.toLocaleDateString("en-IN", { weekday: "short" }),
     full: d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
     value: `${yyyy}-${mm}-${dd}`,
-    slots: i === 2 ? 2 : i === 5 ? 1 : Math.floor(Math.random() * 5) + 3,
   };
 });
 
@@ -239,11 +238,6 @@ export default function PoojaDetailPage() {
                     >
                       <span className="font-semibold mb-0.5">{d.day}</span>
                       <span className="text-lg font-bold">{d.date}</span>
-                      <span
-                        className={`text-[10px] ${d.slots <= 2 ? "text-red-500 font-medium" : "text-[#6b5b45]"}`}
-                      >
-                        {d.slots} slots
-                      </span>
                     </button>
                   ))}
                 </div>
@@ -407,10 +401,12 @@ export default function PoojaDetailPage() {
 
                 {/* Total Price or Note */}
                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-3 mb-4">
-                  <div className="flex justify-between items-center text-sm font-semibold text-[#1a1209] mb-2">
-                    <span>{selectedPackageIndex !== null ? `Package: ${pooja.packages[selectedPackageIndex].name}` : "Base Pooja Price:"}</span>
-                    <span>₹{(selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : pooja.price)?.toLocaleString()}</span>
-                  </div>
+                  {selectedPackageIndex !== null && (
+                    <div className="flex justify-between items-center text-sm font-semibold text-[#1a1209] mb-2">
+                      <span>Package: {pooja.packages[selectedPackageIndex].name}</span>
+                      <span>₹{pooja.packages[selectedPackageIndex].price.toLocaleString()}</span>
+                    </div>
+                  )}
                   {addedOfferings.length > 0 && (
                     <div className="flex justify-between items-center text-sm font-semibold text-[#1a1209] mb-2 pt-2 border-t border-[#ffd9a8]">
                       <span>Offerings Total:</span>
@@ -422,27 +418,35 @@ export default function PoojaDetailPage() {
                   )}
                   <div className="flex justify-between items-center text-lg font-bold text-[#ff7f0a] mt-2 pt-2 border-t border-[#ffd9a8]">
                     <span>Total Payable:</span>
-                    <span>₹{((selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : pooja.price) + addedOfferings.reduce((sum, id) => {
+                    <span>₹{((selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : 0) + addedOfferings.reduce((sum, id) => {
                       const o = offerings.find((x: any) => x._id === id);
                       return sum + (o ? o.price : 0);
                     }, 0)).toLocaleString()}</span>
                   </div>
                 </div>
 
-                {/* Date indicator */}
-                {selectedDate !== null ? (
-                  <div className="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 text-xs text-green-700 text-center">
-                    📅 Pooja on: <strong>{dates[selectedDate].full}</strong>
-                  </div>
-                ) : (
-                  <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-3 mb-4 text-xs text-[#ff7f0a] text-center">
-                    ⬆️ Please select a date above
-                  </div>
-                )}
+                {/* Date and Package indicators */}
+                <div className="space-y-2 mb-4">
+                  {selectedDate !== null ? (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-xs text-green-700 text-center">
+                      📅 Pooja on: <strong>{dates[selectedDate].full}</strong>
+                    </div>
+                  ) : (
+                    <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-3 text-xs text-[#ff7f0a] text-center">
+                      📅 Please select a date
+                    </div>
+                  )}
+
+                  {selectedPackageIndex === null && (
+                    <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-3 text-xs text-[#ff7f0a] text-center">
+                      📦 Please select a package
+                    </div>
+                  )}
+                </div>
 
                 <Link
-                  href={selectedDate !== null ? cartLink : "#"}
-                  className={`btn-saffron w-full text-center text-sm block mb-3 ${selectedDate === null ? "opacity-60 pointer-events-none" : ""}`}
+                  href={(selectedDate !== null && selectedPackageIndex !== null) ? cartLink : "#"}
+                  className={`btn-saffron w-full text-center text-sm block mb-3 ${(selectedDate === null || selectedPackageIndex === null) ? "opacity-60 pointer-events-none" : ""}`}
                 >
                   Proceed to Book →
                 </Link>

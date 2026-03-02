@@ -20,7 +20,6 @@ export default function AddPoojaPage() {
         emoji: "🪔",
         description: "",
         about: "",
-        price: 0,
         duration: "45-60 Minutes",
         benefits: [] as string[],
         includes: [] as string[],
@@ -140,10 +139,7 @@ export default function AddPoojaPage() {
                         <input required name="deity" value={formData.deity} onChange={handleChange} placeholder="e.g. Lord Shiva" className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none" />
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1"><IndianRupee size={12} /> Price (₹)</label>
-                        <input type="number" required name="price" value={formData.price} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none" />
-                    </div>
+
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1"><Clock size={12} /> Duration</label>
