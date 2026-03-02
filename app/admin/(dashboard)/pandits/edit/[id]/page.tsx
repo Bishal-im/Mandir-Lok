@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Save, MapPin, Info, Phone, Mail, User, Briefcase } from "lucide-react";
+import { ChevronLeft, Save, MapPin, Info, Phone, Mail, User, Briefcase, FileText, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { getPanditById, updatePandit, getTemplesAdmin } from "@/lib/actions/admin";
 
@@ -26,6 +26,8 @@ export default function EditPanditPage() {
         bio: "",
         commissionPercentage: 80,
         isActive: true,
+        aadhaarCardUrl: "",
+        aadhaarStatus: "none" as string,
     });
 
     const [newLanguage, setNewLanguage] = useState("");
@@ -181,6 +183,32 @@ export default function EditPanditPage() {
                         </label>
                     </div>
                 </div>
+
+                {/* Aadhaar Card - Read Only for Admin */}
+                {formData.aadhaarCardUrl && (
+                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-3">
+                        <div className="flex items-center gap-2">
+                            <FileText size={16} className="text-[#ff7f0a]" />
+                            <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Aadhaar Card (Submitted)</span>
+                            <span className={`ml-auto px-2 py-0.5 rounded text-[9px] font-bold uppercase ${formData.aadhaarStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                                    formData.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600' :
+                                        formData.aadhaarStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                            'bg-gray-100 text-gray-500'
+                                }`}>{formData.aadhaarStatus || 'none'}</span>
+                        </div>
+                        <div className="relative rounded-2xl overflow-hidden border border-gray-100 shadow-inner max-w-sm">
+                            <img src={formData.aadhaarCardUrl} alt="Aadhaar Card" className="w-full object-cover" />
+                        </div>
+                        <div className="flex gap-2 mt-2">
+                            <button type="button" onClick={() => fetch(`/api/admin/pandit/aadhaar`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'verified' }) }).then(() => setFormData(p => ({ ...p, aadhaarStatus: 'verified' })))} className="px-4 py-1.5 bg-green-100 text-green-700 text-xs font-bold rounded-xl hover:bg-green-200 transition-all">
+                                ✓ Mark Verified
+                            </button>
+                            <button type="button" onClick={() => fetch(`/api/admin/pandit/aadhaar`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'rejected' }) }).then(() => setFormData(p => ({ ...p, aadhaarStatus: 'rejected' })))} className="px-4 py-1.5 bg-red-100 text-red-600 text-xs font-bold rounded-xl hover:bg-red-200 transition-all">
+                                ✕ Reject
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="flex justify-end gap-3 pt-4">
                     <Link href="/admin/pandits" className="px-8 py-3 rounded-xl border border-gray-200 text-gray-500 font-semibold">Cancel</Link>

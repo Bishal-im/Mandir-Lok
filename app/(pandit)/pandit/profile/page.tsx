@@ -233,6 +233,28 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
+            {/* Aadhaar Card Section - Read Only */}
+            <div className="bg-white border border-[#f0dcc8] rounded-3xl shadow-card p-8 space-y-4">
+              <div className="flex items-center gap-2 border-b border-[#fdf6ee] pb-4">
+                <FileText size={18} className="text-[#ff7f0a]" />
+                <p className="text-sm font-bold text-gray-900">Aadhaar Card</p>
+                {pandit?.aadhaarStatus && pandit.aadhaarStatus !== 'none' && (
+                  <span className={`ml-auto px-2 py-0.5 rounded text-[9px] font-bold uppercase ${pandit.aadhaarStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                      pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600' :
+                        'bg-yellow-100 text-yellow-700'
+                    }`}>
+                    {pandit.aadhaarStatus}
+                  </span>
+                )}
+              </div>
+              {pandit?.aadhaarCardUrl ? (
+                <div className="relative rounded-2xl overflow-hidden border border-[#f0dcc8] shadow-inner max-w-sm">
+                  <img src={pandit.aadhaarCardUrl} alt="Aadhaar Card" className="w-full object-cover" />
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic">No Aadhaar card uploaded yet. Complete the onboarding to upload it.</p>
+              )}
+            </div>
           </form>
         </main>
       </div>

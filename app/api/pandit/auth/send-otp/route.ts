@@ -7,24 +7,24 @@ import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
   try {
-    const { phone, email } = await req.json();
+    let { phone, email } = await req.json();
+    if (email) email = email.toLowerCase();
 
-    if (!phone && !email) {
+    if (!email) {
       return NextResponse.json(
-        { success: false, message: "Phone number or Email is required" },
+        { success: false, message: "Email is required" },
         { status: 400 }
       );
     }
 
     await connectDB();
 
-    // Find active pandit by phone or email
-    const query = phone ? { phone, isActive: true } : { email, isActive: true };
-    const pandit = await Pandit.findOne(query);
+    // Find active pandit by email
+    const pandit = await Pandit.findOne({ email, isActive: true });
 
     if (!pandit) {
       return NextResponse.json(
-        { success: false, message: `No active pandit found with this ${phone ? "phone number" : "email"}` },
+        { success: false, message: `No active pandit found with this email` },
         { status: 404 }
       );
     }
@@ -34,18 +34,16 @@ export async function POST(req: Request) {
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Delete old OTPs
-    if (phone) await Otp.deleteMany({ phone });
-    if (email) await Otp.deleteMany({ email });
+    await Otp.deleteMany({ email });
 
-    // Save new OTP using correct field
+    // Save new OTP
     await Otp.create({
-      phone: phone || "",
-      email: email || "",
+      email,
       otp,
       expiresAt,
     });
 
-    console.log(`[Pandit OTP] ${phone ? "Phone: " + phone : "Email: " + email} | OTP: ${otp}`);
+    console.log(`[Pandit OTP] Email: ${email} | OTP: ${otp}`);
 
     if (email) {
       try {

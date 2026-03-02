@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPayoutsAdmin, updatePayoutStatus } from "@/lib/actions/admin";
+import { getPayoutsAdmin, updatePayoutStatus, processPayoutWithRazorpayX } from "@/lib/actions/admin";
 import { CheckCircle2, XCircle, Clock, Banknote, User, Search, Loader2 } from "lucide-react";
 
 export default function PayoutsPage() {
@@ -28,6 +28,19 @@ export default function PayoutsPage() {
             setPayouts(prev => prev.map(p => p._id === id ? { ...p, status, processedAt: status === 'paid' ? new Date() : null } : p));
         } else {
             alert(res.error || "Failed to update status");
+        }
+        setUpdatingId(null);
+    }
+
+    async function handleAutoPayout(id: string) {
+        if (!confirm("Are you sure you want to transfer money automatically?")) return;
+        setUpdatingId(id);
+        const res = await processPayoutWithRazorpayX(id);
+        if (res.success) {
+            alert("Payout initiated successfully! It will be marked as 'Paid' once confirmed by the bank.");
+            setPayouts(prev => prev.map(p => p._id === id ? { ...p, status: 'processing' } : p));
+        } else {
+            alert(res.error || "Failed to initiate automatic payout");
         }
         setUpdatingId(null);
     }
@@ -114,40 +127,51 @@ export default function PayoutsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex gap-2">
-                                                {p.status === "requested" && (
-                                                    <>
-                                                        <button
-                                                            disabled={updatingId === p._id}
-                                                            onClick={() => handleUpdateStatus(p._id, "processing")}
-                                                            className="text-[10px] bg-yellow-50 text-yellow-600 border border-yellow-100 px-2 py-1 rounded hover:bg-yellow-100 disabled:opacity-50"
-                                                        >
-                                                            Process
-                                                        </button>
-                                                        <button
-                                                            disabled={updatingId === p._id}
-                                                            onClick={() => handleUpdateStatus(p._id, "rejected")}
-                                                            className="text-[10px] bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded hover:bg-red-100 disabled:opacity-50"
-                                                        >
-                                                            Reject
-                                                        </button>
-                                                    </>
-                                                )}
-                                                {p.status === "processing" && (
+                                            {p.status === "requested" && (
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        disabled={updatingId === p._id}
+                                                        onClick={() => handleAutoPayout(p._id)}
+                                                        className="text-[10px] bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50 font-semibold shadow-sm"
+                                                    >
+                                                        Pay Now
+                                                    </button>
+                                                    <button
+                                                        disabled={updatingId === p._id}
+                                                        onClick={() => handleUpdateStatus(p._id, "processing")}
+                                                        className="text-[10px] bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded hover:bg-gray-200 disabled:opacity-50"
+                                                    >
+                                                        Mark Processing
+                                                    </button>
+                                                    <button
+                                                        disabled={updatingId === p._id}
+                                                        onClick={() => handleUpdateStatus(p._id, "rejected")}
+                                                        className="text-[10px] bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded hover:bg-red-100 disabled:opacity-50"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {p.status === "processing" && (
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] text-yellow-600 font-medium italic flex items-center gap-1">
+                                                        <Loader2 size={10} className="animate-spin" />
+                                                        Processing...
+                                                    </span>
                                                     <button
                                                         disabled={updatingId === p._id}
                                                         onClick={() => handleUpdateStatus(p._id, "paid")}
                                                         className="text-[10px] bg-green-50 text-green-600 border border-green-100 px-2 py-1 rounded hover:bg-green-100 disabled:opacity-50"
                                                     >
-                                                        Mark as Paid
+                                                        Force Mark Paid
                                                     </button>
-                                                )}
-                                                {(p.status === "paid" || p.status === "rejected") && (
-                                                    <span className="text-[10px] text-gray-400">
-                                                        Processed on {p.processedAt ? new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short' }).format(new Date(p.processedAt)) : "N/A"}
-                                                    </span>
-                                                )}
-                                            </div>
+                                                </div>
+                                            )}
+                                            {(p.status === "paid" || p.status === "rejected") && (
+                                                <span className="text-[10px] text-gray-400">
+                                                    Processed on {p.processedAt ? new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short' }).format(new Date(p.processedAt)) : "N/A"}
+                                                </span>
+                                            )}
                                         </td>
                                     </tr>
                                 );
