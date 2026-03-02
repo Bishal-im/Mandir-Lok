@@ -19,7 +19,8 @@ interface Pooja {
   tag: string;
   tagColor: string;
   availableDays: string;
-  benefit: string;
+  benefits: string[];
+  images: string[];
   deity: string;
   templeId: {
     _id: string;
@@ -80,80 +81,8 @@ const TRUST_BADGES = [
   { icon: "📹", label: "Video Proof of Every Puja" },
 ];
 
-const FEATURED_POOJAS = [
-  {
-    title: "Mahakaleshwar Special Abhishek",
-    temple: "Shri Mahakaleshwar Jyotirlinga, Ujjain",
-    date: "Every Monday",
-    description:
-      "For peace, prosperity and removal of all obstacles. Rudrabhishek performed in your name.",
-    tag: "MOST POPULAR",
-    tagColor: "bg-orange-500",
-    deity: "Shiva",
-    emoji: "🪔",
-    benefit: "Health & Prosperity",
-  },
-  {
-    title: "Tirupati Balaji Archana",
-    temple: "Sri Venkateswara Temple, Tirupati",
-    date: "Every Day",
-    description:
-      "Seek blessings for wealth, health and fulfilment of all wishes. Archana on your name.",
-    tag: "SPECIAL OFFER",
-    tagColor: "bg-rose-500",
-    deity: "Vishnu",
-    emoji: "🌺",
-    benefit: "Wealth & Fortune",
-  },
-  {
-    title: "Kashi Vishwanath Rudrabhishek",
-    temple: "Shri Kashi Vishwanath Temple, Varanasi",
-    date: "Every Monday & Pradosh",
-    description:
-      "Receive the divine blessings of Lord Shiva through this powerful Rudrabhishek.",
-    tag: "TRENDING",
-    tagColor: "bg-amber-500",
-    deity: "Shiva",
-    emoji: "🪔",
-    benefit: "Remove Obstacles",
-  },
-  {
-    title: "Siddhivinayak Maha Puja",
-    temple: "Shree Siddhivinayak Temple, Mumbai",
-    date: "Every Wednesday",
-    description:
-      "Remove obstacles and bring success. Maha Puja performed by experienced pandits.",
-    tag: "",
-    tagColor: "",
-    deity: "Ganesha",
-    emoji: "🐘",
-    benefit: "New Beginnings",
-  },
-  {
-    title: "Vaishno Devi Aarti Seva",
-    temple: "Shri Mata Vaishno Devi, Katra",
-    date: "Every Friday",
-    description:
-      "Special Aarti and Chadhava offering at the divine abode of Mata Vaishno Devi.",
-    tag: "NEW",
-    tagColor: "bg-teal-500",
-    deity: "Devi",
-    emoji: "🔱",
-    benefit: "Divine Protection",
-  },
-  {
-    title: "Shirdi Sai Baba Seva",
-    temple: "Shri Sai Baba Mandir, Shirdi",
-    date: "Every Thursday",
-    description:
-      "Offer your prayers and receive Sai Baba's divine grace and blessings.",
-    tag: "",
-    tagColor: "",
-    deity: "Sai",
-    emoji: "🙏",
-    benefit: "Peace & Grace",
-  },
-];
+
+
 
 const HOW_IT_WORKS = [
   {
@@ -281,17 +210,27 @@ function SectionHeader({
 function PujaCard({ puja }: { puja: Pooja }) {
   return (
     <div className="group bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 flex flex-col h-full">
-      <div className="relative h-48 sm:h-56 bg-gradient-to-br from-orange-400 via-orange-500 to-amber-500 p-8 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 opacity-10 mix-blend-overlay">
-          <svg className="w-full h-full" viewBox="0 0 100 100">
-            <path d="M50 0 L100 50 L50 100 L0 50 Z" fill="white" fillOpacity="0.2" />
-          </svg>
-        </div>
-        <span className="text-8xl transform group-hover:scale-110 transition-transform duration-700">
-          {puja.emoji || "🔱"}
-        </span>
+      <div className="relative h-48 sm:h-56 bg-gradient-to-br from-orange-400 via-orange-500 to-amber-500 flex items-center justify-center overflow-hidden">
+        {puja.images?.[0] ? (
+          <img
+            src={puja.images[0]}
+            alt={puja.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+        ) : (
+          <>
+            <div className="absolute inset-0 opacity-10 mix-blend-overlay">
+              <svg className="w-full h-full" viewBox="0 0 100 100">
+                <path d="M50 0 L100 50 L50 100 L0 50 Z" fill="white" fillOpacity="0.2" />
+              </svg>
+            </div>
+            <span className="text-8xl transform group-hover:scale-110 transition-transform duration-700 relative z-10">
+              {puja.emoji || "🔱"}
+            </span>
+          </>
+        )}
         {puja.tag && (
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-10">
             <span className={`${puja.tagColor || "bg-orange-500"} text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg backdrop-blur-sm`}>
               {puja.tag}
             </span>
@@ -327,7 +266,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
           <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100/50">
             <div>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Benefit</p>
-              <p className="font-bold text-gray-900 text-sm">{puja.benefit || "Grace"}</p>
+              <p className="font-bold text-gray-900 text-sm">{puja.benefits?.[0] || "Grace"}</p>
             </div>
             <div className="text-right">
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Schedule</p>
