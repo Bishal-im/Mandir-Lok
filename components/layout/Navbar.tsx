@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { label: "Pujas", href: "/poojas" },
   { label: "Chadhava", href: "/chadhava" },
   { label: "Temples", href: "/temples" },
+  { label: "Aarti", href: "/aarti" },
 ];
 
 const SPIRITUAL_WORDS = [
