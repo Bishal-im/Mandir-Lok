@@ -13,6 +13,7 @@ import {
     Image as ImageIcon
 } from "lucide-react";
 import { getSettings, updateSettings } from "@/lib/actions/admin";
+import CloudinaryImageUploader from "@/components/admin/CloudinaryImageUploader";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("general");
@@ -30,29 +31,47 @@ export default function SettingsPage() {
         chadhava: "",
         temples: ""
     });
+    const [aartiSettings, setAartiSettings] = useState<{ deities: any[] }>({
+        deities: []
+    });
 
     const tabs = [
         { id: "general", label: "General", icon: <Globe size={18} /> },
         { id: "landing", label: "Landing Page", icon: <Layout size={18} /> },
         { id: "page_banners", label: "Page Banners", icon: <ImageIcon size={18} /> },
         { id: "user_dashboard", label: "User Dashboard", icon: <Layout size={18} /> },
+        { id: "aarti", label: "Aarti Settings", icon: <Layout size={18} /> },
         { id: "payments", label: "Payments", icon: <IndianRupee size={18} /> },
     ];
 
     useEffect(() => {
         async function fetchSettings() {
             setLoading(true);
-            const [slideRes, dashRes, bannerRes, logoRes] = await Promise.all([
+            const [slideRes, dashRes, bannerRes, logoRes, aartiRes] = await Promise.all([
                 getSettings("landing_page_slides"),
                 getSettings("dashboard_settings"),
                 getSettings("page_banners"),
-                getSettings("website_logo")
+                getSettings("website_logo"),
+                getSettings("aarti_settings")
             ]);
 
             if (slideRes && slideRes.value) setSlides(slideRes.value);
             if (dashRes && dashRes.value) setDashboardSettings(dashRes.value);
             if (bannerRes && bannerRes.value) setPageBanners(bannerRes.value);
             if (logoRes && logoRes.value) setLogoUrl(logoRes.value);
+            if (aartiRes && aartiRes.value) {
+                setAartiSettings(aartiRes.value);
+            } else {
+                // Pre-populate with defaults if empty
+                setAartiSettings({
+                    deities: [
+                        { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png" },
+                        { id: "vishnu", name: "Vishnu ji", image: "/images/aarti/vishnu.png" },
+                        { id: "ganesha", name: "Ganesh ji", image: "/images/aarti/ganesha.png" },
+                        { id: "devi", name: "Durga Maa", image: "/images/aarti/durga.png" },
+                    ]
+                });
+            }
 
             setLoading(false);
         }
@@ -73,6 +92,27 @@ export default function SettingsPage() {
         setSlides(newSlides);
     };
 
+    const handleAddDeity = () => {
+        const newDeity = {
+            id: `deity_${Date.now()}`,
+            name: "New Deity",
+            image: "",
+        };
+        setAartiSettings({ ...aartiSettings, deities: [...aartiSettings.deities, newDeity] });
+    };
+
+    const handleRemoveDeity = (index: number) => {
+        const newDeities = [...aartiSettings.deities];
+        newDeities.splice(index, 1);
+        setAartiSettings({ ...aartiSettings, deities: newDeities });
+    };
+
+    const handleUpdateDeity = (index: number, field: string, value: any) => {
+        const newDeities = [...aartiSettings.deities];
+        newDeities[index] = { ...newDeities[index], [field]: value };
+        setAartiSettings({ ...aartiSettings, deities: newDeities });
+    };
+
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -84,6 +124,8 @@ export default function SettingsPage() {
                 await updateSettings("page_banners", pageBanners, "Background images for Poojas and Chadhava banners");
             } else if (activeTab === "general") {
                 await updateSettings("website_logo", logoUrl, "Website main logo URL");
+            } else if (activeTab === "aarti") {
+                await updateSettings("aarti_settings", aartiSettings, "Aarti page configurations");
             }
             alert("Settings saved successfully!");
         } catch (err) {
@@ -340,6 +382,71 @@ export default function SettingsPage() {
                                                 <img src={dashboardSettings.bannerUrl} className="w-full h-full object-cover" alt="Banner Preview" />
                                             </div>
                                         )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "aarti" && (
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-2 bg-orange-100 text-[#ff7f0a] rounded-lg">
+                                                <ImageIcon size={20} />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-gray-900">Aarti Page Settings</h3>
+                                                <p className="text-xs text-gray-500">Manage interactive elements for the virtual Aarti page.</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={handleAddDeity}
+                                            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-xl font-bold text-xs hover:bg-orange-700 transition-all"
+                                        >
+                                            <Plus size={16} /> Add Deity
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {aartiSettings.deities.map((deity, idx) => (
+                                            <div key={deity.id || idx} className="p-6 rounded-2xl border border-gray-100 bg-gray-50/50 space-y-6 relative group">
+                                                <button
+                                                    onClick={() => handleRemoveDeity(idx)}
+                                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+
+                                                <div className="grid md:grid-cols-2 gap-6">
+                                                    <div className="space-y-4">
+                                                        <div className="space-y-1.5">
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">God Name</label>
+                                                            <input
+                                                                value={deity.name}
+                                                                onChange={(e) => handleUpdateDeity(idx, "name", e.target.value)}
+                                                                placeholder="e.g. Shiv ji"
+                                                                className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-4">
+                                                        <div className="space-y-1.5">
+                                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Deity Portrait</label>
+                                                            <div className="flex items-center gap-4">
+                                                                <CloudinaryImageUploader
+                                                                    onUploadSuccess={(url) => handleUpdateDeity(idx, "image", url)}
+                                                                    folder="aarti_deities"
+                                                                    label="Upload Portrait"
+                                                                />
+                                                                {deity.image && (
+                                                                    <img src={deity.image} alt="Portrait" className="w-12 h-12 object-cover rounded-lg border border-gray-200" />
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
