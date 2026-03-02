@@ -1,0 +1,26 @@
+﻿[dotenv@17.3.1] injecting env (17) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+Connected to MongoDB.
+Found 3 pandits total.
+
+[1] ID: 699a791f9817570c24f1e098
+    Name: Bishal Pandit
+    Email: pandeybishal430@gmail.com
+    Phone: 9867254605
+    WhatsApp: "919894644568" (PRESENT)
+    Aadhaar: "undefined" (MISSING)
+
+[2] ID: 699da77753338ddb269ed8ea
+    Name: VIPIS
+    Email: binodstha060@gmail.com
+    Phone: 9860804988
+    WhatsApp: "9864404300" (PRESENT)
+    Aadhaar: "undefined" (MISSING)
+
+[3] ID: 69a2cf180defb6ca2ee2e4f0
+    Name: Kiyo
+    Email: kiyo60254@gmail.com
+    Phone: 9867254605
+    WhatsApp: "9854758965" (PRESENT)
+    Aadhaar: "undefined" (MISSING)
+
+

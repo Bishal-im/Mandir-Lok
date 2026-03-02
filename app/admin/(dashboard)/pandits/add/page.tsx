@@ -9,11 +9,11 @@ import { createPandit, getTemplesAdmin } from "@/lib/actions/admin";
 export default function AddPanditPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const [temples, setTemples] = useState([]);
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
-        whatsapp: "",
         email: "",
         photo: "",
         assignedTemples: [] as string[],
@@ -43,9 +43,19 @@ export default function AddPanditPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        await createPandit(formData);
+        setError("");
+        const payload = {
+            ...formData,
+            email: formData.email.toLowerCase().trim(),
+            phone: formData.phone.trim() || null,
+        };
+        const res = await createPandit(payload);
         setLoading(false);
-        router.push("/admin/pandits");
+        if (res.success) {
+            router.push("/admin/pandits");
+        } else {
+            setError(res.error || "Failed to add Pandit. Please check the details and try again.");
+        }
     };
 
     return (
@@ -56,18 +66,23 @@ export default function AddPanditPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm space-y-6">
+                {error && (
+                    <div className="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-medium">
+                        ⚠️ {error}
+                    </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2 space-y-2">
                         <label className="text-xs font-bold text-gray-500 uppercase">Full Name</label>
                         <input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Pt. Ramesh Sharma" className="w-full px-4 py-3 rounded-xl border border-gray-200" />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase">Phone</label>
-                        <input required value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-200" />
+                        <label className="text-xs font-bold text-gray-500 uppercase">Email Address</label>
+                        <input required type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="pandit@example.com" className="w-full px-4 py-3 rounded-xl border border-gray-200" />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase">WhatsApp</label>
-                        <input required value={formData.whatsapp} onChange={e => setFormData({ ...formData, whatsapp: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-200" />
+                        <label className="text-xs font-bold text-gray-500 uppercase">Phone (Optional)</label>
+                        <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} placeholder="Will be filled by Pandit" className="w-full px-4 py-3 rounded-xl border border-gray-200" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-500 uppercase">Experience (Years)</label>
@@ -89,6 +104,10 @@ export default function AddPanditPage() {
                             ))}
                         </div>
                     </div>
+                </div>
+
+                <div className="col-span-2 p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-600">
+                    💡 The Pandit's WhatsApp and phone number will be collected when they first log in using their email and complete onboarding.
                 </div>
 
                 <button disabled={loading} className="w-full py-4 rounded-xl bg-[#ff7f0a] text-white font-bold shadow-lg shadow-[#ff7f0a]/30">

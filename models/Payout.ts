@@ -9,6 +9,9 @@ export interface IPayout extends Document {
   upiId?: string;
   bankAccount?: string;
   note?: string;
+  razorpayPayoutId?: string;
+  failureReason?: string;
+  utr?: string;
   processedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -26,6 +29,9 @@ const PayoutSchema = new Schema<IPayout>(
     upiId: { type: String, default: "" },
     bankAccount: { type: String, default: "" },
     note: { type: String, default: "" },
+    razorpayPayoutId: { type: String, default: "" },
+    failureReason: { type: String, default: "" },
+    utr: { type: String, default: "" },
     processedAt: { type: Date, default: null },
   },
   { timestamps: true }

@@ -36,7 +36,15 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // Pass current pathname to headers for server components
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-pathname', pathname);
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    }
+  });
 }
 
 export const config = {

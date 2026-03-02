@@ -64,12 +64,7 @@ export default function PanditLoginPage() {
       })
       const data = await res.json()
       if (data.success) {
-        if (data.needsPhoneUpdate) {
-          setPanditId(data.panditId)
-          setStep('phone_setup')
-        } else {
-          router.push('/pandit/dashboard')
-        }
+        router.push('/pandit/dashboard')
       } else {
         setError(data.message || 'Invalid OTP')
       }
