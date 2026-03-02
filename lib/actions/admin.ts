@@ -109,27 +109,67 @@ export async function getPoojasAdmin() {
 export async function createPooja(data: any) {
     try {
         await connectDB();
-        const pooja = await Pooja.create(data);
+
+        // Ensure no _id is passed for creation
+        const { _id, ...createData } = data;
+
+        const pooja = await Pooja.create(createData);
+
         // Sync Temple pujasAvailable count
-        if (data.templeId) {
-            await Temple.findByIdAndUpdate(data.templeId, { $inc: { pujasAvailable: 1 } });
+        if (createData.templeId) {
+            await Temple.findByIdAndUpdate(createData.templeId, { $inc: { pujasAvailable: 1 } });
         }
-        revalidatePath("/admin/poojas");
+
+        try {
+            revalidatePath("/admin/poojas");
+            revalidatePath("/poojas");
+        } catch (revalError) {
+            console.error("Revalidation error (non-fatal):", revalError);
+        }
+
         return { success: true, pooja: JSON.parse(JSON.stringify(pooja)) };
     } catch (error: any) {
-        return { success: false, error: error.message };
+        console.error("createPooja error:", error);
+        return { success: false, error: error.message || "Failed to create pooja" };
     }
 }
 
 export async function updatePooja(id: string, data: any) {
     try {
         await connectDB();
-        const pooja = await Pooja.findByIdAndUpdate(id, data, { new: true });
-        revalidatePath("/admin/poojas");
-        revalidatePath("/poojas");
+
+        // Remove protected fields if they exist in data to prevent Mongoose errors
+        const { _id, createdAt, updatedAt, __v, ...updateData } = data;
+
+        // Use findById and save for better subdocument handling (packages)
+        const pooja = await Pooja.findById(id);
+        if (!pooja) return { success: false, error: "Pooja not found" };
+
+        // Use .set() to update all fields from the object
+        pooja.set(updateData);
+
+        // Explicitly mark packages as modified if they exist in updateData
+        // This is a safety measure for nested arrays in Mongoose
+        if (updateData.packages) {
+            pooja.markModified('packages');
+        }
+
+        await pooja.save();
+
+        // Specific revalidations
+        try {
+            revalidatePath("/admin/poojas");
+            revalidatePath("/poojas");
+            if (pooja.slug) revalidatePath(`/poojas/${pooja.slug}`);
+            revalidatePath(`/poojas/${id}`);
+        } catch (revalError) {
+            console.error("Revalidation error (non-fatal):", revalError);
+        }
+
         return { success: true, pooja: JSON.parse(JSON.stringify(pooja)) };
     } catch (error: any) {
-        return { success: false, error: error.message };
+        console.error("updatePooja error:", error);
+        return { success: false, error: error.message || "Failed to update pooja" };
     }
 }
 

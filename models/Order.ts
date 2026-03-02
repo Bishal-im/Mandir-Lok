@@ -60,6 +60,11 @@ export interface IOrder extends Document {
   videoUrl?: string;         // AWS S3 URL after pandit uploads
   videoSentAt?: Date;
 
+  packageSelected?: {
+    name: string;
+    price: number;
+  };
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
@@ -120,6 +125,10 @@ const OrderSchema = new Schema<IOrder>(
 
     videoUrl: { type: String, default: "" },
     videoSentAt: { type: Date, default: null },
+    packageSelected: {
+      name: { type: String },
+      price: { type: Number },
+    },
   },
   { timestamps: true }
 );

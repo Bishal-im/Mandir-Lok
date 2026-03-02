@@ -112,6 +112,12 @@ export default function OrderDetailPage() {
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Amount</p>
                                 <p className="font-bold text-[#ff7f0a] flex items-center gap-0.5"><IndianRupee size={14} />{order.totalAmount}</p>
                             </div>
+                            {order.packageSelected && (
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-amber-600">Selected Package</p>
+                                    <p className="font-bold text-amber-600">{order.packageSelected.name} <span className="text-[10px] font-normal text-gray-400">(₹{order.packageSelected.price})</span></p>
+                                </div>
+                            )}
                         </div>
 
                         <div className="pt-6 border-t border-gray-50 grid grid-cols-1 md:grid-cols-2 gap-6">

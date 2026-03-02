@@ -57,6 +57,7 @@ function CartContent() {
   const dateStr = searchParams.get("date");
   const qtyStr = searchParams.get("qty");
   const offeringsStr = searchParams.get("offerings"); // comma-separated ids
+  const packageIndex = searchParams.get("packageIndex");
   const isDonationParam = searchParams.get("isDonation") === "true";
   const customAmountParam = parseInt(searchParams.get("customAmount") || "0", 10);
 
@@ -170,8 +171,10 @@ function CartContent() {
   const isStep1Valid = form.name && form.phone && form.whatsapp;
 
   let totalObj = { base: 0, offerings: 0, sum: 0 };
+  const selectedPackage = (pooja && packageIndex !== null) ? pooja.packages[parseInt(packageIndex)] : null;
+  
   if (pooja) {
-    totalObj.base = pooja.price * qty;
+    totalObj.base = selectedPackage ? selectedPackage.price : (pooja.price * qty);
     totalObj.offerings = selectedOfferings.reduce((sum, o) => sum + (o.price * (o.quantity || 1)), 0);
     totalObj.sum = totalObj.base + totalObj.offerings + customAmountParam;
   } else if (templeId && isDonationParam) {
@@ -258,6 +261,7 @@ function CartContent() {
                   address: form.address,
                   isDonation: isDonationParam,
                   extraDonation: customAmountParam,
+                  packageSelected: selectedPackage ? { name: selectedPackage.name, price: selectedPackage.price } : undefined,
                 }),
               });
               const verifyData = await verifyRes.json();
@@ -515,7 +519,9 @@ function CartContent() {
                   {dateStr && (
                     <p className="text-xs text-[#6b5b45]">📅 {new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
                   )}
-                  {pooja && pooja.name !== 'Sacred Offering' && (
+                  {selectedPackage ? (
+                    <p className="text-xs font-bold text-amber-600 mt-1">✨ Package: {selectedPackage.name}</p>
+                  ) : pooja && pooja.name !== 'Sacred Offering' && (
                     <p className="text-xs text-[#6b5b45]">👥 {qty} Devotee{qty > 1 ? "s" : ""}</p>
                   )}
                 </div>

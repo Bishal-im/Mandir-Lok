@@ -50,6 +50,7 @@ export async function POST(req: Request) {
       address,
       isDonation,
       extraDonation,
+      packageSelected,
     } = body;
 
     // 2. Verify Razorpay signature
@@ -77,7 +78,12 @@ export async function POST(req: Request) {
           { status: 404 }
         );
       }
-      poojaAmount = pooja.price * qty;
+      if (packageSelected) {
+        const dbPackage = pooja.packages?.find((p: any) => p.name === packageSelected.name);
+        poojaAmount = dbPackage ? dbPackage.price : packageSelected.price;
+      } else {
+        poojaAmount = pooja.price * qty;
+      }
       poojaName = pooja.name;
     }
 
@@ -122,6 +128,7 @@ export async function POST(req: Request) {
       orderStatus: isDonation ? "completed" : "pending",
       isDonation: !!isDonation,
       extraDonation: extraDonation || 0,
+      packageSelected: packageSelected || undefined,
     };
 
     if (poojaId) {
