@@ -813,16 +813,16 @@ function TestimonialsSection() {
                     "{rev.comment}"
                   </p>
                   <div className="flex items-center gap-3">
-                    {rev.userId.photo ? (
-                      <img src={rev.userId.photo} alt={rev.userId.name} className="w-10 h-10 rounded-full object-cover border-2 border-orange-100" />
+                    {rev.userId?.photo ? (
+                      <img src={rev.userId.photo} alt={rev.userId?.name || "Devotee"} className="w-10 h-10 rounded-full object-cover border-2 border-orange-100" />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm">
-                        {rev.userId.name.charAt(0).toUpperCase()}
+                        {(rev.userId?.name || "D").charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm">{rev.userId.name}</h4>
-                      <p className="text-xs text-orange-500 font-medium">{rev.templeId.name}</p>
+                      <h4 className="font-bold text-gray-900 text-sm">{rev.userId?.name || "Devotee"}</h4>
+                      <p className="text-xs text-orange-500 font-medium">{rev.templeId?.name || "Sacred Temple"}</p>
                     </div>
                   </div>
                 </div>

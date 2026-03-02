@@ -50,10 +50,18 @@ export async function POST(req: Request) {
     // Delete used OTP
     await Otp.deleteOne({ _id: otpRecord._id });
 
+    // Check if phone or whatsapp is missing
+    const needsPhoneUpdate = !pandit.phone || !pandit.whatsapp;
+
     // Generate JWT
     const token = generateToken({ panditId: pandit._id.toString() });
 
-    const response = NextResponse.json({ success: true, message: "Login successful" });
+    const response = NextResponse.json({
+      success: true,
+      message: "Login successful",
+      needsPhoneUpdate,
+      panditId: pandit._id.toString()
+    });
     response.cookies.set("mandirlok_pandit_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

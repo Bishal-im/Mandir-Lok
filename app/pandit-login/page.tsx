@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 
 export default function PanditLoginPage() {
   const router = useRouter()
-  const [method, setMethod] = useState<'phone' | 'email'>('phone')
-  const [phone, setPhone] = useState('')
-  const [countryCode, setCountryCode] = useState('91')
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
-  const [step, setStep] = useState<'identifier' | 'otp'>('identifier')
+  const [phone, setPhone] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
+  const [panditId, setPanditId] = useState('')
+  const [step, setStep] = useState<'identifier' | 'otp' | 'phone_setup'>('identifier')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -18,18 +18,9 @@ export default function PanditLoginPage() {
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (method === 'phone') {
-      const isIN = countryCode === '91' && /^[6-9]\d{9}$/.test(phone);
-      const isNP = countryCode === '977' && /^9[78]\d{8}$/.test(phone);
-      if (!isIN && !isNP) {
-        setError('Please enter a valid 10-digit mobile number')
-        return
-      }
-    } else {
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setError('Please enter a valid email address')
-        return
-      }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Please enter a valid email address')
+      return
     }
 
     setError('')
@@ -38,12 +29,12 @@ export default function PanditLoginPage() {
       const res = await fetch('/api/pandit/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(method === 'phone' ? { phone: `${countryCode}${phone}` } : { email }),
+        body: JSON.stringify({ email }),
       })
       const data = await res.json()
       if (data.success) {
         setStep('otp')
-        setSuccess(data.message || `OTP sent to your registered ${method === 'phone' ? 'WhatsApp' : 'Email'}`)
+        setSuccess(data.message || `OTP sent to your registered Email`)
       } else {
         setError(data.message || 'Failed to send OTP')
       }
@@ -67,15 +58,47 @@ export default function PanditLoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...(method === 'phone' ? { phone: `${countryCode}${phone}` } : { email }),
+          email,
           otp
         }),
       })
       const data = await res.json()
       if (data.success) {
-        router.push('/pandit/dashboard')
+        if (data.needsPhoneUpdate) {
+          setPanditId(data.panditId)
+          setStep('phone_setup')
+        } else {
+          router.push('/pandit/dashboard')
+        }
       } else {
         setError(data.message || 'Invalid OTP')
+      }
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSavePhone = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (phone.length !== 10 || whatsapp.length !== 10) {
+      setError('Please enter valid 10-digit numbers')
+      return
+    }
+    setError('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/pandit/auth/update-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ panditId, phone, whatsapp }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        router.push('/pandit/dashboard')
+      } else {
+        setError(data.message || 'Failed to update phone number')
       }
     } catch {
       setError('Network error. Please try again.')
@@ -100,71 +123,24 @@ export default function PanditLoginPage() {
         <div className="bg-white border border-[#f0dcc8] rounded-2xl shadow-card p-8">
           {step === 'identifier' ? (
             <div className="space-y-6">
-              {/* Method Switcher */}
-              <div className="flex bg-[#fff8f0] p-1 rounded-xl border border-[#f0dcc8]">
-                <button
-                  onClick={() => { setMethod('phone'); setError(''); }}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${method === 'phone' ? 'bg-[#ff7f0a] text-white shadow-md' : 'text-[#6b5b45]'}`}
-                >
-                  WhatsApp Login
-                </button>
-                <button
-                  onClick={() => { setMethod('email'); setError(''); }}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${method === 'email' ? 'bg-[#ff7f0a] text-white shadow-md' : 'text-[#6b5b45]'}`}
-                >
-                  Gmail Login
-                </button>
-              </div>
-
               <form onSubmit={handleSendOtp} className="space-y-5">
-                {method === 'phone' ? (
-                  <div>
-                    <label className="block text-sm font-semibold text-[#1a1209] mb-2">
-                      📱 Registered Mobile Number
-                    </label>
-                    <div className="flex gap-2">
-                      <select
-                        value={countryCode}
-                        onChange={e => setCountryCode(e.target.value)}
-                        className="px-2 bg-[#fff8f0] border border-[#f0dcc8] rounded-xl text-[#6b5b45] text-xs font-medium outline-none"
-                      >
-                        <option value="91">+91 (IN)</option>
-                        <option value="977">+977 (NP)</option>
-                      </select>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                        placeholder="Enter 10-digit number"
-                        className="input-divine flex-1"
-                        maxLength={10}
-                        required
-                        autoFocus
-                      />
-                    </div>
-                    <p className="text-xs text-[#6b5b45] mt-1.5">
-                      OTP will be sent to your registered WhatsApp
-                    </p>
-                  </div>
-                ) : (
-                  <div>
-                    <label className="block text-sm font-semibold text-[#1a1209] mb-2">
-                      📧 Registered Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder="Enter your registered email"
-                      className="input-divine w-full"
-                      required
-                      autoFocus
-                    />
-                    <p className="text-xs text-[#6b5b45] mt-1.5">
-                      OTP will be sent to your registered Gmail
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-semibold text-[#1a1209] mb-2">
+                    📧 Registered Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="Enter your registered email"
+                    className="input-divine w-full"
+                    required
+                    autoFocus
+                  />
+                  <p className="text-xs text-[#6b5b45] mt-1.5">
+                    OTP will be sent to your registered Gmail
+                  </p>
+                </div>
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
@@ -182,16 +158,16 @@ export default function PanditLoginPage() {
                   ) : (
                     '→'
                   )}
-                  {loading ? 'Sending OTP…' : `Send OTP via ${method === 'phone' ? 'WhatsApp' : 'Email'}`}
+                  {loading ? 'Sending OTP…' : 'Send OTP via Email'}
                 </button>
               </form>
             </div>
-          ) : (
+          ) : step === 'otp' ? (
             <form onSubmit={handleVerifyOtp} className="space-y-5">
               <div className="text-center mb-2">
-                <div className="text-4xl mb-2">{method === 'phone' ? '📲' : '📩'}</div>
+                <div className="text-4xl mb-2">📩</div>
                 <p className="text-sm text-[#6b5b45]">
-                  OTP sent to <strong>{method === 'phone' ? `+${countryCode} ${phone}` : email}</strong>
+                  OTP sent to <strong>{email}</strong>
                 </p>
               </div>
 
@@ -238,7 +214,7 @@ export default function PanditLoginPage() {
                 onClick={() => { setStep('identifier'); setOtp(''); setError(''); setSuccess(''); }}
                 className="w-full text-center text-sm text-[#6b5b45] hover:text-[#ff7f0a] transition-colors"
               >
-                ← Change {method === 'phone' ? 'phone number' : 'email'}
+                ← Change email
               </button>
 
               <p className="text-center text-xs text-[#6b5b45]">
@@ -251,6 +227,66 @@ export default function PanditLoginPage() {
                   Resend
                 </button>
               </p>
+            </form>
+          ) : (
+            <form onSubmit={handleSavePhone} className="space-y-5">
+              <div className="text-center mb-2">
+                <div className="text-4xl mb-2">📱</div>
+                <h2 className="text-lg font-bold text-[#1a1209]">Complete Your Profile</h2>
+                <p className="text-sm text-[#6b5b45]">
+                  Please provide your contact numbers to continue
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-[#1a1209] mb-2">
+                    📞 Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="Enter 10-digit phone number"
+                    className="input-divine w-full"
+                    maxLength={10}
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#1a1209] mb-2">
+                    💬 WhatsApp Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={whatsapp}
+                    onChange={e => setWhatsapp(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="Enter 10-digit WhatsApp number"
+                    className="input-divine w-full"
+                    maxLength={10}
+                    required
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-saffron w-full py-3 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : '✅'}
+                {loading ? 'Saving...' : 'Save & Continue'}
+              </button>
             </form>
           )}
         </div>

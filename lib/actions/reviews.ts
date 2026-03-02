@@ -59,10 +59,13 @@ export async function getHomepageReviews() {
       .populate("userId", "name photo")
       .populate("templeId", "name location")
       .sort({ isFeatured: -1, createdAt: -1 })
-      .limit(6)
+      .limit(10) // Fetch a few more to allow for filtering
       .lean();
 
-    return { success: true, data: JSON.parse(JSON.stringify(reviews)) };
+    // Filter out reviews where population failed (referenced doc deleted)
+    const validReviews = (reviews as any[]).filter(rev => rev.userId && rev.templeId).slice(0, 6);
+
+    return { success: true, data: JSON.parse(JSON.stringify(validReviews)) };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
