@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Save, Info, Plus, X, IndianRupee, Clock, Tag, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, Save, Info, Plus, X, IndianRupee, Clock, Tag, Image as ImageIcon, Trash2, HelpCircle } from "lucide-react";
+import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
 import { getPoojaById, updatePooja, getTemplesAdmin } from "@/lib/actions/admin";
 
@@ -233,8 +234,20 @@ export default function EditPoojaPage() {
                     <div className="space-y-3">
                         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1"><ImageIcon size={14} /> Pooja Images (URLs)</label>
                         <div className="flex gap-2">
-                            <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder="Paste image URL here" className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm" />
-                            <button type="button" onClick={() => addArrayItem("images")} className="bg-gray-100 p-2.5 rounded-xl hover:bg-[#ff7f0a] hover:text-white transition-all"><Plus size={20} /></button>
+                            <div className="flex gap-2">
+                            <input
+                                value={newImageUrl}
+                                onChange={(e) => setNewImageUrl(e.target.value)}
+                                placeholder="Paste image URL here"
+                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm"
+                            />
+                            <CloudinaryUploader 
+                                onUploadSuccess={(url) => setNewImageUrl(url)}
+                                folder="poojas"
+                                buttonText="Upload"
+                            />
+                        </div>
+    <button type="button" onClick={() => addArrayItem("images")} className="bg-gray-100 p-2.5 rounded-xl hover:bg-[#ff7f0a] hover:text-white transition-all"><Plus size={20} /></button>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {formData.images.map(img => (

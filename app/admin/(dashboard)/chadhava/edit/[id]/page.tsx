@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Save, IndianRupee, Info, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, Save, IndianRupee, Info, Image as ImageIcon, Upload } from "lucide-react";
+import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
 import { getChadhavaById, updateChadhava, getTemplesAdmin } from "@/lib/actions/admin";
 
@@ -99,7 +100,20 @@ export default function EditChadhavaPage() {
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><ImageIcon size={12} /> Image URL</label>
-                        <input name="image" value={formData.image} onChange={handleChange} placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-gray-200" />
+                        <div className="flex gap-2">
+                            <input 
+                                name="image" 
+                                value={formData.image} 
+                                onChange={handleChange} 
+                                placeholder="https://..." 
+                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200" 
+                            />
+                            <CloudinaryUploader 
+                                onUploadSuccess={(url) => setFormData({ ...formData, image: url })}
+                                folder="chadhava"
+                                buttonText="Upload"
+                            />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

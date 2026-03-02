@@ -13,6 +13,7 @@ import {
     Image as ImageIcon
 } from "lucide-react";
 import { getSettings, updateSettings } from "@/lib/actions/admin";
+import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("general");
@@ -135,12 +136,19 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Website Logo URL</label>
-                                        <input
-                                            value={logoUrl}
-                                            onChange={(e) => setLogoUrl(e.target.value)}
-                                            placeholder="https://cloudinary.com/..."
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200"
-                                        />
+                                        <div className="flex gap-2">
+                                            <input
+                                                value={logoUrl}
+                                                onChange={(e) => setLogoUrl(e.target.value)}
+                                                placeholder="https://cloudinary.com/..."
+                                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
+                                            />
+                                            <CloudinaryUploader 
+                                                onUploadSuccess={(url) => setLogoUrl(url)}
+                                                folder="branding"
+                                                buttonText="Upload Logo"
+                                            />
+                                        </div>
                                         {logoUrl && (
                                             <div className="mt-2 p-4 bg-gray-50 rounded-xl inline-block border border-gray-100">
                                                 <img src={logoUrl} alt="Logo Preview" className="h-10 object-contain" />
@@ -182,13 +190,20 @@ export default function SettingsPage() {
                                                 <div className="grid md:grid-cols-2 gap-4">
                                                     <div className="space-y-1.5">
                                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Image URL</label>
-                                                        <div className="relative">
-                                                            <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                                                            <input
-                                                                value={slide.src}
-                                                                onChange={(e) => handleUpdateSlide(index, "src", e.target.value)}
-                                                                placeholder="https://..."
-                                                                className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                        <div className="flex gap-2">
+                                                            <div className="relative flex-1">
+                                                                <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                                                                <input
+                                                                    value={slide.src}
+                                                                    onChange={(e) => handleUpdateSlide(index, "src", e.target.value)}
+                                                                    placeholder="https://..."
+                                                                    className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                                />
+                                                            </div>
+                                                            <CloudinaryUploader 
+                                                                onUploadSuccess={(url) => handleUpdateSlide(index, "src", url)}
+                                                                folder="landing_banners"
+                                                                buttonText="Upload"
                                                             />
                                                         </div>
                                                     </div>
@@ -268,12 +283,19 @@ export default function SettingsPage() {
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-4 p-5 rounded-2xl border border-gray-100 bg-gray-50/50">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Poojas Page Banner</label>
-                                            <input
-                                                value={pageBanners.poojas}
-                                                onChange={e => setPageBanners({ ...pageBanners, poojas: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white"
-                                                placeholder="https://..."
-                                            />
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={pageBanners.poojas}
+                                                    onChange={e => setPageBanners({ ...pageBanners, poojas: e.target.value })}
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
+                                                    placeholder="https://..."
+                                                />
+                                                <CloudinaryUploader 
+                                                    onUploadSuccess={(url) => setPageBanners({ ...pageBanners, poojas: url })}
+                                                    folder="banners"
+                                                    buttonText="Upload"
+                                                />
+                                            </div>
                                             {pageBanners.poojas && (
                                                 <div className="rounded-xl overflow-hidden aspect-video border border-gray-100 shadow-sm">
                                                     <img src={pageBanners.poojas} className="w-full h-full object-cover" alt="Poojas Banner Preview" />
@@ -283,12 +305,19 @@ export default function SettingsPage() {
 
                                         <div className="space-y-4 p-5 rounded-2xl border border-gray-100 bg-gray-50/50">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Chadhava Page Banner</label>
-                                            <input
-                                                value={pageBanners.chadhava}
-                                                onChange={e => setPageBanners({ ...pageBanners, chadhava: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white"
-                                                placeholder="https://..."
-                                            />
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={pageBanners.chadhava}
+                                                    onChange={e => setPageBanners({ ...pageBanners, chadhava: e.target.value })}
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
+                                                    placeholder="https://..."
+                                                />
+                                                <CloudinaryUploader 
+                                                    onUploadSuccess={(url) => setPageBanners({ ...pageBanners, chadhava: url })}
+                                                    folder="banners"
+                                                    buttonText="Upload"
+                                                />
+                                            </div>
                                             {pageBanners.chadhava && (
                                                 <div className="rounded-xl overflow-hidden aspect-video border border-gray-100 shadow-sm">
                                                     <img src={pageBanners.chadhava} className="w-full h-full object-cover" alt="Chadhava Banner Preview" />
@@ -298,12 +327,19 @@ export default function SettingsPage() {
 
                                         <div className="space-y-4 p-5 rounded-2xl border border-gray-100 bg-gray-50/50">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Temples Page Banner</label>
-                                            <input
-                                                value={pageBanners.temples}
-                                                onChange={e => setPageBanners({ ...pageBanners, temples: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white"
-                                                placeholder="https://..."
-                                            />
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={pageBanners.temples}
+                                                    onChange={e => setPageBanners({ ...pageBanners, temples: e.target.value })}
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
+                                                    placeholder="https://..."
+                                                />
+                                                <CloudinaryUploader 
+                                                    onUploadSuccess={(url) => setPageBanners({ ...pageBanners, temples: url })}
+                                                    folder="banners"
+                                                    buttonText="Upload"
+                                                />
+                                            </div>
                                             {pageBanners.temples && (
                                                 <div className="rounded-xl overflow-hidden aspect-video border border-gray-100 shadow-sm">
                                                     <img src={pageBanners.temples} className="w-full h-full object-cover" alt="Temples Banner Preview" />
@@ -320,12 +356,19 @@ export default function SettingsPage() {
                                     <div className="space-y-4">
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400">Banner Image URL</label>
-                                            <input
-                                                value={dashboardSettings.bannerUrl}
-                                                onChange={e => setDashboardSettings({ ...dashboardSettings, bannerUrl: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
-                                                placeholder="https://..."
-                                            />
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={dashboardSettings.bannerUrl}
+                                                    onChange={e => setDashboardSettings({ ...dashboardSettings, bannerUrl: e.target.value })}
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
+                                                    placeholder="https://..."
+                                                />
+                                                <CloudinaryUploader 
+                                                    onUploadSuccess={(url) => setDashboardSettings({ ...dashboardSettings, bannerUrl: url })}
+                                                    folder="dashboard"
+                                                    buttonText="Upload"
+                                                />
+                                            </div>
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400">Welcome Message</label>

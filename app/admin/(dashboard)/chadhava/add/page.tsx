@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Save, MapPin, IndianRupee, Image as ImageIcon } from "lucide-react";
+import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
 import { createChadhava, getTemplesAdmin } from "@/lib/actions/admin";
 
@@ -52,7 +53,19 @@ export default function AddChadhavaPage() {
                     
                     <div className="col-span-2 space-y-2">
                         <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><ImageIcon size={12} /> Image URL</label>
-                        <input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} placeholder="https://images.unsplash.com/..." className="w-full px-4 py-3 rounded-xl border border-gray-200" />
+                        <div className="flex gap-2">
+                            <input 
+                                value={formData.image} 
+                                onChange={e => setFormData({ ...formData, image: e.target.value })} 
+                                placeholder="https://images.unsplash.com/..." 
+                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200" 
+                            />
+                            <CloudinaryUploader 
+                                onUploadSuccess={(url) => setFormData({ ...formData, image: url })}
+                                folder="chadhava"
+                                buttonText="Upload"
+                            />
+                        </div>
                         <p className="text-[10px] text-gray-400 italic">Optional: Overrides emoji if provided.</p>
                     </div>
 

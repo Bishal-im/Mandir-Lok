@@ -7,6 +7,7 @@ import {
   Award, FileText, Camera, Check,
   Building, Percent, ShieldCheck, Save
 } from 'lucide-react'
+import CloudinaryUploader from '@/components/admin/CloudinaryUploader'
 
 export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
@@ -167,13 +168,20 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><Camera size={14} /> Profile Photo URL</label>
-                      <input
-                        type="url"
-                        value={formData.photo}
-                        onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                        className="input-divine w-full"
-                        placeholder="https://..."
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          value={formData.photo}
+                          onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
+                          className="flex-1 input-divine"
+                          placeholder="https://..."
+                        />
+                        <CloudinaryUploader 
+                          onUploadSuccess={(url) => setFormData({ ...formData, photo: url })}
+                          folder="pandits"
+                          buttonText="Upload"
+                        />
+                      </div>
                     </div>
                   </div>
 

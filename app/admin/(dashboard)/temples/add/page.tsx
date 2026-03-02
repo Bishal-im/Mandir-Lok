@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Save, Upload, X, MapPin, Info, Image as ImageIcon, Plus } from "lucide-react";
+import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
 import { createTemple } from "@/lib/actions/admin";
 
@@ -260,21 +261,26 @@ export default function AddTemplePage() {
                     <div className="p-6 space-y-6">
                         <div className="space-y-3">
                             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Temple Images (URL)</label>
-                            <div className="flex gap-2">
-                                <input
-                                    value={newImageUrl}
-                                    onChange={(e) => setNewImageUrl(e.target.value)}
-                                    placeholder="Paste image URL here"
-                                    className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#ff7f0a]/20 focus:border-[#ff7f0a] transition-all"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={addImage}
-                                    className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-semibold hover:bg-[#ff7f0a] hover:text-white transition-all flex items-center gap-2"
-                                >
-                                    <Plus size={18} /> Add
-                                </button>
-                            </div>
+                                <div className="flex gap-2 w-full">
+                                    <input
+                                        value={newImageUrl}
+                                        onChange={(e) => setNewImageUrl(e.target.value)}
+                                        placeholder="Paste image URL here"
+                                        className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#ff7f0a]/20 focus:border-[#ff7f0a] transition-all"
+                                    />
+                                    <CloudinaryUploader 
+                                        onUploadSuccess={(url) => setNewImageUrl(url)}
+                                        folder="temples"
+                                        buttonText="Upload"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={addImage}
+                                        className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-semibold hover:bg-[#ff7f0a] hover:text-white transition-all flex items-center gap-2"
+                                    >
+                                        <Plus size={18} /> Add
+                                    </button>
+                                </div>
 
                             {/* Image Preview Grid */}
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
