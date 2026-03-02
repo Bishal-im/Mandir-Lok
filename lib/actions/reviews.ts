@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { connectDB } from "../db";
 import Review from "../../models/Review";
 import Order from "../../models/Order";
+import Notification from "../../models/Notification";
 import { Types } from "mongoose";
 
 export async function submitReview(data: {
@@ -43,6 +44,20 @@ export async function submitReview(data: {
 
     revalidatePath(`/bookings/${data.orderId}`);
     revalidatePath("/dashboard");
+
+    // Create Admin Notification for review submission
+    try {
+      await Notification.create({
+        recipientId: new Types.ObjectId(data.userId),
+        recipientModel: "Admin",
+        title: "New Review Submitted! ⭐",
+        message: `A new ${data.rating}-star review has been submitted for ${(order.poojaId as any)?.name || 'a pooja'}.`,
+        type: "system",
+        link: "/admin/reviews"
+      });
+    } catch (notifError) {
+      console.error("Failed to create admin notification (review):", notifError);
+    }
 
     return { success: true, data: JSON.parse(JSON.stringify(review)) };
   } catch (error: any) {

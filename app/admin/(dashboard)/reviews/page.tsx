@@ -109,11 +109,11 @@ export default function AdminReviewsPage() {
               <div className="p-5 border-b border-gray-50 flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                    {review.userId.name.charAt(0).toUpperCase()}
+                    {review.userId?.name?.charAt(0).toUpperCase() || "U"}
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 text-sm">{review.userId.name}</h4>
-                    <p className="text-xs text-gray-400">{review.userId.email}</p>
+                    <h4 className="font-bold text-gray-900 text-sm">{review.userId?.name || "Unknown User"}</h4>
+                    <p className="text-xs text-gray-400">{review.userId?.email || "No email provided"}</p>
                   </div>
                 </div>
                 <div className="flex gap-0.5">
@@ -134,10 +134,10 @@ export default function AdminReviewsPage() {
                 </p>
                 <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-widest font-bold">
                   <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded border border-orange-100">
-                    📿 {review.poojaId.name}
+                    📿 {review.poojaId?.name || "Deleted Pooja"}
                   </span>
                   <span className="bg-gray-50 text-gray-500 px-2 py-1 rounded border border-gray-100">
-                    🛕 {review.templeId.name}
+                    🛕 {review.templeId?.name || "Deleted Temple"}
                   </span>
                 </div>
               </div>

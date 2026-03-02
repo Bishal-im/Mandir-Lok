@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
+import Notification from "@/models/Notification";
 import { getPanditFromRequest } from "@/lib/panditAuth";
 import { sendWhatsApp } from "@/lib/whatsapp";
 
@@ -43,6 +44,20 @@ export async function POST(
       }
     } catch (e) {
       console.error("[WhatsApp pooja started notification failed]", e);
+    }
+
+    // Create Admin Notification for order start
+    try {
+      await Notification.create({
+        recipientId: order.userId,
+        recipientModel: "Admin",
+        title: "Pooja Started! 📿",
+        message: `Pooja for ${order.sankalpName} has been started by a Pandit.`,
+        type: "booking",
+        link: `/admin/orders`
+      });
+    } catch (adminNotifError) {
+      console.error("Failed to create admin notification (order start):", adminNotifError);
     }
 
     return NextResponse.json({ success: true, message: "Pooja started" });

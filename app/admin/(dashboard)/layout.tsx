@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/jwt";
 import AdminSidebar from "./AdminSidebar";
+import AdminNotificationBell from "@/components/admin/AdminNotificationBell";
 
 export default async function AdminLayout({
     children,
@@ -32,10 +33,14 @@ export default async function AdminLayout({
                             Welcome back, Admin
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <span className="badge-saffron text-xs">Super Admin</span>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center text-white text-sm font-bold">
-                            A
+                    <div className="flex items-center gap-4">
+                        <AdminNotificationBell />
+                        <div className="h-8 w-[1px] bg-gray-200 mx-1" />
+                        <div className="flex items-center gap-3">
+                            <span className="badge-saffron text-xs">Super Admin</span>
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center text-white text-sm font-bold">
+                                A
+                            </div>
                         </div>
                     </div>
                 </header>

@@ -146,6 +146,20 @@ export async function POST(req: Request) {
       console.error("Failed to create in-app notification (payment):", notifError);
     }
 
+    // Create Admin Notification for new order
+    try {
+      await Notification.create({
+        recipientId: decoded.userId, // Using the user who paid as a proxy ID, though Admin doesn't need a specific recipientId usually, we'll use a placeholder or the user's ID
+        recipientModel: "Admin",
+        title: "New Order Received! 💰",
+        message: `A new order of ₹${totalAmount} has been placed for ${poojaName}.`,
+        type: "booking",
+        link: `/admin/orders`
+      });
+    } catch (adminNotifError) {
+      console.error("Failed to create admin notification (new order):", adminNotifError);
+    }
+
     // 5. Auto-assign Pandit (Only if NOT a donation)
     if (!isDonation) {
       try {

@@ -31,7 +31,7 @@ export default function PoojasAdminPage() {
         if (search) {
             result = result.filter(p =>
                 p.name.toLowerCase().includes(search.toLowerCase()) ||
-                p.templeId?.name.toLowerCase().includes(search.toLowerCase())
+                (p.templeId?.name || "Deleted Temple").toLowerCase().includes(search.toLowerCase())
             );
         }
         if (selectedTemple !== "All") {

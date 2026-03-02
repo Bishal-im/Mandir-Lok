@@ -47,6 +47,21 @@ export async function POST(req: Request) {
       bankAccount: bankAccount || ""
     });
 
+    // Create Admin Notification for payout request
+    try {
+      const Notification = (await import("@/models/Notification")).default;
+      await Notification.create({
+        recipientId: panditId,
+        recipientModel: "Admin",
+        title: "New Payout Request! 💸",
+        message: `Pandit ${pandit.name} has requested a payout of ₹${amount}.`,
+        type: "system",
+        link: `/admin/payments/payouts`
+      });
+    } catch (adminNotifError) {
+      console.error("Failed to create admin notification (payout request):", adminNotifError);
+    }
+
     return NextResponse.json({ success: true, data: payout });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message || "Server error" }, { status: 401 });

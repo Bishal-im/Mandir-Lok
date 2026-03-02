@@ -68,3 +68,70 @@ export async function getUnreadNotificationCount() {
         return { success: false, data: 0 };
     }
 }
+
+// =======================
+// ADMIN NOTIFICATIONS
+// =======================
+
+async function getAuthAdmin() {
+    const token = cookies().get("mandirlok_token")?.value;
+    if (!token) return null;
+
+    const decoded = verifyToken(token);
+    if (!decoded || decoded.role !== "admin") return null;
+
+    return decoded.userId;
+}
+
+export async function getAdminNotifications() {
+    try {
+        const adminId = await getAuthAdmin();
+        if (!adminId) return { success: false, message: "Please login as admin" };
+
+        await connectDB();
+        const notifications = await Notification.find({
+            recipientModel: "Admin"
+        })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return { success: true, data: JSON.parse(JSON.stringify(notifications)) };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function markAdminNotificationRead(id: string) {
+    try {
+        const adminId = await getAuthAdmin();
+        if (!adminId) return { success: false, message: "Please login as admin" };
+
+        await connectDB();
+        await Notification.findByIdAndUpdate(id, { read: true });
+
+        const { revalidatePath } = await import("next/cache");
+        revalidatePath("/admin/notifications");
+        revalidatePath("/admin");
+
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function getUnreadAdminNotificationCount() {
+    try {
+        const adminId = await getAuthAdmin();
+        if (!adminId) return { success: false, data: 0 };
+
+        await connectDB();
+        const count = await Notification.countDocuments({
+            recipientModel: "Admin",
+            read: false
+        });
+
+        return { success: true, data: count };
+    } catch (error: any) {
+        return { success: false, data: 0 };
+    }
+}

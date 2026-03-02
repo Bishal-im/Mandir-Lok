@@ -18,7 +18,10 @@ import {
     Menu,
     X,
     MessageCircle,
+    Bell,
 } from "lucide-react";
+import AdminNotificationBell from "@/components/admin/AdminNotificationBell";
+import { getUnreadAdminNotificationCount } from "@/lib/actions/notifications";
 
 const navItems = [
     { label: "Dashboard", href: "/admin", icon: <LayoutDashboard size={18} /> },
@@ -36,12 +39,14 @@ const navItems = [
     { label: "Payouts", href: "/admin/payments/payouts", icon: <IndianRupee size={18} /> },
     { label: "Settings", href: "/admin/settings", icon: <Settings size={18} /> },
     { label: "Reviews", href: "/admin/reviews", icon: <MessageCircle size={18} /> },
+    { label: "Notifications", href: "/admin/notifications", icon: <Bell size={18} /> },
 ];
 
 export default function AdminSidebar() {
     const pathname = usePathname();
     const [sideOpen, setSideOpen] = useState(false);
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
         async function loadLogo() {
@@ -53,6 +58,19 @@ export default function AdminSidebar() {
             }
         }
         loadLogo();
+    }, []);
+
+    useEffect(() => {
+        const fetchCount = async () => {
+            const res = await getUnreadAdminNotificationCount();
+            if (res.success) {
+                setUnreadCount(res.data);
+            }
+        };
+
+        fetchCount();
+        const interval = setInterval(fetchCount, 30000); // 30 seconds
+        return () => clearInterval(interval);
     }, []);
 
     return (
@@ -73,6 +91,9 @@ export default function AdminSidebar() {
                             म
                         </div>
                     )}
+                </div>
+                <div className="flex items-center gap-2">
+                    <AdminNotificationBell />
                 </div>
             </header>
 
@@ -126,6 +147,11 @@ export default function AdminSidebar() {
                             >
                                 {item.icon}
                                 {item.label}
+                                {item.label === "Notifications" && unreadCount > 0 && (
+                                    <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] flex items-center justify-center">
+                                        {unreadCount > 9 ? "9+" : unreadCount}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}

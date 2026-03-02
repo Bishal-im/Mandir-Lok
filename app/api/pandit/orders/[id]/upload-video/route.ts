@@ -82,6 +82,20 @@ export async function POST(
       console.error("Failed to create in-app notification:", notifError);
     }
 
+    // Create Admin Notification for order completion
+    try {
+      await Notification.create({
+        recipientId: order.userId,
+        recipientModel: "Admin",
+        title: "Order Completed! ✅",
+        message: `Pooja for ${order.sankalpName} has been completed by Pandit ${pandit.name}.`,
+        type: "booking",
+        link: `/admin/orders`
+      });
+    } catch (adminNotifError) {
+      console.error("Failed to create admin notification (order completion):", adminNotifError);
+    }
+
     return NextResponse.json({
       success: true,
       data: { videoUrl, completedAt: order.videoSentAt }

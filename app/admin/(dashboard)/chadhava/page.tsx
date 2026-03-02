@@ -24,7 +24,7 @@ export default function ChadhavaAdminPage() {
     useEffect(() => {
         const res = items.filter(i =>
             i.name.toLowerCase().includes(search.toLowerCase()) ||
-            i.templeId?.name.toLowerCase().includes(search.toLowerCase())
+            (i.templeId?.name || "Global").toLowerCase().includes(search.toLowerCase())
         );
         setFilteredItems(res);
     }, [search, items]);
