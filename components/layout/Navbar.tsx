@@ -151,37 +151,37 @@ export default function Navbar() {
       `}</style>
 
       {/* TOP MARQUEE BAR */}
-      <div className="bg-gradient-to-r from-[#7c1a00] via-[#a32200] to-[#7c1a00] text-white text-xs overflow-hidden h-8 flex items-center relative">
-        <div className="absolute left-2 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm px-2.5 sm:px-3 py-0.5 rounded-full border border-white/20 shrink-0">
-          <span className="text-yellow-300 text-[10px] sm:text-xs">✦</span>
+      <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] text-[#1a0500] text-xs overflow-hidden h-8 flex items-center relative">
+        <div className="absolute left-2 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 bg-black/5 backdrop-blur-sm px-2.5 sm:px-3 py-0.5 rounded-full border border-black/10 shrink-0">
+          <span className="text-orange-600 text-[10px] sm:text-xs">✦</span>
           <span
             key={wordIndex}
             className={
               wordVisible
-                ? "word-in inline-block text-yellow-200 font-bold tracking-wide text-[10px] sm:text-xs"
-                : "word-out inline-block text-yellow-200 font-bold tracking-wide text-[10px] sm:text-xs"
+                ? "word-in inline-block text-orange-700 font-bold tracking-wide text-[10px] sm:text-xs"
+                : "word-out inline-block text-orange-700 font-bold tracking-wide text-[10px] sm:text-xs"
             }
           >
             {SPIRITUAL_WORDS[wordIndex]}
           </span>
-          <span className="text-white/70 font-medium hidden md:inline text-[10px] sm:text-xs">Services</span>
+          <span className="text-[#1a0500]/70 font-medium hidden md:inline text-[10px] sm:text-xs">Services</span>
         </div>
         <div className="flex whitespace-nowrap ml-48">
           <div className="top-marquee flex items-center gap-0">
             {[
-              "🙏 Trusted by 1 Million+ Devotees", "🔒 100% Secure Payments", "🛕 500+ Sacred Temples",
-              "📹 Video Proof Delivered", "⚡ Participate in 2 Minutes", "🌍 Devotees in 30+ Countries",
-              "🎁 Prasad Home Delivery", "✅ 100% Authentic Rituals"
+              "Trusted by 1 Million+ Devotees", "100% Secure Payments", "500+ Sacred Temples",
+              "Video Proof Delivered", "Participate in 2 Minutes", "Devotees in 30+ Countries",
+              "Prasad Home Delivery", "100% Authentic Rituals"
             ].map((item, i) => (
-              <span key={i} className="flex items-center gap-5 px-6 text-white/90 font-medium text-[10px] sm:text-[11px]">
-                {item}<span className="text-orange-300/50">·</span>
+              <span key={i} className="flex items-center gap-5 px-6 text-[#1a0500]/90 font-medium text-[10px] sm:text-[11px]">
+                {item}<span className="text-orange-900/30">·</span>
               </span>
             ))}
             {/* Duplicate for seamless loop */}
             {[
-              "🙏 Trusted by 1 Million+ Devotees", "🔒 100% Secure Payments", "🛕 500+ Sacred Temples",
-              "📹 Video Proof Delivered", "⚡ Participate in 2 Minutes", "🌍 Devotees in 30+ Countries",
-              "🎁 Prasad Home Delivery", "✅ 100% Authentic Rituals"
+              "Trusted by 1 Million+ Devotees", "100% Secure Payments", "500+ Sacred Temples",
+              "Video Proof Delivered", "Participate in 2 Minutes", "Devotees in 30+ Countries",
+              "Prasad Home Delivery", "100% Authentic Rituals"
             ].map((item, i) => (
               <span key={i + 'dup'} className="flex items-center gap-5 px-6 text-white/90 font-medium text-[10px] sm:text-[11px]">
                 {item}<span className="text-orange-300/50">·</span>
@@ -213,7 +213,6 @@ export default function Navbar() {
                 <img src={logoUrl} alt="Mandirlok Logo" className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-110" />
               ) : (
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center text-white text-lg shadow-md group-hover:shadow-orange-300/50 transition-all duration-300 group-hover:scale-110">
-                  🛕
                 </div>
               )}
               <div className="flex flex-col leading-none">
@@ -288,10 +287,10 @@ export default function Navbar() {
                         <div className="px-4 py-3">
                           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 px-1">Account</p>
                           {[
-                            { icon: "👤", label: "My Profile", href: "/dashboard/profile" },
-                            { icon: "📋", label: "My Bookings", href: "/dashboard" },
-                            { icon: "🪔", label: "Book a Puja", href: "/poojas", badge: "New" },
-                            { icon: "🙏", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
+                            { icon: "", label: "My Profile", href: "/dashboard/profile" },
+                            { icon: "", label: "My Bookings", href: "/dashboard" },
+                            { icon: "", label: "Book a Puja", href: "/poojas", badge: "New" },
+                            { icon: "", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
                           ].map((item) => (
                             <Link
                               key={item.label}
@@ -378,9 +377,9 @@ export default function Navbar() {
                           </div>
                           <div className="px-4 py-3">
                             {[
-                              { icon: "📋", label: "My Bookings", href: "/login" },
-                              { icon: "🪔", label: "Book a Puja", href: "/poojas", badge: "New" },
-                              { icon: "🙏", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
+                              { icon: "", label: "My Bookings", href: "/login" },
+                              { icon: "", label: "Book a Puja", href: "/poojas", badge: "New" },
+                              { icon: "", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
                             ].map((item) => (
                               <Link
                                 key={item.label}
@@ -440,13 +439,13 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-xl transition-colors"
                   >
-                    📋 My Bookings
+                    My Bookings
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                   >
-                    🚪 Logout
+                    Logout
                   </button>
                 </>
               ) : (
@@ -463,7 +462,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="flex-1 btn-book flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-bold shadow-md"
                   >
-                    Book Puja 🙏
+                    Book Puja
                   </Link>
                 </div>
               )}

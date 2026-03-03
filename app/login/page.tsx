@@ -237,13 +237,12 @@ export default function LoginPage() {
           <div className="absolute w-[380px] h-[380px] rounded-full border-[2px] border-dashed border-orange-400" />
           <div className="absolute w-[260px] h-[260px] rounded-full border-[20px] border-orange-300" />
         </div>
-        <div className="absolute top-16 left-12 float-diya text-4xl opacity-70">🪔</div>
-        <div className="absolute top-32 right-16 float-diya-2 text-3xl opacity-50">🪔</div>
-        <div className="absolute bottom-24 left-16 float-diya-3 text-3xl opacity-60">🪔</div>
-        <div className="absolute bottom-16 right-12 float-diya text-2xl opacity-40">🪔</div>
+        <div className="absolute top-16 left-12 float-diya text-4xl opacity-70"></div>
+        <div className="absolute top-32 right-16 float-diya-2 text-3xl opacity-50"></div>
+        <div className="absolute bottom-24 left-16 float-diya-3 text-3xl opacity-60"></div>
+        <div className="absolute bottom-16 right-12 float-diya text-2xl opacity-40"></div>
         <div className="relative z-10 text-center">
           <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-orange-500 to-rose-700 flex items-center justify-center text-5xl mx-auto mb-8 shadow-2xl shadow-orange-900/50 pulse-ring">
-            🛕
           </div>
           <h2 className="display-font text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
             Welcome to
@@ -256,10 +255,10 @@ export default function LoginPage() {
           </p>
           <div className="space-y-3">
             {[
-              { icon: "🙏", text: "1 Million+ Devotees Trust Us" },
-              { icon: "🛕", text: "500+ Sacred Temples" },
-              { icon: "📹", text: "Video Proof of Every Puja" },
-              { icon: "🔒", text: "100% Secure & Private" },
+              { icon: "", text: "1 Million+ Devotees Trust Us" },
+              { icon: "", text: "500+ Sacred Temples" },
+              { icon: "", text: "Video Proof of Every Puja" },
+              { icon: "", text: "100% Secure & Private" },
             ].map((item, i) => (
               <div
                 key={i}
@@ -279,7 +278,6 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8 fade-up">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
-              🛕
             </div>
             <h1 className="display-font text-2xl font-bold text-[#1a0500]">Mandirlok</h1>
             <p className="text-orange-600 text-xs font-semibold tracking-widest uppercase mt-1">
@@ -472,7 +470,6 @@ export default function LoginPage() {
           {step === "name" && (
             <div key="name-step">
               <div className="success-icon w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-400 to-rose-600 flex items-center justify-center text-4xl mx-auto mb-6 shadow-2xl shadow-orange-200">
-                🙏
               </div>
               <div className="fade-up mb-2 text-center">
                 <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200">
@@ -524,7 +521,7 @@ export default function LoginPage() {
                     </>
                   ) : (
                     <>
-                      🙏 Start My Journey
+                      Start My Journey
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>

@@ -18,7 +18,7 @@ interface Pooja {
   _id: string;
   name: string;
   slug: string;
-  templeId: Temple;
+  templeIds: Temple[];
   deity: string;
   emoji: string;
   description: string;
@@ -72,7 +72,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
               }}
             />
             <span className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">
-              {puja.emoji || "🙏"}
+              {puja.emoji || ""}
             </span>
           </>
         )}
@@ -112,7 +112,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
             />
           </svg>
           <p className="text-xs text-gray-500 line-clamp-1">
-            {puja.templeId?.name}
+            {puja.templeIds?.[0]?.name} {puja.templeIds?.length > 1 && `+ ${puja.templeIds.length - 1} more`}
           </p>
         </div>
 
@@ -147,7 +147,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
               key={b}
               className="bg-orange-50 text-orange-700 text-xs px-2 py-0.5 rounded-full border border-orange-100"
             >
-              ✓ {b}
+              {b}
             </span>
           ))}
         </div>
@@ -241,22 +241,18 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
 function HowItWorksBanner() {
   const steps = [
     {
-      icon: "🛕",
       title: "Choose Puja",
       desc: "Select from 200+ authentic pujas across India's sacred temples",
     },
     {
-      icon: "✍️",
       title: "Enter Your Name",
       desc: "Panditji will chant your name in the Sankalp during the puja",
     },
     {
-      icon: "💳",
       title: "Secure Payment",
       desc: "Pay securely via UPI, card or net banking through Razorpay",
     },
     {
-      icon: "📹",
       title: "Get Puja Video",
       desc: "Receive the video proof of your completed puja within 24–48 hrs",
     },
@@ -266,10 +262,7 @@ function HowItWorksBanner() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {steps.map((s, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-xl shrink-0">
-                {s.icon}
-              </div>
+            <div key={i} className="flex items-start">
               <div>
                 <h4 className="font-bold text-gray-900 text-sm mb-0.5">
                   {s.title}
@@ -450,7 +443,7 @@ export default function PoojasPage() {
           {/* Empty State */}
           {!loading && !error && poojas.length === 0 && (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">🙏</div>
+            <div className="text-6xl mb-4"></div>
               <h3 className="text-xl font-bold text-gray-700 mb-2">
                 No pujas found
               </h3>

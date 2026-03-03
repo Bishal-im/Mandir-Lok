@@ -80,7 +80,7 @@ function ImagePlaceholder({
         }}
       />
       <div className="flex flex-col items-center text-white/50 gap-1 z-10 p-4">
-        <span className="text-4xl">🛕</span>
+        <span className="text-4xl"></span>
         {label && (
           <p className="text-xs text-center line-clamp-2 max-w-[140px]">
             {label}
@@ -169,8 +169,7 @@ function PoojaCard({ pooja }: { pooja: Pooja }) {
             <Clock size={10} /> {pooja.duration}
           </span>
           <span className="flex items-center gap-1">
-            ⭐ {pooja.rating?.toFixed(1)} (
-            {pooja.totalReviews?.toLocaleString()})
+            {pooja.rating?.toFixed(1)} ({pooja.totalReviews?.toLocaleString()})
           </span>
           <span className="text-[#ff7f0a]">{pooja.availableDays}</span>
         </div>
@@ -284,7 +283,7 @@ export default function TempleDetailPage() {
         <Navbar />
         <main className="pt-16 min-h-screen bg-[#fdf6ee] flex items-center justify-center">
           <div className="text-center max-w-sm px-4">
-            <span className="text-6xl block mb-4">🛕</span>
+            <span className="text-6xl block mb-4"></span>
             <h2 className="text-xl font-bold text-[#1a1209] mb-2">
               Temple Not Found
             </h2>
@@ -487,7 +486,7 @@ export default function TempleDetailPage() {
 
                 {poojas.length === 0 ? (
                   <div className="bg-white border border-[#f0dcc8] rounded-2xl p-8 text-center">
-                    <span className="text-4xl block mb-2">🪔</span>
+                    <span className="text-4xl block mb-2"></span>
                     <p className="text-[#6b5b45] text-sm">
                       No poojas available at this temple yet.
                     </p>
@@ -592,7 +591,7 @@ export default function TempleDetailPage() {
               {/* Map */}
               <div className="bg-white border border-[#f0dcc8] rounded-2xl overflow-hidden shadow-card">
                 <div className="h-48 bg-gradient-to-br from-[#e8f4e8] to-[#d4e8d4] flex flex-col items-center justify-center gap-3">
-                  <p className="text-4xl">📍</p>
+                  <p className="text-4xl"></p>
                   <div className="text-center">
                     <p className="font-semibold text-[#1a1209] text-sm">
                       {temple.name}
@@ -637,7 +636,7 @@ export default function TempleDetailPage() {
                       href={`/poojas/${poojas[0].slug}`}
                       className="w-full block text-center bg-gradient-to-r from-[#ff7f0a] to-[#ff9b30] text-white font-semibold text-sm py-3 rounded-xl shadow-[0_4px_15px_rgba(255,127,10,0.3)] hover:shadow-[0_6px_25px_rgba(255,127,10,0.45)] transition-all mb-3"
                     >
-                      🙏 Participate in a Pooja
+                      Participate in a Pooja
                     </Link>
                   </>
                 ) : (
@@ -650,10 +649,10 @@ export default function TempleDetailPage() {
                   href="/chadhava"
                   className="w-full block text-center border-2 border-[#ff7f0a] text-[#ff7f0a] font-semibold text-sm py-2.5 rounded-xl hover:bg-[#fff8f0] transition-colors"
                 >
-                  🌸 Make a Chadhava
+                  Make a Chadhava
                 </Link>
                 <p className="text-center text-[10px] text-[#6b5b45] mt-3 flex items-center justify-center gap-1">
-                  📹 Video proof on WhatsApp after pooja
+                  Video proof on WhatsApp after pooja
                 </p>
               </div>
 
@@ -663,12 +662,12 @@ export default function TempleDetailPage() {
                   Why Participate with Mandirlok?
                 </h4>
                 {[
-                  "✅ Verified, experienced pandits only",
-                  "📹 HD video proof of pooja",
-                  "🔒 100% secure Razorpay payment",
-                  "💬 Real-time WhatsApp updates",
-                  "🌿 Authentic Vedic rituals",
-                  "↩️ Full refund if cancelled 24h before",
+                  "Verified, experienced pandits only",
+                  "HD video proof of pooja",
+                  "100% secure Razorpay payment",
+                  "Real-time WhatsApp updates",
+                  "Authentic Vedic rituals",
+                  "Full refund if cancelled 24h before",
                 ].map((t) => (
                   <p
                     key={t}

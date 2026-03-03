@@ -26,26 +26,26 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 const COUNTRIES = [
-  { name: "India", code: "91", flag: "🇮🇳" },
-  { name: "Nepal", code: "977", flag: "🇳🇵" },
-  { name: "USA", code: "1", flag: "🇺🇸" },
-  { name: "UK", code: "44", flag: "🇬🇧" },
-  { name: "Canada", code: "1", flag: "🇨🇦" },
-  { name: "Australia", code: "61", flag: "🇦🇺" },
-  { name: "UAE", code: "971", flag: "🇦🇪" },
-  { name: "Singapore", code: "65", flag: "🇸🇬" },
-  { name: "Malaysia", code: "60", flag: "🇲🇾" },
-  { name: "Mauritius", code: "230", flag: "🇲🇺" },
-  { name: "Fiji", code: "679", flag: "🇫🇯" },
-  { name: "South Africa", code: "27", flag: "🇿🇦" },
-  { name: "Germany", code: "49", flag: "🇩🇪" },
-  { name: "France", code: "33", flag: "🇫🇷" },
-  { name: "Guyana", code: "592", flag: "🇬🇾" },
-  { name: "Suriname", code: "597", flag: "🇸🇷" },
-  { name: "Trinidad", code: "1", flag: "🇹🇹" },
-  { name: "Sri Lanka", code: "94", flag: "🇱🇰" },
-  { name: "Bangladesh", code: "880", flag: "🇧🇩" },
-  { name: "Indonesia", code: "62", flag: "🇮🇩" },
+  { name: "India", code: "91", flag: "" },
+  { name: "Nepal", code: "977", flag: "" },
+  { name: "USA", code: "1", flag: "" },
+  { name: "UK", code: "44", flag: "" },
+  { name: "Canada", code: "1", flag: "" },
+  { name: "Australia", code: "61", flag: "" },
+  { name: "UAE", code: "971", flag: "" },
+  { name: "Singapore", code: "65", flag: "" },
+  { name: "Malaysia", code: "60", flag: "" },
+  { name: "Mauritius", code: "230", flag: "" },
+  { name: "Fiji", code: "679", flag: "" },
+  { name: "South Africa", code: "27", flag: "" },
+  { name: "Germany", code: "49", flag: "" },
+  { name: "France", code: "33", flag: "" },
+  { name: "Guyana", code: "592", flag: "" },
+  { name: "Suriname", code: "597", flag: "" },
+  { name: "Trinidad", code: "1", flag: "" },
+  { name: "Sri Lanka", code: "94", flag: "" },
+  { name: "Bangladesh", code: "880", flag: "" },
+  { name: "Indonesia", code: "62", flag: "" },
 ];
 
 function CartContent() {
@@ -470,10 +470,10 @@ function CartContent() {
                   </div>
                 )}
                 <div className="bg-[#f9f9f9] border border-[#f0dcc8] rounded-xl p-4 mb-6">
-                  <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Payment via Razorpay 🔒</h4>
+                  <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Payment via Razorpay</h4>
                   <p className="text-xs text-[#6b5b45]">You can pay using UPI, Debit/Credit Card, or Net Banking through the secure Razorpay checkout.</p>
-                  <div className="flex gap-3 mt-3 text-xl">
-                    <span title="UPI">📱</span><span title="Card">💳</span><span title="Net Banking">🏦</span>
+                  <div className="flex gap-3 mt-3 text-sm font-medium text-[#6b5b45]">
+                    <span>UPI</span><span>Card</span><span>Net Banking</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -510,19 +510,19 @@ function CartContent() {
                   <p className="font-semibold text-[#1a1209] text-sm">
                     {pooja ? (pooja.name === 'Sacred Offering' ? 'Chadhava Offering' : pooja.name) : 'Sacred Contribution'}
                   </p>
-                  <p className="text-xs text-[#ff7f0a]">🛕 {pooja?.templeId?.name}</p>
+                  <p className="text-xs text-[#ff7f0a]">Temple: {pooja?.templeId?.name}</p>
                   {isDonationParam && (
                     <p className="text-[10px] inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-bold mt-1">
-                      📜 {pooja ? 'Direct Donation' : 'Temple Support'}
+                      {pooja ? 'Direct Donation' : 'Temple Support'}
                     </p>
                   )}
                   {dateStr && (
-                    <p className="text-xs text-[#6b5b45]">📅 {new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
+                    <p className="text-xs text-[#6b5b45]">Date: {new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
                   )}
                   {selectedPackage ? (
-                    <p className="text-xs font-bold text-amber-600 mt-1">✨ Package: {selectedPackage.name}</p>
+                    <p className="text-xs font-bold text-amber-600 mt-1">Package: {selectedPackage.name}</p>
                   ) : pooja && pooja.name !== 'Sacred Offering' && (
-                    <p className="text-xs text-[#6b5b45]">👥 {qty} Devotee{qty > 1 ? "s" : ""}</p>
+                    <p className="text-xs text-[#6b5b45]">Devotees: {qty} Devotee{qty > 1 ? "s" : ""}</p>
                   )}
                 </div>
                 {totalObj.base > 0 && (
@@ -560,16 +560,16 @@ function CartContent() {
               <div className="mt-4 space-y-1.5 text-xs text-[#6b5b45]">
                 {!isDonationParam ? (
                   <>
-                    <p>📹 Video on WhatsApp after pooja</p>
-                    <p>🙏 Personalized sankalp by pandit</p>
+                    <p>Video on WhatsApp after pooja</p>
+                    <p>Personalized sankalp by pandit</p>
                   </>
                 ) : (
                   <>
-                    <p>📜 Immediate digital certificate</p>
-                    <p>🙏 Meritorious donation contribution</p>
+                    <p>Immediate digital certificate</p>
+                    <p>Meritorious donation contribution</p>
                   </>
                 )}
-                <p>↩️ 100% refund if cancelled 24hrs before</p>
+                <p>Full refund if cancelled 24hrs before</p>
               </div>
             </div>
           </div>

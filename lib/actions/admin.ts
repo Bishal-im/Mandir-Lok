@@ -102,7 +102,7 @@ export async function getTempleById(id: string) {
 // =======================
 export async function getPoojasAdmin() {
     await connectDB();
-    const poojas = await Pooja.find().populate("templeId", "name").sort({ createdAt: -1 }).lean();
+    const poojas = await Pooja.find().populate("templeIds", "name").sort({ createdAt: -1 }).lean();
     return JSON.parse(JSON.stringify(poojas));
 }
 
@@ -115,9 +115,12 @@ export async function createPooja(data: any) {
 
         const pooja = await Pooja.create(createData);
 
-        // Sync Temple pujasAvailable count
-        if (createData.templeId) {
-            await Temple.findByIdAndUpdate(createData.templeId, { $inc: { pujasAvailable: 1 } });
+        // Sync Temple pujasAvailable count for all assigned temples
+        if (createData.templeIds && Array.isArray(createData.templeIds)) {
+            await Temple.updateMany(
+                { _id: { $in: createData.templeIds } },
+                { $inc: { pujasAvailable: 1 } }
+            );
         }
 
         try {
@@ -141,20 +144,34 @@ export async function updatePooja(id: string, data: any) {
         // Remove protected fields if they exist in data to prevent Mongoose errors
         const { _id, createdAt, updatedAt, __v, ...updateData } = data;
 
-        // Use findById and save for better subdocument handling (packages)
-        const pooja = await Pooja.findById(id);
-        if (!pooja) return { success: false, error: "Pooja not found" };
+        const PoojaDoc = await Pooja.findById(id);
+        if (!PoojaDoc) return { success: false, error: "Pooja not found" };
+
+        // Detect temple changes to sync counts
+        const oldTempleIds = PoojaDoc.templeIds.map((t: any) => t.toString());
+        const newTempleIds = (updateData.templeIds || []).map((t: any) => t.toString());
+
+        const addedTemples = newTempleIds.filter((t: string) => !oldTempleIds.includes(t));
+        const removedTemples = oldTempleIds.filter((t: string) => !newTempleIds.includes(t));
 
         // Use .set() to update all fields from the object
-        pooja.set(updateData);
+        PoojaDoc.set(updateData);
 
         // Explicitly mark packages as modified if they exist in updateData
-        // This is a safety measure for nested arrays in Mongoose
         if (updateData.packages) {
-            pooja.markModified('packages');
+            PoojaDoc.markModified('packages');
         }
 
-        await pooja.save();
+        await PoojaDoc.save();
+
+        // Update counts for added temples
+        if (addedTemples.length > 0) {
+            await Temple.updateMany({ _id: { $in: addedTemples } }, { $inc: { pujasAvailable: 1 } });
+        }
+        // Update counts for removed temples
+        if (removedTemples.length > 0) {
+            await Temple.updateMany({ _id: { $in: removedTemples } }, { $inc: { pujasAvailable: -1 } });
+        }
 
         // Specific revalidations
         try {
@@ -176,11 +193,16 @@ export async function updatePooja(id: string, data: any) {
 export async function deletePooja(id: string) {
     try {
         await connectDB();
-        const pooja = await Pooja.findById(id);
-        if (pooja) {
+        const PoojaDoc = await Pooja.findById(id);
+        if (PoojaDoc) {
             await Pooja.findByIdAndDelete(id);
-            // Sync Temple pujasAvailable count
-            await Temple.findByIdAndUpdate(pooja.templeId, { $inc: { pujasAvailable: -1 } });
+            // Sync Temple pujasAvailable count for all assigned temples
+            if (PoojaDoc.templeIds && PoojaDoc.templeIds.length > 0) {
+                await Temple.updateMany(
+                    { _id: { $in: PoojaDoc.templeIds } },
+                    { $inc: { pujasAvailable: -1 } }
+                );
+            }
         }
         revalidatePath("/admin/poojas");
         revalidatePath("/poojas");

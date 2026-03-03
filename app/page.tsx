@@ -76,8 +76,8 @@ const SLIDE_IMAGES = [
 
 const TRUST_BADGES = [
   { icon: "🙏", label: "Trusted by 1 Million+ Devotees" },
-  { icon: "🔒", label: "100% Secure Payments" },
-  { icon: "🕌", label: "500+ Sacred Temples" },
+  { icon: "🛡️", label: "100% Secure Payments" },
+  { icon: "🛕", label: "500+ Sacred Temples" },
   { icon: "📹", label: "Video Proof of Every Puja" },
 ];
 
@@ -89,25 +89,43 @@ const HOW_IT_WORKS = [
     step: "01",
     title: "Choose Your Puja",
     desc: "Browse 500+ puja services across India's most sacred temples and select the one that resonates.",
-    icon: "🙏",
+    icon: (
+      <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+      </svg>
+    ),
   },
   {
     step: "02",
     title: "Enter Your Name",
     desc: "Provide your name and gotra for the Sankalp. Our pandits will chant it during the puja.",
-    icon: "✍️",
+    icon: (
+      <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+      </svg>
+    ),
   },
   {
     step: "03",
     title: "Secure Payment",
     desc: "Pay securely using UPI, credit/debit card, or net banking through our Razorpay gateway.",
-    icon: "🔐",
+    icon: (
+      <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
+      </svg>
+    ),
   },
   {
     step: "04",
     title: "Receive Puja Video",
     desc: "Get a complete video of your puja performed at the temple, delivered within 24–48 hours.",
-    icon: "📹",
+    icon: (
+      <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+      </svg>
+    ),
   },
 ];
 
@@ -120,32 +138,58 @@ const STATS = [
 
 const FEATURES = [
   {
-    icon: "🛕",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+      </svg>
+    ),
     title: "Sacred Temple Network",
     desc: "Access 500+ renowned temples across India — Jyotirlingas, Shaktipeeths, Divya Desams and more.",
   },
   {
-    icon: "📿",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    ),
     title: "Authentic Vedic Rituals",
     desc: "All rituals performed by trained, experienced pandits following traditional Vedic procedures.",
   },
   {
-    icon: "📱",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5" />
+      </svg>
+    ),
     title: "Real-Time Updates",
     desc: "Track your puja participation status and receive instant WhatsApp updates on ritual completion.",
   },
   {
-    icon: "🎥",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12A9 9 0 1112 3a9 9 0 019 9z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+      </svg>
+    ),
     title: "Video Proof",
     desc: "Receive a high-quality video of your puja so you can witness the divine ritual personally.",
   },
   {
-    icon: "💬",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.33.185.506.541.499.911-.007.447-.213.846-.543 1.114a14.936 14.936 0 00-1.811 1.777c-.303.35-.599.742-.831 1.144-.216.374-.351.756-.403 1.13-.13.93-.165 1.946-.201 3.033-.012.355-.173.669-.475.86a2.25 2.25 0 01-2.513-.02c-.312-.212-.51-.555-.589-.92-.124-.574-.29-1.29-.533-2.028a11.137 11.137 0 01-.84-3.535l-.014-.52c0-.392.174-.764.484-1.004a11.137 11.137 0 015.65-2.001c.214-.025.432-.037.653-.037.168 0 .334.008.498.024a1.875 1.875 0 011.604 1.077z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.003 9.003 0 008.313-5.547M12 3a9.003 9.003 0 018.313 5.547M3.687 8.453A9.003 9.003 0 0112 3v18a9.003 9.003 0 01-8.313-5.547M12 3c-1.123 0-2.2.203-3.187.575m0 16.85c.987.372 2.064.575 3.187.575" />
+      </svg>
+    ),
     title: "WhatsApp Support",
     desc: "Dedicated support via WhatsApp for all participation queries, customization and post-puja questions.",
   },
   {
-    icon: "🌍",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.003 9.003 0 008.313-5.547M12 3a9.003 9.003 0 018.313 5.547M3.687 8.453A9.003 9.003 0 0112 3v18a9.003 9.003 0 01-8.313-5.547M12 3c-1.123 0-2.2.203-3.187.575m0 16.85c.987.372 2.064.575 3.187.575" />
+      </svg>
+    ),
     title: "Participate from Anywhere",
     desc: "Devotees across 30+ countries trust Mandirlok to connect them with India's sacred temples.",
   },
@@ -191,7 +235,7 @@ function SectionHeader({
     <div className="text-center mb-10">
       {tag && (
         <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3 border border-orange-100">
-          🌸 {tag}
+          {tag}
         </div>
       )}
       <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
@@ -280,7 +324,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
             href={`/poojas/${puja.slug}`}
             className="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl text-center group-hover:bg-orange-600 transition-all duration-300 shadow-xl shadow-gray-200 group-hover:shadow-orange-200"
           >
-            Participate Now 🙏
+            Participate Now
           </Link>
         </div>
       </div>
@@ -407,7 +451,7 @@ function HeroSection() {
               className="text-orange-300 text-xs font-bold tracking-widest uppercase mb-4"
               style={{ animation: "fadeSlideUp 0.55s ease-out 0.05s both" }}
             >
-              🙏 Mandirlok Sacred Services
+              Mandirlok Sacred Services
             </p>
             <h1
               key={`h-${current}`}
@@ -517,31 +561,31 @@ function HeroSection() {
 
 // ── Trust Bar — infinite scrolling marquee ──────────────────────────────────
 const MARQUEE_ITEMS = [
-  { icon: "🙏", label: "Trusted by 1 Million+ Devotees" },
-  { icon: "🔒", label: "100% Secure Payments" },
-  { icon: "🛕", label: "500+ Sacred Temples" },
-  { icon: "📹", label: "Video Proof of Every Puja" },
-  { icon: "⚡", label: "Participation in Under 2 Minutes" },
-  { icon: "📿", label: "Authentic Vedic Rituals" },
-  { icon: "🌍", label: "Devotees in 30+ Countries" },
-  { icon: "💬", label: "WhatsApp Support 24/7" },
-  { icon: "🎁", label: "Prasad Delivered to Door" },
-  { icon: "✅", label: "100% Money-Back Guarantee" },
+  { icon: "", label: "Trusted by 1 Million+ Devotees" },
+  { icon: "", label: "100% Secure Payments" },
+  { icon: "", label: "500+ Sacred Temples" },
+  { icon: "", label: "Video Proof of Every Puja" },
+  { icon: "", label: "Participation in Under 2 Minutes" },
+  { icon: "", label: "Authentic Vedic Rituals" },
+  { icon: "", label: "Devotees in 30+ Countries" },
+  { icon: "", label: "WhatsApp Support 24/7" },
+  { icon: "", label: "Prasad Delivered to Door" },
+  { icon: "", label: "100% Money-Back Guarantee" },
 ];
 
 function TrustBar() {
   return (
-    <div className="bg-white border-b border-orange-100 shadow-sm overflow-hidden py-3.5 relative">
+    <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-b border-orange-200/30 shadow-sm overflow-hidden py-3 relative">
       <div
         className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(to right, #fff 0%, transparent 100%)",
+          background: "linear-gradient(to right, #ffbf00 0%, transparent 100%)",
         }}
       />
       <div
         className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(to left, #fff 0%, transparent 100%)",
+          background: "linear-gradient(to left, #ffbf00 0%, transparent 100%)",
         }}
       />
       <style>{`
@@ -563,10 +607,10 @@ function TrustBar() {
             className="flex items-center gap-2.5 px-7 whitespace-nowrap"
           >
             <span className="text-xl leading-none">{item.icon}</span>
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm font-bold text-[#1a0500]">
               {item.label}
             </span>
-            <span className="text-orange-200 text-lg ml-4">✦</span>
+            <span className="text-orange-950 text-lg ml-4">✦</span>
           </div>
         ))}
       </div>
@@ -594,7 +638,8 @@ function HowItWorksSection() {
                 <div className="hidden lg:block absolute top-10 left-[calc(50%+3rem)] w-full h-px border-t-2 border-dashed border-orange-200 z-0" />
               )}
               <div className="relative z-10">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-white shadow-md flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300 border border-orange-100">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-50 to-amber-50 shadow-[0_10px_30px_rgba(249,115,22,0.1)] flex items-center justify-center group-hover:scale-110 transition-all duration-300 border-2 border-orange-100/50 relative">
+                  <div className="absolute inset-0 rounded-full bg-orange-200/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   {step.icon}
                 </div>
                 <div className="inline-block bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">
@@ -639,23 +684,23 @@ function HowItWorksSection() {
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function StatsSection({ stats }: { stats: any[] }) {
   return (
-    <section className="bg-gradient-to-r from-orange-600 to-rose-700 py-10 md:py-14">
+    <section className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] py-10 md:py-14 border-y border-orange-200/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1a0500] mb-2">
             India's Growing Devotional Platform
           </h2>
-          <p className="text-white/80 text-sm">
+          <p className="text-[#1a0500]/70 text-sm font-medium">
             Connecting devotees with sacred temples since 2020
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((s, i) => (
             <div key={i} className="text-center">
-              <div className="text-4xl md:text-5xl font-extrabold text-white mb-1">
+              <div className="text-4xl md:text-5xl font-extrabold text-[#1a0500] mb-1">
                 {s.value}
               </div>
-              <div className="text-white/80 text-sm font-medium">{s.label}</div>
+              <div className="text-[#1a0500]/80 text-sm font-bold uppercase tracking-tight">{s.label}</div>
             </div>
           ))}
         </div>
@@ -680,7 +725,8 @@ function FeaturesSection() {
               key={i}
               className="flex gap-4 p-6 rounded-2xl hover:bg-orange-50 transition-colors duration-200 group border border-transparent hover:border-orange-100"
             >
-              <div className="w-14 h-14 rounded-2xl bg-orange-100 group-hover:bg-orange-200 flex items-center justify-center text-3xl shrink-0 transition-colors duration-200">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-50 to-amber-50 group-hover:from-orange-100 group-hover:to-amber-100 flex items-center justify-center shrink-0 transition-all duration-300 border border-orange-100 hover:shadow-lg hover:shadow-orange-200/20 relative">
+                <div className="absolute inset-0 rounded-full bg-orange-400/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                 {f.icon}
               </div>
               <div>

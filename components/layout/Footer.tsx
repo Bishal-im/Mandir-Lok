@@ -69,7 +69,7 @@ export default function Footer() {
                 href="#"
                 className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#ff7f0a] flex items-center justify-center transition-colors text-sm font-bold uppercase"
               >
-                {s === "wa" ? "💬" : s === "fb" ? "🅕" : s === "in" ? "📸" : "▶"}
+                 {s === "wa" ? "📞" : s === "fb" ? "fb" : s === "in" ? "ig" : "yt"}
               </a>
             ))}
           </div>
@@ -88,7 +88,7 @@ export default function Footer() {
                     href={`/temples/${t.slug}`}
                     className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
                   >
-                    <span className="text-[#ff7f0a] text-xs">🛕</span> {t.name}
+                     <span className="text-[#ff7f0a] text-xs">🛕</span> {t.name}
                   </Link>
                 </li>
               ))
@@ -111,7 +111,7 @@ export default function Footer() {
                     href={`/poojas/${p.slug}`}
                     className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
                   >
-                    <span className="text-[#f0bc00] text-xs">🪔</span> {p.name}
+                     <span className="text-[#f0bc00] text-xs">🌸</span> {p.name}
                   </Link>
                 </li>
               ))
@@ -145,12 +145,12 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="container-app py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#7a6050]">
           <p>
-            © {new Date().getFullYear()} Mandirlok. All rights reserved. Made
-            with 🙏 in India
+             © {new Date().getFullYear()} Mandirlok. All rights reserved. Made
+            in India
           </p>
           <div className="flex items-center gap-4">
             <span>🔒 Razorpay Secured</span>
-            <span>📱 WhatsApp Updates</span>
+            <span>💬 WhatsApp Updates</span>
             <span>✅ Verified Pandits</span>
           </div>
         </div>

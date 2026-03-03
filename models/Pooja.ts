@@ -9,7 +9,8 @@ export interface IPoojaPackage {
 export interface IPooja extends Document {
   name: string;
   slug: string;
-  templeId: Types.ObjectId;
+  templeId?: Types.ObjectId;
+  templeIds: Types.ObjectId[];
   deity: string;
   emoji: string;
   description: string;
@@ -35,7 +36,8 @@ const PoojaSchema = new Schema<IPooja>(
   {
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    templeId: { type: Schema.Types.ObjectId, ref: "Temple", required: true },
+    templeId: { type: Schema.Types.ObjectId, ref: "Temple", required: false },
+    templeIds: [{ type: Schema.Types.ObjectId, ref: "Temple", default: [] }],
     deity: { type: String, required: true },
     emoji: { type: String, default: "🪔" },
     description: { type: String, required: true },

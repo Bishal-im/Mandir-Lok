@@ -17,8 +17,8 @@ export async function GET(
 
     // Find pooja by _id or slug, populate temple details
     const pooja = isMongoId
-      ? await Pooja.findById(id).populate("templeId")
-      : await Pooja.findOne({ slug: id, isActive: true }).populate("templeId");
+      ? await Pooja.findById(id).populate("templeIds")
+      : await Pooja.findOne({ slug: id, isActive: true }).populate("templeIds");
 
     if (!pooja) {
       return NextResponse.json(
@@ -27,9 +27,9 @@ export async function GET(
       );
     }
 
-    // Also fetch chadhava items for this temple
+    // Also fetch chadhava items for temples associated with this pooja
     const chadhavaItems = await Chadhava.find({
-      templeId: pooja.templeId,
+      templeId: { $in: pooja.templeIds.map((t: any) => t._id) },
       isActive: true,
     });
 

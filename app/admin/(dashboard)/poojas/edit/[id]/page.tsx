@@ -18,7 +18,7 @@ export default function EditPoojaPage() {
     const [formData, setFormData] = useState({
         name: "",
         slug: "",
-        templeId: "",
+        templeIds: [] as string[],
         deity: "",
         emoji: "🪔",
         description: "",
@@ -155,11 +155,29 @@ export default function EditPoojaPage() {
                         <input required name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none" />
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase">Temple Assignment</label>
-                        <select name="templeId" value={formData.templeId} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none bg-white">
-                            {temples.map((t: any) => <option key={t._id} value={t._id}>{t.name}</option>)}
-                        </select>
+                    <div className="space-y-1.5 md:col-span-2">
+                        <label className="text-xs font-bold text-gray-500 uppercase">Temple Assignments</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 max-h-48 overflow-y-auto">
+                            {temples.map((t: any) => (
+                                <label key={t._id} className="flex items-center gap-2 cursor-pointer group">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={formData.templeIds.includes(t._id)}
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                templeIds: checked 
+                                                    ? [...prev.templeIds, t._id]
+                                                    : prev.templeIds.filter(id => id !== t._id)
+                                            }));
+                                        }}
+                                        className="w-4 h-4 rounded border-gray-300 text-[#ff7f0a] focus:ring-[#ff7f0a]"
+                                    />
+                                    <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{t.name}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="space-y-1.5">

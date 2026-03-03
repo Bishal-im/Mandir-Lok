@@ -10,25 +10,25 @@ const DEFAULT_STATS = [
   {
     value: "1M+",
     label: "Devotees Served",
-    icon: "🙏",
+    icon: "",
     desc: "have trusted us in their devotional journey",
   },
   {
     value: "500+",
     label: "Sacred Temples",
-    icon: "🛕",
+    icon: "",
     desc: "Partnered with India's most revered temples across all states",
   },
   {
     value: "50K+",
     label: "Pujas Completed",
-    icon: "🌍",
+    icon: "",
     desc: "Millions of devotees have begun Puja and Chadhava at famous temples",
   },
   {
     value: "25+",
     label: "States Covered",
-    icon: "⭐",
+    icon: "",
     desc: "Connecting devotees with sacred temples across India",
   },
 ];
@@ -66,22 +66,39 @@ const TEAM = [
 
 const VALUES = [
   {
-    icon: "🕉️",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    ),
     title: "Authentic Rituals",
     desc: "Every puja follows the traditional Vedic procedure. We never compromise on authenticity.",
   },
   {
-    icon: "🔒",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
     title: "Trust & Transparency",
     desc: "Video proof of every ritual, real-time tracking and honest communication always.",
   },
   {
-    icon: "🌏",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.003 9.003 0 008.313-5.547M12 3a9.003 9.003 0 018.313 5.547M3.687 8.453A9.003 9.003 0 0112 3v18a9.003 9.003 0 01-8.313-5.547M12 3c-1.123 0-2.2.203-3.187.575m0 16.85c.987.372 2.064.575 3.187.575" />
+      </svg>
+    ),
     title: "Accessibility",
     desc: "Making sacred temple rituals accessible to every devotee, regardless of location.",
   },
   {
-    icon: "💎",
+    icon: (
+      <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+      </svg>
+    ),
     title: "Devotee First",
     desc: "We exist to serve the devotional needs of our community — not for profit at their expense.",
   },
@@ -118,7 +135,7 @@ function ImagePlaceholder({
         }}
       />
       <div className="flex flex-col items-center text-white/40 gap-2 z-10 p-4">
-        <span className="text-4xl">🛕</span>
+        <span className="text-4xl"></span>
         {label && <p className="text-xs text-center opacity-60">{label}</p>}
         <p className="text-xs opacity-40">Upload Image</p>
       </div>
@@ -150,7 +167,7 @@ export default function AboutPage() {
             data.stats.map((s: any, i: number) => ({
               value: s.value,
               label: s.label,
-              icon: DEFAULT_STATS[i]?.icon || "🙏",
+              icon: DEFAULT_STATS[i]?.icon || "",
               desc: DEFAULT_STATS[i]?.desc || "",
             }))
           );
@@ -226,7 +243,7 @@ export default function AboutPage() {
               {/* Content */}
               <div>
                 <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                  🌸 Our Mission
+                  Our Mission
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   {settings?.missionTitle || "Committed to Building the Most Trusted Devotional Platform"}
@@ -242,12 +259,12 @@ export default function AboutPage() {
                   {stats.map((item) => (
                     <div
                       key={item.label}
-                      className="bg-orange-50 rounded-xl p-4 border border-orange-100"
+                      className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-200/50 shadow-sm"
                     >
                       <div className="text-2xl font-extrabold text-orange-600">
                         {item.value}
                       </div>
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="text-xs text-gray-600 font-medium mt-0.5">
                         {item.label}
                       </div>
                     </div>
@@ -279,26 +296,26 @@ export default function AboutPage() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-14 bg-gradient-to-r from-orange-600 to-rose-700">
+        <section className="py-14 bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-y border-orange-200/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1a0500] mb-2">
                 India's Largest Devotional Platform
               </h2>
-              <p className="text-white/80 text-sm">
+              <p className="text-[#1a0500]/70 text-sm font-medium">
                 Trusted by devotees in 30+ countries
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((s) => (
                 <div key={s.label} className="text-center">
-                  <div className="text-3xl md:text-4xl font-extrabold text-white mb-1">
+                  <div className="text-3xl md:text-4xl font-extrabold text-[#1a0500] mb-1">
                     {s.value}
                   </div>
-                  <div className="text-white font-semibold text-sm mb-1">
+                  <div className="text-[#1a0500] font-bold text-sm mb-1">
                     {s.label}
                   </div>
-                  <p className="text-white/70 text-xs leading-relaxed">
+                  <p className="text-[#1a0500]/60 text-xs leading-relaxed font-medium">
                     {s.desc}
                   </p>
                 </div>
@@ -312,7 +329,7 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                🌸 Our Values
+                Our Values
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                 What We Stand For
@@ -327,9 +344,10 @@ export default function AboutPage() {
               {VALUES.map((v) => (
                 <div
                   key={v.title}
-                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group hover:border-orange-200"
+                  className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 group hover:border-orange-200 hover:-translate-y-1"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-orange-100 group-hover:bg-orange-200 flex items-center justify-center text-3xl mb-4 transition-colors duration-200">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-50 to-amber-50 group-hover:from-orange-100 group-hover:to-amber-100 flex items-center justify-center mb-6 transition-all duration-300 border border-orange-100 relative shadow-sm">
+                    <div className="absolute inset-0 rounded-full bg-orange-400/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     {v.icon}
                   </div>
                   <h3 className="font-bold text-gray-900 mb-2">{v.title}</h3>
@@ -393,32 +411,39 @@ export default function AboutPage() {
         </section>
 
         {/* Address Section */}
-        <section className="py-10 bg-white border-t border-gray-100">
+        <section className="py-20 bg-gradient-to-b from-white to-orange-50/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8">
-              <div>
-                <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="text-orange-500">📍</span> Our Address
-                </h4>
+            <div className="grid md:grid-cols-3 gap-12">
+              <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
+                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Our Address</h4>
                 <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-line">
-                  {contactSettings?.address || "Mandirlok Technologies Pvt. Ltd.\n2nd Floor, Sunrise Tower, Sector 62,\nNoida, Uttar Pradesh - 201301"}
+                  {contactSettings?.address || "Mandirlok Technologies Pvt. Ltd.\nNoida, Uttar Pradesh - 201301"}
                 </p>
               </div>
-              <div>
-                <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="text-orange-500">📞</span> Contact
-                </h4>
-                <p className="text-gray-500 text-sm">Phone: {contactSettings?.phone || "+91 98765 43210"}</p>
-                <p className="text-gray-500 text-sm">
-                  Email: {contactSettings?.supportEmail || "help@mandirlok.com"}
-                </p>
+
+              <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
+                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Contact Us</h4>
+                <div className="space-y-1">
+                  <p className="text-gray-500 text-sm font-medium">Phone: {contactSettings?.phone || "+91 98765 43210"}</p>
+                  <p className="text-orange-600 text-sm font-bold break-all">
+                    {contactSettings?.supportEmail || "help@mandirlok.com"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="text-orange-500">⏰</span> Support Hours
-                </h4>
-                <p className="text-gray-500 text-sm whitespace-pre-line">
-                  {contactSettings?.workingHours || "Monday – Saturday: 9 AM – 9 PM\nSunday: 10 AM – 6 PM\nFestivals: Special hours apply"}
+
+              <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
+                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Support Hours</h4>
+                <p className="text-gray-500 text-sm whitespace-pre-line leading-relaxed">
+                  {contactSettings?.workingHours || "Mon – Sat: 9 AM – 9 PM\nSun: 10 AM – 6 PM"}
                 </p>
               </div>
             </div>
@@ -427,21 +452,36 @@ export default function AboutPage() {
 
 
         {/* Developer Credits Section */}
-        <section className="py-8 bg-gray-50/50 border-t border-gray-100 mb-10">
+        <section className="py-12 bg-[#1a0500] relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <path d="M0 0 L100 100 M100 0 L0 100" stroke="white" strokeWidth="0.1" />
+            </svg>
+          </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center justify-center text-center">
-              <p className="text-[10px] font-bold text-gray-400 border border-gray-200 px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4">
-                Designed & Developed By
-              </p>
-              <div className="flex flex-wrap justify-center gap-8 md:gap-12">
-                <div className="flex flex-col items-center gap-1 group">
-                  <span className="text-xs font-bold text-gray-600 group-hover:text-orange-600 transition-colors font-display">Bishal Pandey</span>
-                  <a href="mailto:bishalpandey.im@gmail.com" className="text-[10px] text-gray-400 hover:text-orange-500 transition-colors select-all">bishalpandey.im@gmail.com</a>
+              <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 px-5 py-2 rounded-full mb-8">
+                <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
+                <p className="text-[10px] font-bold text-orange-200/80 uppercase tracking-[0.3em]">
+                  Designed & Developed By
+                </p>
+                <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
+              </div>
+              
+              <div className="flex flex-wrap justify-center gap-8 md:gap-20">
+                <div className="flex flex-col items-center gap-2 group">
+                  <span className="text-base font-bold text-white group-hover:text-orange-400 transition-colors tracking-wide">Bishal Pandey</span>
+                  <a href="mailto:bishalpandey.im@gmail.com" className="text-[11px] text-white/40 hover:text-orange-300 transition-colors flex items-center gap-2">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    bishalpandey.im@gmail.com
+                  </a>
                 </div>
-                <div className="w-px h-8 bg-gray-200 hidden md:block" />
-                <div className="flex flex-col items-center gap-1 group">
-                  <span className="text-xs font-bold text-gray-600 group-hover:text-orange-600 transition-colors font-display">Binod Shrestha</span>
-                  <a href="mailto:binodstha060@gmail.com" className="text-[10px] text-gray-400 hover:text-orange-500 transition-colors select-all">binodstha060@gmail.com</a>
+                <div className="flex flex-col items-center gap-2 group">
+                  <span className="text-base font-bold text-white group-hover:text-orange-400 transition-colors tracking-wide">Binod Shrestha</span>
+                  <a href="mailto:binodstha060@gmail.com" className="text-[11px] text-white/40 hover:text-orange-300 transition-colors flex items-center gap-2">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    binodstha060@gmail.com
+                  </a>
                 </div>
               </div>
             </div>

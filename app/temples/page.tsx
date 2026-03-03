@@ -62,7 +62,7 @@ function ImagePlaceholder({ label = "", className = "" }: { label?: string; clas
         }}
       />
       <div className="flex flex-col items-center text-white/50 gap-1 z-10 p-4">
-        <span className="text-3xl">🛕</span>
+        <span className="text-3xl"></span>
         {label && <p className="text-xs text-center line-clamp-2 max-w-[120px]">{label}</p>}
       </div>
     </div>
@@ -401,7 +401,7 @@ export default function TemplesPage() {
           {/* Empty State */}
           {!loading && !error && temples.length === 0 && (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">🔍</div>
+              <div className="text-6xl mb-4"></div>
               <h3 className="text-xl font-bold text-gray-700 mb-2">No temples found</h3>
               <p className="text-gray-500 mb-6">Try adjusting your filters or search query</p>
               <button

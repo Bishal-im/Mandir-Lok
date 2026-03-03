@@ -156,7 +156,7 @@ export default function DashboardPage() {
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] text-white font-display font-bold text-2xl flex items-center justify-center mx-auto mb-3">
-                      {profile?.name ? profile.name.charAt(0).toUpperCase() : "🙏"}
+                      {profile?.name ? profile.name.charAt(0).toUpperCase() : ""}
                     </div>
                   )}
                   <h2 className="font-display font-semibold text-[#1a1209]">
@@ -228,9 +228,9 @@ export default function DashboardPage() {
               {/* Stats Row */}
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { label: "Total Bookings", value: totalBookings, emoji: "🙏" },
-                  { label: "Completed", value: completedCount, emoji: "✅" },
-                  { label: "Videos Received", value: videosReceived, emoji: "📹" },
+                  { label: "Total Bookings", value: totalBookings, emoji: "" },
+                  { label: "Completed", value: completedCount, emoji: "" },
+                  { label: "Videos Received", value: videosReceived, emoji: "" },
                 ].map((s) => (
                   <div key={s.label} className="bg-white border border-[#f0dcc8] rounded-2xl p-4 text-center shadow-card">
                     <div className="text-2xl mb-1">{s.emoji}</div>
@@ -275,7 +275,7 @@ export default function DashboardPage() {
               {/* Empty State */}
               {!loading && !error && filtered.length === 0 && (
                 <div className="bg-white border border-[#f0dcc8] rounded-2xl p-10 text-center shadow-card">
-                  <div className="text-5xl mb-4">🙏</div>
+                  <div className="text-5xl mb-4"></div>
                   <h3 className="font-display font-semibold text-[#1a1209] mb-2">No bookings yet</h3>
                   <p className="text-xs text-[#6b5b45] mb-5">
                     You haven't booked any pooja yet. Start your divine journey today!
@@ -296,7 +296,7 @@ export default function DashboardPage() {
                         <div className="flex items-start gap-4">
                           {/* Emoji */}
                           <div className="w-12 h-12 bg-[#fff8f0] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                            {order.poojaId?.emoji || "🪔"}
+                            {order.poojaId?.emoji || ""}
                           </div>
 
                           {/* Info */}
@@ -324,7 +324,7 @@ export default function DashboardPage() {
                                 {order.poojaId?.duration}
                               </span>
                               <span>
-                                🧘 {order.panditId?.name || "Pandit TBD"}
+                                Pandit: {order.panditId?.name || "TBD"}
                               </span>
                             </div>
 

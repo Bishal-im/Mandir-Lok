@@ -182,7 +182,7 @@ export default function ContactPage() {
             {/* Social / trust */}
             <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
               <p className="text-sm font-semibold text-orange-700 mb-1">
-                🙏 We're here for you
+                We're here for you
               </p>
               <p className="text-xs text-orange-600 leading-relaxed">
                 Whether it's a booking question, a payment concern, or just a
@@ -200,7 +200,7 @@ export default function ContactPage() {
                     <CheckCircle2 size={40} className="text-green-500" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Message Sent! 🙏
+                    Message Sent!
                   </h3>
                   <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">
                     Thank you for reaching out. We've received your message and

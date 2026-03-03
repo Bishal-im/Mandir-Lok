@@ -32,12 +32,12 @@ interface Chadhava {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const CATEGORIES = [
-  { id: "all", name: "All Offerings", icon: "✨" },
-  { id: "Bhog", name: "Prasad & Bhog", icon: "🍬" },
-  { id: "Vastra", name: "Shringar & Vastra", icon: "👘" },
-  { id: "Deep Daan", name: "Deep & Oil", icon: "🪔" },
-  { id: "Flowers", name: "Pushpa & Mala", icon: "🌸" },
-  { id: "Seva", name: "Special Seva", icon: "🙏" },
+  { id: "all", name: "All Offerings", icon: "" },
+  { id: "Bhog", name: "Prasad & Bhog", icon: "" },
+  { id: "Vastra", name: "Shringar & Vastra", icon: "" },
+  { id: "Deep Daan", name: "Deep & Oil", icon: "" },
+  { id: "Flowers", name: "Pushpa & Mala", icon: "" },
+  { id: "Seva", name: "Special Seva", icon: "" },
 ];
 
 // ── Chadhava Card ─────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ function ChadhavaCard({
           />
         ) : (
           <span className="text-5xl group-hover:scale-110 transition-transform duration-500 relative z-10">
-            {item.emoji || "🌸"}
+            {item.emoji || ""}
           </span>
         )}
 
@@ -397,7 +397,7 @@ export default function ChadhavaPage() {
           {/* Grid */}
           {error ? (
             <div className="text-center py-20 bg-white rounded-[3rem] border border-amber-100 shadow-sm">
-              <div className="text-5xl mb-4">🪔</div>
+              <div className="text-5xl mb-4"></div>
               <p className="text-red-500 text-sm mb-6 font-medium">{error}</p>
               <button onClick={() => setSearch("")} className="btn-primary">Try Again</button>
             </div>

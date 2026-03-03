@@ -101,7 +101,7 @@ export default function ChadhavaDetailPage() {
       <div className="min-h-screen bg-[#fdf6ee] flex flex-col">
         <Navbar />
         <div className="flex-1 container-app py-20 text-center">
-          <div className="text-6xl mb-4">🌸</div>
+          <div className="text-6xl mb-4"></div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">{error || "Offering Not Found"}</h1>
           <Link href="/chadhava" className="btn-primary">Browse All Offerings</Link>
         </div>
@@ -142,7 +142,7 @@ export default function ChadhavaDetailPage() {
                       />
                     ) : (
                       <span className="text-8xl transform group-hover:scale-110 transition-transform duration-500">
-                        {item.emoji || "🌸"}
+                        {item.emoji || ""}
                       </span>
                     )}
                     {item.tag && (
@@ -223,9 +223,9 @@ export default function ChadhavaDetailPage() {
                 </div>
                 <div className="grid sm:grid-cols-3 gap-6">
                   {[
-                    { title: "Personal Sankalp", desc: "Panditji performs your offering with your Name and Gotra.", icon: "✍️" },
-                    { title: "Ritual Execution", desc: "The offering is made following Vedic traditions at the temple.", icon: "📿" },
-                    { title: "Video Proof", desc: "Receive high-quality video of the offering on WhatsApp.", icon: "📹" }
+                    { title: "Personal Sankalp", desc: "Panditji performs your offering with your Name and Gotra.", icon: "" },
+                    { title: "Ritual Execution", desc: "The offering is made following Vedic traditions at the temple.", icon: "" },
+                    { title: "Video Proof", desc: "Receive high-quality video of the offering on WhatsApp.", icon: "" }
                   ].map((step, i) => (
                     <div key={i} className="bg-white p-6 rounded-3xl border border-amber-50 relative group">
                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-amber-500 text-white font-bold rounded-full flex items-center justify-center text-xs shadow-lg">
@@ -292,14 +292,14 @@ export default function ChadhavaDetailPage() {
                           onClick={() => setIsDonation(false)}
                           className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all ${!isDonation ? 'bg-amber-50 border-amber-500 ring-1 ring-amber-500' : 'bg-gray-50 border-gray-100'}`}
                         >
-                          <span className="text-lg">📹</span>
+                          <span className="text-lg"></span>
                           <span className={`text-[10px] font-bold ${!isDonation ? 'text-amber-700' : 'text-gray-500'}`}>Ritual + Video</span>
                         </button>
                         <button
                           onClick={() => setIsDonation(true)}
                           className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all ${isDonation ? 'bg-amber-50 border-amber-500 ring-1 ring-amber-500' : 'bg-gray-50 border-gray-100'}`}
                         >
-                          <span className="text-lg">📜</span>
+                          <span className="text-lg"></span>
                           <span className={`text-[10px] font-bold ${isDonation ? 'text-amber-700' : 'text-gray-500'}`}>Simple Donation</span>
                         </button>
                       </div>
@@ -346,7 +346,7 @@ export default function ChadhavaDetailPage() {
                     }}
                     className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold py-4 rounded-2xl shadow-[0_8px_30px_rgb(245,158,11,0.3)] hover:shadow-[0_12px_40px_rgb(245,158,11,0.4)] transition-all active:scale-[0.98] mb-4"
                   >
-                    Proceed to Offer 🙏
+                    Proceed to Offer
                   </button>
 
                   <div className="flex items-center justify-center gap-6 pt-4 border-t border-amber-50">

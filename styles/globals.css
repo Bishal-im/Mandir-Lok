@@ -443,3 +443,20 @@ h4 {
     display: none !important;
   }
 }
+
+/* ── Global Trishul & Damaru Cursor ── */
+* {
+  cursor: url("/images/trishul-cursor.svg") 16 4, auto;
+}
+
+/* Damaru Pointers for interactive elements */
+a,
+button,
+[role="button"],
+select,
+textarea,
+input[type="submit"],
+input[type="button"],
+.cursor-pointer {
+  cursor: url("/images/trishul-cursor.svg") 16 4, pointer !important;
+}
