@@ -217,6 +217,7 @@ export default function AddPoojaPage() {
                             <CloudinaryUploader 
                                 onUploadSuccess={(url) => setNewImageUrl(url)}
                                 folder="poojas"
+                                resourceType="image"
                                 buttonText="Upload"
                             />
                         </div>

@@ -179,6 +179,7 @@ export default function ProfilePage() {
                         <CloudinaryUploader 
                           onUploadSuccess={(url) => setFormData({ ...formData, photo: url })}
                           folder="pandits"
+                          resourceType="image"
                           buttonText="Upload"
                         />
                       </div>

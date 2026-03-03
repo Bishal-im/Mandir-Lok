@@ -305,6 +305,7 @@ export default function EditTemplePage() {
                                     <CloudinaryUploader 
                                         onUploadSuccess={(url) => setNewImageUrl(url)}
                                         folder="temples"
+                                        resourceType="image"
                                         buttonText="Upload"
                                     />
                                     <button

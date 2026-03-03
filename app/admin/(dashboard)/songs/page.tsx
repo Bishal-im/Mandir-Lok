@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Music as MusicIcon, X } from "lucide-react";
 import CloudinaryImageUploader from "@/components/admin/CloudinaryImageUploader";
 import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
+import { getSettings } from "@/lib/actions/admin";
 
 interface Song {
     _id: string;
@@ -22,6 +23,7 @@ export default function SongsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingSong, setEditingSong] = useState<Song | null>(null);
+    const [deities, setDeities] = useState<{ id: string, name: string }[]>([]);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -29,13 +31,26 @@ export default function SongsPage() {
         audioUrl: "",
         imageUrl: "",
         type: "bhajan",
-        deity: "Shiva",
+        deity: "",
         isActive: true,
     });
 
     useEffect(() => {
         fetchSongs();
+        fetchDeities();
     }, []);
+
+    const fetchDeities = async () => {
+        const res = await getSettings("aarti_settings");
+        if (res && res.value && res.value.deities) {
+            const goddessList = res.value.deities;
+            setDeities(goddessList);
+            // Default to first deity if adding new
+            if (!editingSong && goddessList.length > 0) {
+                setFormData(prev => ({ ...prev, deity: goddessList[0].name }));
+            }
+        }
+    };
 
     const fetchSongs = async () => {
         try {
@@ -77,7 +92,7 @@ export default function SongsPage() {
                     audioUrl: "",
                     imageUrl: "",
                     type: "bhajan",
-                    deity: "Shiva",
+                    deity: deities.length > 0 ? deities[0].name : "",
                     isActive: true,
                 });
                 fetchSongs();
@@ -139,7 +154,7 @@ export default function SongsPage() {
                             audioUrl: "",
                             imageUrl: "",
                             type: "bhajan",
-                            deity: "Shiva",
+                            deity: deities.length > 0 ? deities[0].name : "",
                             isActive: true,
                         });
                         setIsModalOpen(true);
@@ -265,13 +280,13 @@ export default function SongsPage() {
                                         value={formData.deity}
                                         onChange={(e) => setFormData({ ...formData, deity: e.target.value })}
                                     >
-                                        <option value="Shiva">Shiva</option>
-                                        <option value="Vishnu">Vishnu</option>
-                                        <option value="Ganesha">Ganesha</option>
-                                        <option value="Durga">Durga</option>
-                                        <option value="Hanuman">Hanuman</option>
-                                        <option value="Ram">Ram</option>
-                                        <option value="Krishna">Krishna</option>
+                                        {deities.length > 0 ? (
+                                            deities.map((d: any) => (
+                                                <option key={d.id} value={d.name}>{d.name}</option>
+                                            ))
+                                        ) : (
+                                            <option value="">No Deities Added</option>
+                                        )}
                                     </select>
                                 </div>
                                 <div className="space-y-2">

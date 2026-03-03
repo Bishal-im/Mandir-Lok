@@ -111,6 +111,7 @@ export default function EditChadhavaPage() {
                             <CloudinaryUploader 
                                 onUploadSuccess={(url) => setFormData({ ...formData, image: url })}
                                 folder="chadhava"
+                                resourceType="image"
                                 buttonText="Upload"
                             />
                         </div>

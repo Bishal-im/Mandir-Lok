@@ -50,7 +50,7 @@ export default function MusicPlayer({ isOpen, onClose, deityId, deityName }: Mus
 
     const fetchSongs = async () => {
         try {
-            const res = await fetch(`/api/songs?deity=${deityId}`);
+            const res = await fetch(`/api/songs?deity=${encodeURIComponent(deityName)}`);
             const data = await res.json();
             setSongs(data);
             if (data.length > 0) {
@@ -130,9 +130,12 @@ export default function MusicPlayer({ isOpen, onClose, deityId, deityName }: Mus
 
     useEffect(() => {
         if (isPlaying && audioRef.current) {
-            audioRef.current.play().catch(e => console.error("Auto-play failed", e));
+            audioRef.current.play().catch(e => {
+                console.error("Auto-play failed", e);
+                setIsPlaying(false);
+            });
         }
-    }, [currentSongIndex]);
+    }, [currentSongIndex, isPlaying]);
 
     const [showPlaylist, setShowPlaylist] = useState(false);
 

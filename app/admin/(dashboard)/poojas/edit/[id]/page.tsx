@@ -244,6 +244,7 @@ export default function EditPoojaPage() {
                             <CloudinaryUploader 
                                 onUploadSuccess={(url) => setNewImageUrl(url)}
                                 folder="poojas"
+                                resourceType="image"
                                 buttonText="Upload"
                             />
                         </div>
