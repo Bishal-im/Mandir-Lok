@@ -6,9 +6,18 @@ import { Upload, X, Check, Loader2, Video } from "lucide-react";
 interface CloudinaryUploaderProps {
   onUploadSuccess: (url: string) => void;
   folder?: string;
+  accept?: string;
+  resourceType?: "video" | "image" | "auto" | "raw";
+  label?: string;
 }
 
-export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_recordings" }: CloudinaryUploaderProps) {
+export default function CloudinaryUploader({
+  onUploadSuccess,
+  folder = "pooja_recordings",
+  accept = "video/*",
+  resourceType = "video",
+  label = "Upload Video Recording"
+}: CloudinaryUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -18,10 +27,17 @@ export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_re
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type (video only for this use case)
-    if (!file.type.startsWith("video/")) {
-      setError("Please select a valid video file.");
-      return;
+    // Validate file type
+    const isAccepted = accept === "*" || file.type.match(new RegExp(accept.replace("*", ".*")));
+    if (!isAccepted && accept !== "video/*") { // Fallback for simple validation
+      // If it's a specific type like audio/* or video/* we can check startsWith
+      if (accept.includes("/*")) {
+        const typePrefix = accept.split("/")[0];
+        if (!file.type.startsWith(typePrefix)) {
+          setError(`Please select a valid ${typePrefix} file.`);
+          return;
+        }
+      }
     }
 
     // Validate size (e.g., 100MB max for Cloudinary free tier or as needed)
@@ -45,13 +61,13 @@ export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_re
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
+    formData.append("upload_preset", uploadPreset || "");
     formData.append("folder", folder);
-    formData.append("resource_type", "video");
+    formData.append("resource_type", resourceType);
 
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, true);
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType === "raw" ? "raw" : "video"}/upload`, true);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -90,7 +106,7 @@ export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_re
         type="file"
         ref={fileInputRef}
         onChange={handleUpload}
-        accept="video/*"
+        accept={accept}
         className="hidden"
       />
 
@@ -99,7 +115,7 @@ export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_re
           onClick={() => fileInputRef.current?.click()}
           className="flex items-center gap-2 px-4 py-2 bg-orange-50 text-[#ff7f0a] rounded-xl font-bold text-xs hover:bg-orange-100 transition-all border border-orange-100"
         >
-          <Upload size={14} /> Upload Video Recording
+          <Upload size={14} /> {label}
         </button>
       )}
 
@@ -107,14 +123,14 @@ export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_re
         <div className="space-y-2">
           <div className="flex justify-between items-center text-xs">
             <span className="flex items-center gap-2 text-gray-600 font-medium">
-              <Loader2 size={12} className="animate-spin text-[#ff7f0a]" /> 
-              Uploading Video...
+              <Loader2 size={12} className="animate-spin text-[#ff7f0a]" />
+              Uploading...
             </span>
             <span className="text-[#ff7f0a] font-bold">{progress}%</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            <div 
-              className="bg-[#ff7f0a] h-full transition-all duration-300" 
+            <div
+              className="bg-[#ff7f0a] h-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -123,8 +139,8 @@ export default function CloudinaryUploader({ onUploadSuccess, folder = "pooja_re
 
       {progress === 100 && !isUploading && (
         <div className="flex items-center gap-2 text-xs text-green-600 font-bold bg-green-50 px-3 py-2 rounded-xl border border-green-100">
-          <Check size={14} /> Upload Successful! Video URL updated.
-          <button 
+          <Check size={14} /> Upload Successful! File URL updated.
+          <button
             onClick={() => { setProgress(0); setError(""); }}
             className="ml-auto p-1 hover:bg-green-100 rounded-lg transition-colors"
           >
