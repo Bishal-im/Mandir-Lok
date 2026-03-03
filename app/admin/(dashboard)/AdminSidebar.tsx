@@ -19,6 +19,7 @@ import {
     X,
     MessageCircle,
     Bell,
+    Music,
 } from "lucide-react";
 import AdminNotificationBell from "@/components/admin/AdminNotificationBell";
 import { getUnreadAdminNotificationCount } from "@/lib/actions/notifications";
@@ -40,6 +41,7 @@ const navItems = [
     { label: "Settings", href: "/admin/settings", icon: <Settings size={18} /> },
     { label: "Reviews", href: "/admin/reviews", icon: <MessageCircle size={18} /> },
     { label: "Notifications", href: "/admin/notifications", icon: <Bell size={18} /> },
+    { label: "Music", href: "/admin/songs", icon: <Music size={18} /> },
 ];
 
 export default function AdminSidebar() {

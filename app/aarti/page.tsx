@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
+import MusicPlayer from "@/components/MusicPlayer";
 
 const DEFAULT_DEITIES = [
     { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png", color: "from-blue-500 to-indigo-800" },
     { id: "vishnu", name: "Vishnu ji", image: "/images/aarti/vishnu.png", color: "from-yellow-400 to-orange-600" },
     { id: "ganesha", name: "Ganesh ji", image: "/images/aarti/ganesha.png", color: "from-red-500 to-orange-500" },
-    { id: "devi", name: "Durga Maa", image: "/images/aarti/durga.png", color: "from-rose-500 to-red-700" },
+    { id: "durga", name: "Durga Maa", image: "/images/aarti/durga.png", color: "from-rose-500 to-red-700" },
 ];
 
 export default function AartiPage() {
@@ -21,6 +22,7 @@ export default function AartiPage() {
     const [isLampGlowing, setIsLampGlowing] = useState(false);
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
+    const [isMusicPlayerOpen, setIsMusicPlayerOpen] = useState(false);
 
     useEffect(() => {
         async function fetchSettings() {
@@ -234,14 +236,24 @@ export default function AartiPage() {
                             </a>
 
                             <div className="flex flex-col items-center">
-                                <button className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center text-xl shadow-lg hover:bg-rose-700 transition-colors">
+                                <button
+                                    onClick={() => setIsMusicPlayerOpen(true)}
+                                    className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center text-xl shadow-lg hover:bg-rose-700 transition-colors"
+                                >
                                     🎵
                                 </button>
-                                <span className="text-[10px] font-bold mt-1">Music</span>
+                                <span className="text-[10px] font-bold mt-1 text-white">Music</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <MusicPlayer
+                    isOpen={isMusicPlayerOpen}
+                    onClose={() => setIsMusicPlayerOpen(false)}
+                    deityId={selectedDeity.id}
+                    deityName={selectedDeity.name}
+                />
 
                 {/* Informational Text */}
                 <div className="mt-12 text-center px-6 max-w-2xl">
