@@ -1,25 +1,29 @@
-import Link from "next/link";
+"use client";
 
-const temples = [
-  "Kashi Vishwanath",
-  "Tirupati Balaji",
-  "Shirdi Sai Baba",
-  "Vaishno Devi",
-  "Siddhivinayak",
-];
-const poojas = [
-  "Rudrabhishek",
-  "Satyanarayan Katha",
-  "Navgrah Puja",
-  "Ganesh Pooja",
-  "Lakshmi Puja",
-];
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { getFooterData } from "@/lib/actions/footer";
+
 const links = [
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
 ];
 
 export default function Footer() {
+  const [temples, setTemples] = useState<any[]>([]);
+  const [poojas, setPoojas] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await getFooterData();
+      if (res.success) {
+        setTemples(res.temples);
+        setPoojas(res.poojas);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <footer className="bg-[#1a0a00] text-[#e8d5b8]">
       {/* Top wave */}
@@ -77,16 +81,20 @@ export default function Footer() {
             Popular Temples
           </h4>
           <ul className="space-y-2.5">
-            {temples.map((t) => (
-              <li key={t}>
-                <Link
-                  href="/temples"
-                  className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
-                >
-                  <span className="text-[#ff7f0a] text-xs">🛕</span> {t}
-                </Link>
-              </li>
-            ))}
+            {temples.length > 0 ? (
+              temples.map((t) => (
+                <li key={t.slug}>
+                  <Link
+                    href={`/temples/${t.slug}`}
+                    className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
+                  >
+                    <span className="text-[#ff7f0a] text-xs">🛕</span> {t.name}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <p className="text-xs text-[#b89b7a]/50">Loading temples...</p>
+            )}
           </ul>
         </div>
 
@@ -96,16 +104,20 @@ export default function Footer() {
             Popular Poojas
           </h4>
           <ul className="space-y-2.5">
-            {poojas.map((p) => (
-              <li key={p}>
-                <Link
-                  href="/poojas"
-                  className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
-                >
-                  <span className="text-[#f0bc00] text-xs">🪔</span> {p}
-                </Link>
-              </li>
-            ))}
+            {poojas.length > 0 ? (
+              poojas.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    href={`/poojas/${p.slug}`}
+                    className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
+                  >
+                    <span className="text-[#f0bc00] text-xs">🪔</span> {p.name}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <p className="text-xs text-[#b89b7a]/50">Loading poojas...</p>
+            )}
           </ul>
         </div>
 
@@ -146,3 +158,4 @@ export default function Footer() {
     </footer>
   );
 }
+
