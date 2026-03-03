@@ -3,8 +3,10 @@
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useEffect, useState } from "react";
+import { getSettings } from "@/lib/actions/admin";
 // ── Data ──────────────────────────────────────────────────────────────────────
-const STATS = [
+const DEFAULT_STATS = [
   {
     value: "1M+",
     label: "Devotees Served",
@@ -12,22 +14,22 @@ const STATS = [
     desc: "have trusted us in their devotional journey",
   },
   {
-    value: "4.8★",
-    label: "App Rating",
-    icon: "⭐",
-    desc: "Over 10,000 devotees express their love for us on Play Store",
-  },
-  {
-    value: "30+",
-    label: "Countries Served",
-    icon: "🌍",
-    desc: "We help devotees globally reconnect with their devotional heritage",
+    value: "500+",
+    label: "Sacred Temples",
+    icon: "🛕",
+    desc: "Partnered with India's most revered temples across all states",
   },
   {
     value: "50K+",
-    label: "Services Completed",
-    icon: "🛕",
+    label: "Pujas Completed",
+    icon: "🌍",
     desc: "Millions of devotees have begun Puja and Chadhava at famous temples",
+  },
+  {
+    value: "25+",
+    label: "States Covered",
+    icon: "⭐",
+    desc: "Connecting devotees with sacred temples across India",
   },
 ];
 
@@ -126,16 +128,68 @@ function ImagePlaceholder({
 
 // ── Main Export ────────────────────────────────────────────────────────────────
 export default function AboutPage() {
+  const [settings, setSettings] = useState<any>(null);
+  const [stats, setStats] = useState(DEFAULT_STATS);
+  const [contactSettings, setContactSettings] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const res = await getSettings("about_settings");
+      if (res && res.value) {
+        setSettings(res.value);
+      }
+    }
+
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        if (data.success && data.stats?.length > 0) {
+          // Merge API values/labels with our static icons & descriptions
+          setStats(
+            data.stats.map((s: any, i: number) => ({
+              value: s.value,
+              label: s.label,
+              icon: DEFAULT_STATS[i]?.icon || "🙏",
+              desc: DEFAULT_STATS[i]?.desc || "",
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("fetchStats error:", err);
+      }
+    }
+
+    async function fetchContactSettings() {
+      const res = await getSettings("contact_settings");
+      if (res && res.value) {
+        setContactSettings(res.value);
+      }
+    }
+
+    fetchSettings();
+    fetchStats();
+    fetchContactSettings();
+  }, []);
+
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-white font-sans">
         {/* Hero Banner */}
         <section className="relative h-72 md:h-96 overflow-hidden">
-          <ImagePlaceholder
-            className="absolute inset-0 w-full h-full"
-            gradient="from-[#2d0a00] to-[#1a0500]"
-          />
+          {settings?.bannerUrl ? (
+            <img 
+              src={settings.bannerUrl} 
+              alt="Hero Banner" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <ImagePlaceholder
+              className="absolute inset-0 w-full h-full"
+              gradient="from-[#2d0a00] to-[#1a0500]"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a0500]/95 via-[#2d0a00]/80 to-transparent" />
           <div className="relative z-10 h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -143,12 +197,10 @@ export default function AboutPage() {
                 Our Story
               </p>
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-                About Mandirlok
+                {settings?.heroTitle || "About Mandirlok"}
               </h1>
               <p className="text-white/80 text-base md:text-lg max-w-xl leading-relaxed">
-                India's growing platform for authentic temple rituals.
-                Connecting millions of devotees with sacred temples across
-                India.
+                {settings?.heroSubtitle || "India's growing platform for authentic temple rituals. Connecting millions of devotees with sacred temples across India."}
               </p>
             </div>
           </div>
@@ -159,12 +211,16 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               {/* Image */}
-              <div className="rounded-3xl overflow-hidden shadow-xl">
-                <ImagePlaceholder
-                  label="Mandirlok Team"
-                  className="w-full h-72 md:h-96"
-                  gradient="from-orange-700/60 to-red-900/70"
-                />
+              <div className="rounded-3xl overflow-hidden shadow-xl aspect-square md:aspect-auto">
+                {settings?.missionImage ? (
+                  <img src={settings.missionImage} alt="Mandirlok Team" className="w-full h-full object-cover" />
+                ) : (
+                  <ImagePlaceholder
+                    label="Mandirlok Team"
+                    className="w-full h-72 md:h-96"
+                    gradient="from-orange-700/60 to-red-900/70"
+                  />
+                )}
               </div>
 
               {/* Content */}
@@ -173,28 +229,17 @@ export default function AboutPage() {
                   🌸 Our Mission
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                  Committed to Building the Most Trusted Devotional Platform
+                  {settings?.missionTitle || "Committed to Building the Most Trusted Devotional Platform"}
                 </h2>
                 <p className="text-gray-600 leading-relaxed mb-4 text-sm">
-                  Mandirlok was founded with a single vision — to make authentic
-                  temple rituals accessible to every Hindu devotee in the world,
-                  regardless of their location. We believe that geography should
-                  never be a barrier to divine blessings.
+                  {settings?.missionDescription1 || "Mandirlok was founded with a single vision — to make authentic temple rituals accessible to every Hindu devotee in the world, regardless of their location."}
                 </p>
                 <p className="text-gray-600 leading-relaxed mb-6 text-sm">
-                  We partner with India's most revered temples — Jyotirlingas,
-                  Shaktipeeths, Divya Desams — and trained Vedic pandits to
-                  perform authentic rituals on your behalf, with full video
-                  documentation.
+                  {settings?.missionDescription2 || "We partner with India's most revered temples and trained Vedic pandits to perform authentic rituals on your behalf, with full video documentation."}
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  {[
-                    { label: "Founded", value: "2020" },
-                    { label: "Temples Partner", value: "500+" },
-                    { label: "Expert Pandits", value: "1,200+" },
-                    { label: "Devotees Served", value: "1M+" },
-                  ].map((item) => (
+                  {stats.map((item) => (
                     <div
                       key={item.label}
                       className="bg-orange-50 rounded-xl p-4 border border-orange-100"
@@ -245,9 +290,8 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {STATS.map((s) => (
+              {stats.map((s) => (
                 <div key={s.label} className="text-center">
-                  <div className="text-4xl mb-2">{s.icon}</div>
                   <div className="text-3xl md:text-4xl font-extrabold text-white mb-1">
                     {s.value}
                   </div>
@@ -298,80 +342,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Team Section */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                🌸 Our Team
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                The People Behind Mandirlok
-              </h2>
-              <p className="text-gray-500 text-sm max-w-xl mx-auto">
-                A passionate team of technologists, Vedic scholars and temple
-                relations experts.
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {TEAM.map((member) => (
-                <div
-                  key={member.name}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group"
-                >
-                  {/* Photo Placeholder */}
-                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div
-                        className={`w-24 h-24 rounded-full ${member.color} flex items-center justify-center text-white text-3xl font-bold shadow-lg`}
-                      >
-                        {member.initials}
-                      </div>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-gray-100/80 to-transparent" />
-                    {/* Upload hint */}
-                    <div className="absolute top-2 right-2 bg-white/80 text-xs text-gray-500 px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                      📷 Upload Photo
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-900 mb-0.5">
-                      {member.name}
-                    </h3>
-                    <p className="text-orange-500 text-xs font-semibold mb-2">
-                      {member.role}
-                    </p>
-                    <p className="text-gray-500 text-xs leading-relaxed">
-                      {member.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Media Section */}
-        <section className="py-12 bg-gray-50 border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-gray-400 text-sm font-semibold tracking-widest uppercase mb-8">
-              As Featured In
-            </p>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-6 items-center">
-              {MEDIA_LOGOS.map((logo) => (
-                <div
-                  key={logo}
-                  className="h-12 bg-white rounded-xl border border-gray-200 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
-                >
-                  <span className="text-xs font-bold text-gray-400 group-hover:text-gray-600 transition-colors text-center px-2">
-                    {logo}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* CTA Section */}
         <section className="py-16 bg-gradient-to-br from-[#1a0500] to-[#3d1500] relative overflow-hidden">
@@ -429,37 +400,49 @@ export default function AboutPage() {
                 <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="text-orange-500">📍</span> Our Address
                 </h4>
-                <p className="text-gray-500 text-sm leading-relaxed">
-                  Mandirlok Technologies Pvt. Ltd.
-                  <br />
-                  2nd Floor, Sunrise Tower, Sector 62,
-                  <br />
-                  Noida, Uttar Pradesh - 201301
+                <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-line">
+                  {contactSettings?.address || "Mandirlok Technologies Pvt. Ltd.\n2nd Floor, Sunrise Tower, Sector 62,\nNoida, Uttar Pradesh - 201301"}
                 </p>
               </div>
               <div>
                 <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="text-orange-500">📞</span> Contact
                 </h4>
-                <p className="text-gray-500 text-sm">Phone: +91 98765 43210</p>
+                <p className="text-gray-500 text-sm">Phone: {contactSettings?.phone || "+91 98765 43210"}</p>
                 <p className="text-gray-500 text-sm">
-                  Email: help@mandirlok.com
-                </p>
-                <p className="text-gray-500 text-sm">
-                  WhatsApp: +91 87654 32109
+                  Email: {contactSettings?.supportEmail || "help@mandirlok.com"}
                 </p>
               </div>
               <div>
                 <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="text-orange-500">⏰</span> Support Hours
                 </h4>
-                <p className="text-gray-500 text-sm">
-                  Monday – Saturday: 9 AM – 9 PM
+                <p className="text-gray-500 text-sm whitespace-pre-line">
+                  {contactSettings?.workingHours || "Monday – Saturday: 9 AM – 9 PM\nSunday: 10 AM – 6 PM\nFestivals: Special hours apply"}
                 </p>
-                <p className="text-gray-500 text-sm">Sunday: 10 AM – 6 PM</p>
-                <p className="text-gray-500 text-sm">
-                  Festivals: Special hours apply
-                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        {/* Developer Credits Section */}
+        <section className="py-8 bg-gray-50/50 border-t border-gray-100 mb-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center justify-center text-center">
+              <p className="text-[10px] font-bold text-gray-400 border border-gray-200 px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4">
+                Designed & Developed By
+              </p>
+              <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+                <div className="flex flex-col items-center gap-1 group">
+                  <span className="text-xs font-bold text-gray-600 group-hover:text-orange-600 transition-colors font-display">Bishal Pandey</span>
+                  <a href="mailto:bishalpandey.im@gmail.com" className="text-[10px] text-gray-400 hover:text-orange-500 transition-colors select-all">bishalpandey.im@gmail.com</a>
+                </div>
+                <div className="w-px h-8 bg-gray-200 hidden md:block" />
+                <div className="flex flex-col items-center gap-1 group">
+                  <span className="text-xs font-bold text-gray-600 group-hover:text-orange-600 transition-colors font-display">Binod Shrestha</span>
+                  <a href="mailto:binodstha060@gmail.com" className="text-[10px] text-gray-400 hover:text-orange-500 transition-colors select-all">binodstha060@gmail.com</a>
+                </div>
               </div>
             </div>
           </div>

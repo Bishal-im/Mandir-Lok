@@ -34,6 +34,28 @@ export default function SettingsPage() {
     const [aartiSettings, setAartiSettings] = useState<{ deities: any[] }>({
         deities: []
     });
+    const [contactSettings, setContactSettings] = useState({
+        bannerUrl: "",
+        heroTitle: "How can we help you?",
+        heroSubtitle: "Our team is here to help you with bookings, payment issues, or any queries about our poojas and services.",
+        supportEmail: "support@mandirlok.com",
+        phone: "+91 98765 43210",
+        address: "Mandirlok Technologies, India",
+        workingHours: "Mon – Sat, 9:00 AM – 7:00 PM IST"
+    });
+    const [aboutSettings, setAboutSettings] = useState({
+        bannerUrl: "",
+        heroTitle: "About Mandirlok",
+        heroSubtitle: "India's growing platform for authentic temple rituals.",
+        missionTitle: "Committed to Building the Most Trusted Devotional Platform",
+        missionDescription1: "",
+        missionDescription2: "",
+        missionImage: "",
+        foundedYear: "2020",
+        templesCount: "500+",
+        panditsCount: "1,200+",
+        devoteesCount: "1M+"
+    });
 
     const tabs = [
         { id: "general", label: "General", icon: <Globe size={18} /> },
@@ -41,18 +63,22 @@ export default function SettingsPage() {
         { id: "page_banners", label: "Page Banners", icon: <ImageIcon size={18} /> },
         { id: "user_dashboard", label: "User Dashboard", icon: <Layout size={18} /> },
         { id: "aarti", label: "Aarti Settings", icon: <Layout size={18} /> },
+        { id: "contact", label: "Contact Settings", icon: <Bell size={18} /> },
+        { id: "about", label: "About Us", icon: <Layout size={18} /> },
         { id: "payments", label: "Payments", icon: <IndianRupee size={18} /> },
     ];
 
     useEffect(() => {
         async function fetchSettings() {
             setLoading(true);
-            const [slideRes, dashRes, bannerRes, logoRes, aartiRes] = await Promise.all([
+            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes] = await Promise.all([
                 getSettings("landing_page_slides"),
                 getSettings("dashboard_settings"),
                 getSettings("page_banners"),
                 getSettings("website_logo"),
-                getSettings("aarti_settings")
+                getSettings("aarti_settings"),
+                getSettings("contact_settings"),
+                getSettings("about_settings")
             ]);
 
             if (slideRes && slideRes.value) setSlides(slideRes.value);
@@ -72,6 +98,8 @@ export default function SettingsPage() {
                     ]
                 });
             }
+            if (contactRes && contactRes.value) setContactSettings(prev => ({ ...prev, ...contactRes.value }));
+            if (aboutRes && aboutRes.value) setAboutSettings(prev => ({ ...prev, ...aboutRes.value }));
 
             setLoading(false);
         }
@@ -126,6 +154,10 @@ export default function SettingsPage() {
                 await updateSettings("website_logo", logoUrl, "Website main logo URL");
             } else if (activeTab === "aarti") {
                 await updateSettings("aarti_settings", aartiSettings, "Aarti page configurations");
+            } else if (activeTab === "contact") {
+                await updateSettings("contact_settings", contactSettings, "Contact Us page configurations");
+            } else if (activeTab === "about") {
+                await updateSettings("about_settings", aboutSettings, "About Us page configurations");
             }
             alert("Settings saved successfully!");
         } catch (err) {
@@ -492,6 +524,212 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
                             )}
+
+                            {activeTab === "contact" && (
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                                            <Bell size={20} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-900">Contact Us Settings</h3>
+                                            <p className="text-xs text-gray-500">Manage banner and contact info for the support page.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="space-y-4 p-5 rounded-2xl border border-gray-100 bg-gray-50/50">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Banner Image</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={contactSettings.bannerUrl}
+                                                    onChange={e => setContactSettings({ ...contactSettings, bannerUrl: e.target.value })}
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
+                                                    placeholder="https://..."
+                                                />
+                                                <CloudinaryImageUploader 
+                                                    onUploadSuccess={(url) => setContactSettings({ ...contactSettings, bannerUrl: url })}
+                                                    folder="banners"
+                                                    label="Upload"
+                                                />
+                                            </div>
+                                            {contactSettings.bannerUrl && (
+                                                <div className="rounded-xl overflow-hidden aspect-video border border-gray-100 shadow-sm">
+                                                    <img src={contactSettings.bannerUrl} className="w-full h-full object-cover" alt="Contact Banner Preview" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-6 flex flex-col justify-center">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Title</label>
+                                                <input 
+                                                    value={contactSettings.heroTitle}
+                                                    onChange={e => setContactSettings({ ...contactSettings, heroTitle: e.target.value })}
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Subtitle</label>
+                                                <textarea 
+                                                    value={contactSettings.heroSubtitle}
+                                                    onChange={e => setContactSettings({ ...contactSettings, heroSubtitle: e.target.value })}
+                                                    rows={2}
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none" 
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid md:grid-cols-2 gap-6 pt-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Support Email (Recipient)</label>
+                                            <input 
+                                                value={contactSettings.supportEmail}
+                                                onChange={e => setContactSettings({ ...contactSettings, supportEmail: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 font-mono" 
+                                            />
+                                            <p className="text-[10px] text-gray-400 italic">User submissions will be sent to this email.</p>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Phone / WhatsApp</label>
+                                            <input 
+                                                value={contactSettings.phone}
+                                                onChange={e => setContactSettings({ ...contactSettings, phone: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Office Address</label>
+                                            <input 
+                                                value={contactSettings.address}
+                                                onChange={e => setContactSettings({ ...contactSettings, address: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Working Hours</label>
+                                            <input 
+                                                value={contactSettings.workingHours}
+                                                onChange={e => setContactSettings({ ...contactSettings, workingHours: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "about" && (
+                                <div className="space-y-8">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                            <Layout size={20} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-900">About Us Page Settings</h3>
+                                            <p className="text-xs text-gray-500">Manage your company story, mission, and key metrics.</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Hero Section */}
+                                    <div className="grid md:grid-cols-2 gap-6 pb-6 border-b border-gray-50">
+                                        <div className="space-y-4 p-5 rounded-2xl border border-gray-100 bg-gray-50/50">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Banner</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={aboutSettings.bannerUrl}
+                                                    onChange={e => setAboutSettings({ ...aboutSettings, bannerUrl: e.target.value })}
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm"
+                                                    placeholder="Banner URL"
+                                                />
+                                                <CloudinaryImageUploader 
+                                                    onUploadSuccess={(url) => setAboutSettings({ ...aboutSettings, bannerUrl: url })}
+                                                    folder="banners"
+                                                    label="Upload"
+                                                />
+                                            </div>
+                                            {aboutSettings.bannerUrl && (
+                                                <div className="rounded-xl overflow-hidden aspect-video border border-gray-100 shadow-sm">
+                                                    <img src={aboutSettings.bannerUrl} className="w-full h-full object-cover" alt="Hero Preview" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Title</label>
+                                                <input 
+                                                    value={aboutSettings.heroTitle}
+                                                    onChange={e => setAboutSettings({ ...aboutSettings, heroTitle: e.target.value })}
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Subtitle</label>
+                                                <textarea 
+                                                    value={aboutSettings.heroSubtitle}
+                                                    onChange={e => setAboutSettings({ ...aboutSettings, heroSubtitle: e.target.value })}
+                                                    rows={2}
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Mission Section */}
+                                    <div className="space-y-6">
+                                        <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Mission & Story</h4>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="space-y-4">
+                                                <div className="space-y-1.5">
+                                                    <label className="text-xs font-bold text-gray-400">Mission Title</label>
+                                                    <input 
+                                                        value={aboutSettings.missionTitle}
+                                                        onChange={e => setAboutSettings({ ...aboutSettings, missionTitle: e.target.value })}
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-xs font-bold text-gray-400">Mission Image</label>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            value={aboutSettings.missionImage}
+                                                            onChange={e => setAboutSettings({ ...aboutSettings, missionImage: e.target.value })}
+                                                            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm"
+                                                            placeholder="Image URL"
+                                                        />
+                                                        <CloudinaryImageUploader 
+                                                            onUploadSuccess={(url) => setAboutSettings({ ...aboutSettings, missionImage: url })}
+                                                            folder="about"
+                                                            label="Upload"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div className="space-y-1.5">
+                                                    <label className="text-xs font-bold text-gray-400">Story Paragraph 1</label>
+                                                    <textarea 
+                                                        value={aboutSettings.missionDescription1}
+                                                        onChange={e => setAboutSettings({ ...aboutSettings, missionDescription1: e.target.value })}
+                                                        rows={3}
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-xs font-bold text-gray-400">Story Paragraph 2</label>
+                                                    <textarea 
+                                                        value={aboutSettings.missionDescription2}
+                                                        onChange={e => setAboutSettings({ ...aboutSettings, missionDescription2: e.target.value })}
+                                                        rows={3}
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
 
                             {activeTab === "payments" && (
                                 <div className="space-y-6">

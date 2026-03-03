@@ -6,6 +6,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, email, phone, subject, message } = body;
 
+    // Connect to DB to get support email from settings
+    const { connectDB } = require("@/lib/db");
+    const Settings = require("@/models/Settings").default;
+    await connectDB();
+    const contactSettingsRes = await Settings.findOne({ key: "contact_settings" }).lean();
+    const contactSettings = contactSettingsRes?.value || {};
+
     // Basic validation
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -27,16 +34,17 @@ export async function POST(req: NextRequest) {
       port: parseInt(process.env.SMTP_PORT || "587"),
       secure: false,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.SMTP_USER || process.env.EMAIL_USER,
+        pass: process.env.SMTP_PASS || process.env.EMAIL_PASS,
       },
     });
 
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER;
+    const senderEmail = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const adminEmail = contactSettings.supportEmail || process.env.ADMIN_EMAIL || senderEmail;
 
     // Email to admin
     await transporter.sendMail({
-      from: `"Mandirlok Contact" <${process.env.SMTP_USER}>`,
+      from: `"Mandirlok Contact" <${senderEmail}>`,
       to: adminEmail,
       subject: `[Contact] ${subject || "New message from " + name}`,
       html: `
@@ -75,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     // Auto-reply to user
     await transporter.sendMail({
-      from: `"Mandirlok" <${process.env.SMTP_USER}>`,
+      from: `"Mandirlok" <${senderEmail}>`,
       to: email,
       subject: "We received your message — Mandirlok 🛕",
       html: `

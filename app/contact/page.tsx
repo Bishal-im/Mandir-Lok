@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSettings } from "@/lib/actions/admin";
 import {
   MapPin,
   Phone,
@@ -10,6 +11,8 @@ import {
   Send,
   MessageSquare,
 } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 const SUBJECTS = [
   "Booking Help",
@@ -32,6 +35,25 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [settings, setSettings] = useState({
+    bannerUrl: "",
+    heroTitle: "How can we help you?",
+    heroSubtitle: "Our team is here to help you with bookings, payment issues, or any queries about our poojas and services.",
+    supportEmail: "support@mandirlok.com",
+    phone: "+91 98765 43210",
+    address: "Mandirlok Technologies, India",
+    workingHours: "Mon – Sat, 9:00 AM – 7:00 PM IST"
+  });
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const res = await getSettings("contact_settings");
+      if (res && res.value) {
+        setSettings(prev => ({ ...prev, ...res.value }));
+      }
+    }
+    fetchSettings();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -72,20 +94,29 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="bg-dark-temple py-14">
-        <div className="section-container text-center">
-          <span className="section-tag mb-4 inline-flex">
+      <div 
+        className="relative py-20 md:py-28 flex items-center justify-center overflow-hidden bg-gray-900"
+        style={{
+          backgroundImage: settings.bannerUrl ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${settings.bannerUrl})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        {!settings.bannerUrl && <div className="absolute inset-0 bg-dark-temple opacity-90" />}
+        <div className="section-container text-center relative z-10">
+          <span className="bg-orange-500/20 text-orange-200 border border-orange-500/30 px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-widest uppercase mb-6 inline-flex items-center gap-2 backdrop-blur-sm">
             <MessageSquare size={12} />
             GET IN TOUCH
           </span>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">
-            How can we help you?
+          <h1 className="text-4xl md:text-6xl font-black text-white mt-2 leading-tight">
+            {settings.heroTitle}
           </h1>
-          <p className="text-orange-200 mt-3 text-sm md:text-base max-w-xl mx-auto">
-            Our team is here to help you with bookings, payment issues, or any
-            queries about our poojas and services.
+          <p className="text-orange-100/80 mt-6 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-medium">
+            {settings.heroSubtitle}
           </p>
         </div>
       </div>
@@ -107,26 +138,26 @@ export default function ContactPage() {
               {
                 icon: <Phone size={18} className="text-orange-500" />,
                 label: "Phone / WhatsApp",
-                value: "+91 98765 43210",
-                sub: "Mon–Sat, 9 AM – 7 PM",
+                value: settings.phone,
+                sub: settings.workingHours,
               },
               {
                 icon: <Mail size={18} className="text-orange-500" />,
                 label: "Email",
-                value: "support@mandirlok.com",
+                value: settings.supportEmail,
                 sub: "We reply within 24 hours",
               },
               {
                 icon: <MapPin size={18} className="text-orange-500" />,
                 label: "Office",
-                value: "Mandirlok Technologies",
+                value: settings.address,
                 sub: "India",
               },
               {
                 icon: <Clock size={18} className="text-orange-500" />,
                 label: "Working Hours",
-                value: "Mon – Sat",
-                sub: "9:00 AM – 7:00 PM IST",
+                value: settings.workingHours,
+                sub: "Standard IST Time",
               },
             ].map((item, i) => (
               <div
@@ -330,5 +361,7 @@ export default function ContactPage() {
         </div>
       </div>
     </main>
+    <Footer />
+  </>
   );
 }
