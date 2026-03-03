@@ -13,6 +13,7 @@ import {
     Image as ImageIcon
 } from "lucide-react";
 import { getSettings, updateSettings } from "@/lib/actions/admin";
+import CloudinaryImageUploader from "@/components/admin/CloudinaryImageUploader";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("general");
@@ -183,10 +184,10 @@ export default function SettingsPage() {
                                                 placeholder="https://cloudinary.com/..."
                                                 className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
                                             />
-                                            <CloudinaryUploader 
+                                            <CloudinaryImageUploader 
                                                 onUploadSuccess={(url) => setLogoUrl(url)}
                                                 folder="branding"
-                                                buttonText="Upload Logo"
+                                                label="Upload Logo"
                                             />
                                         </div>
                                         {logoUrl && (
@@ -240,10 +241,10 @@ export default function SettingsPage() {
                                                                     className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-200"
                                                                 />
                                                             </div>
-                                                            <CloudinaryUploader 
+                                                            <CloudinaryImageUploader 
                                                                 onUploadSuccess={(url) => handleUpdateSlide(index, "src", url)}
                                                                 folder="landing_banners"
-                                                                buttonText="Upload"
+                                                                label="Upload"
                                                             />
                                                         </div>
                                                     </div>
@@ -330,10 +331,10 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryUploader 
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, poojas: url })}
                                                     folder="banners"
-                                                    buttonText="Upload"
+                                                    label="Upload"
                                                 />
                                             </div>
                                             {pageBanners.poojas && (
@@ -352,10 +353,10 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryUploader 
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, chadhava: url })}
                                                     folder="banners"
-                                                    buttonText="Upload"
+                                                    label="Upload"
                                                 />
                                             </div>
                                             {pageBanners.chadhava && (
@@ -374,10 +375,10 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryUploader 
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, temples: url })}
                                                     folder="banners"
-                                                    buttonText="Upload"
+                                                    label="Upload"
                                                 />
                                             </div>
                                             {pageBanners.temples && (
@@ -403,10 +404,10 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryUploader 
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setDashboardSettings({ ...dashboardSettings, bannerUrl: url })}
                                                     folder="dashboard"
-                                                    buttonText="Upload"
+                                                    label="Upload"
                                                 />
                                             </div>
                                         </div>

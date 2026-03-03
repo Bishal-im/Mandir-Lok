@@ -83,7 +83,7 @@ export default function OrdersAdminPage() {
 
             {loading ? <div className="text-center py-20 opacity-50">Loading orders...</div> : (
                 <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
+                    <div className="table-container">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">

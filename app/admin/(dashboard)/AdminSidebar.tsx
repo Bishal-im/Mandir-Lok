@@ -109,7 +109,7 @@ export default function AdminSidebar() {
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-60 bg-[#1a0a00] text-white flex flex-col transition-transform duration-300 ${sideOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a0a00] text-white flex flex-col transition-all duration-300 ease-in-out ${sideOpen ? "translate-x-0" : "-translate-x-full"
                     } lg:translate-x-0 lg:static lg:flex`}
             >
                 <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10">

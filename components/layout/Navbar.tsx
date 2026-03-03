@@ -141,8 +141,8 @@ export default function Navbar() {
         .menu-open .hamburger-line:nth-child(1) { transform:translateY(7px) rotate(45deg); }
         .menu-open .hamburger-line:nth-child(2) { opacity:0;transform:scaleX(0); }
         .menu-open .hamburger-line:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-        @keyframes menuSlide { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-        .mobile-menu { animation: menuSlide 0.25s ease-out forwards; }
+        @keyframes menuSlide { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+        .mobile-menu { animation: menuSlide 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
         @keyframes profileSlide { from{opacity:0;transform:translateY(-6px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
         .profile-dropdown { animation: profileSlide 0.2s ease-out forwards; }
         .nav-link { position:relative; }
@@ -152,31 +152,38 @@ export default function Navbar() {
 
       {/* TOP MARQUEE BAR */}
       <div className="bg-gradient-to-r from-[#7c1a00] via-[#a32200] to-[#7c1a00] text-white text-xs overflow-hidden h-8 flex items-center relative">
-        <div className="absolute left-4 z-10 flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-0.5 rounded-full border border-white/20 shrink-0">
-          <span className="text-yellow-300">✦</span>
+        <div className="absolute left-2 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm px-2.5 sm:px-3 py-0.5 rounded-full border border-white/20 shrink-0">
+          <span className="text-yellow-300 text-[10px] sm:text-xs">✦</span>
           <span
             key={wordIndex}
             className={
               wordVisible
-                ? "word-in inline-block text-yellow-200 font-bold tracking-wide"
-                : "word-out inline-block text-yellow-200 font-bold tracking-wide"
+                ? "word-in inline-block text-yellow-200 font-bold tracking-wide text-[10px] sm:text-xs"
+                : "word-out inline-block text-yellow-200 font-bold tracking-wide text-[10px] sm:text-xs"
             }
           >
             {SPIRITUAL_WORDS[wordIndex]}
           </span>
-          <span className="text-white/70 font-medium hidden sm:inline">Services</span>
+          <span className="text-white/70 font-medium hidden md:inline text-[10px] sm:text-xs">Services</span>
         </div>
         <div className="flex whitespace-nowrap ml-48">
           <div className="top-marquee flex items-center gap-0">
             {[
               "🙏 Trusted by 1 Million+ Devotees", "🔒 100% Secure Payments", "🛕 500+ Sacred Temples",
               "📹 Video Proof Delivered", "⚡ Participate in 2 Minutes", "🌍 Devotees in 30+ Countries",
-              "🎁 Prasad Home Delivery", "✅ 100% Authentic Rituals",
+              "🎁 Prasad Home Delivery", "✅ 100% Authentic Rituals"
+            ].map((item, i) => (
+              <span key={i} className="flex items-center gap-5 px-6 text-white/90 font-medium text-[10px] sm:text-[11px]">
+                {item}<span className="text-orange-300/50">·</span>
+              </span>
+            ))}
+            {/* Duplicate for seamless loop */}
+            {[
               "🙏 Trusted by 1 Million+ Devotees", "🔒 100% Secure Payments", "🛕 500+ Sacred Temples",
               "📹 Video Proof Delivered", "⚡ Participate in 2 Minutes", "🌍 Devotees in 30+ Countries",
-              "🎁 Prasad Home Delivery", "✅ 100% Authentic Rituals",
+              "🎁 Prasad Home Delivery", "✅ 100% Authentic Rituals"
             ].map((item, i) => (
-              <span key={i} className="flex items-center gap-5 px-6 text-white/90 font-medium text-[11px]">
+              <span key={i + 'dup'} className="flex items-center gap-5 px-6 text-white/90 font-medium text-[10px] sm:text-[11px]">
                 {item}<span className="text-orange-300/50">·</span>
               </span>
             ))}

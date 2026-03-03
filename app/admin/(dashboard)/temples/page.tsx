@@ -54,14 +54,14 @@ export default function TemplesAdminPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:items-center sm:flex-row justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-bold text-gray-900">Temple Management</h2>
                     <p className="text-sm text-gray-500">Manage your temples, their descriptions, and images.</p>
                 </div>
                 <Link
                     href="/admin/temples/add"
-                    className="bg-[#ff7f0a] text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-[#e67208] transition-colors shadow-lg shadow-orange-200"
+                    className="bg-[#ff7f0a] text-white px-4 py-2 rounded-xl flex items-center justify-center gap-2 hover:bg-[#e67208] transition-colors shadow-lg shadow-orange-200 w-full sm:w-auto text-sm"
                 >
                     <Plus size={18} />
                     Add Temple

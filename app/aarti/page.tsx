@@ -112,7 +112,7 @@ export default function AartiPage() {
                 </div>
 
                 {/* Main Aarti Frame Container */}
-                <div className="relative w-[95%] max-w-[600px] aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30">
+                <div className="relative w-[95%] sm:w-[500px] aspect-[3/4] sm:aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30">
 
                     {/* Frame Image (First Picture) */}
                     <img
@@ -141,7 +141,7 @@ export default function AartiPage() {
                             <motion.img
                                 src="/images/aarti/aarti.png"
                                 alt="Aarti"
-                                className="w-64 h-auto drop-shadow-[0_0_25px_rgba(255,255,255,0.7)]"
+                                className="w-48 sm:w-64 h-auto drop-shadow-[0_0_25px_rgba(255,255,255,0.7)]"
                                 animate={isAartiPerforming ? {
                                     x: [0, 120, 180, 120, 0, -120, -180, -120, 0],
                                     y: [0, -60, -180, -300, -360, -300, -180, -60, 0],
@@ -197,29 +197,26 @@ export default function AartiPage() {
                     </div>
 
                     {/* Interaction Overlay (Floating Buttons) */}
-                    <div className="absolute left-6 bottom-32 flex flex-col gap-6 z-30">
-                        {/* Lamp Button */}
+                    <div className="absolute left-4 sm:left-6 bottom-24 sm:bottom-32 flex flex-col gap-4 sm:gap-6 z-30">
                         <button onClick={handleDeepClick} className="group flex flex-col items-center gap-1">
-                            <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-orange-400/50 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-orange-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
                                 🪔
                             </div>
-                            <span className="text-[14px] font-bold bg-black/40 px-2 py-0.5 rounded-full">{(counts.deep / 1000).toFixed(1)}K</span>
+                            <span className="text-[10px] sm:text-[14px] font-bold bg-black/40 px-2 py-0.5 rounded-full">{(counts.deep / 1000).toFixed(1)}K</span>
                         </button>
 
-                        {/* Flower Button */}
                         <button onClick={handlePushpaClick} className="group flex flex-col items-center gap-1">
-                            <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-rose-400/50 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-rose-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
                                 🌸
                             </div>
-                            <span className="text-[14px] font-bold bg-black/40 px-2 py-0.5 rounded-full">{(counts.pushpa / 1000).toFixed(1)}K</span>
+                            <span className="text-[10px] sm:text-[14px] font-bold bg-black/40 px-2 py-0.5 rounded-full">{(counts.pushpa / 1000).toFixed(1)}K</span>
                         </button>
 
-                        {/* Shankh Button */}
                         <button onClick={handleShankhClick} className="group flex flex-col items-center gap-1">
-                            <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-blue-400/50 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-blue-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
                                 🐚
                             </div>
-                            <span className="text-[14px] font-bold bg-black/40 px-2 py-0.5 rounded-full">{(counts.shankh / 1000).toFixed(1)}K</span>
+                            <span className="text-[10px] sm:text-[14px] font-bold bg-black/40 px-2 py-0.5 rounded-full">{(counts.shankh / 1000).toFixed(1)}K</span>
                         </button>
                     </div>
 

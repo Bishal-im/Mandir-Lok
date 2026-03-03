@@ -55,14 +55,14 @@ export default function PoojasAdminPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:items-center sm:flex-row justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-bold text-gray-900">Pooja Management</h2>
                     <p className="text-sm text-gray-500">Manage poojas, set prices, and assign them to temples.</p>
                 </div>
                 <Link
                     href="/admin/poojas/add"
-                    className="bg-[#ff7f0a] text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-[#e67208] transition-colors shadow-lg shadow-orange-100"
+                    className="bg-[#ff7f0a] text-white px-4 py-2 rounded-xl flex items-center justify-center gap-2 hover:bg-[#e67208] transition-colors shadow-lg shadow-orange-100 w-full sm:w-auto text-sm"
                 >
                     <Plus size={18} />
                     Add Pooja
@@ -85,7 +85,7 @@ export default function PoojasAdminPage() {
                     <select
                         value={selectedTemple}
                         onChange={(e) => setSelectedTemple(e.target.value)}
-                        className="px-4 py-2 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20"
+                        className="flex-1 md:flex-none px-4 py-2 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20"
                     >
                         <option value="All">All Temples</option>
                         {temples.map(t => <option key={t._id} value={t._id}>{t.name}</option>)}
@@ -97,7 +97,7 @@ export default function PoojasAdminPage() {
                 <div className="text-center py-20 text-gray-400">Loading rituals...</div>
             ) : (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
+                    <div className="table-container">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-gray-50 border-b border-gray-100">

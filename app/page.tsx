@@ -411,14 +411,14 @@ function HeroSection() {
             </p>
             <h1
               key={`h-${current}`}
-              className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-5"
+              className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white leading-tight mb-5"
               style={{ animation: "fadeSlideUp 0.6s ease-out 0.1s both" }}
             >
               {slide.title}
             </h1>
             <p
               key={`sub-${current}`}
-              className="text-white/80 text-base md:text-lg mb-8 leading-relaxed"
+              className="text-white/80 text-sm sm:text-base md:text-lg mb-8 leading-relaxed line-clamp-3 sm:line-clamp-none"
               style={{ animation: "fadeSlideUp 0.6s ease-out 0.2s both" }}
             >
               {slide.subtitle}
@@ -579,7 +579,7 @@ function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="py-16 bg-gradient-to-br from-orange-50 to-amber-50"
+      className="py-12 md:py-16 bg-gradient-to-br from-orange-50 to-amber-50"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
@@ -639,7 +639,7 @@ function HowItWorksSection() {
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function StatsSection({ stats }: { stats: any[] }) {
   return (
-    <section className="bg-gradient-to-r from-orange-600 to-rose-700 py-14">
+    <section className="bg-gradient-to-r from-orange-600 to-rose-700 py-10 md:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
@@ -667,7 +667,7 @@ function StatsSection({ stats }: { stats: any[] }) {
 // ── Features ──────────────────────────────────────────────────────────────────
 function FeaturesSection() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           tag="Why Choose Us"
@@ -716,7 +716,7 @@ function TestimonialsSection() {
   if (!loading && reviews.length === 0) return null;
 
   return (
-    <section className="py-16 bg-gray-50 overflow-hidden">
+    <section className="py-12 md:py-16 bg-gray-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           tag="Reviews"
