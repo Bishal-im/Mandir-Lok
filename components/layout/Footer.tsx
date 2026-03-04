@@ -2,16 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useLanguage } from "@/lib/context/LanguageContext";
 import { getFooterData } from "@/lib/actions/footer";
 
-const getLinks = (t: any) => [
-  { label: t("footer.about"), href: "/about" },
-  { label: t("footer.contact"), href: "/contact" },
+const getLinks = () => [
+  { label: "About Us", href: "/about" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
 export default function Footer() {
-  const { t } = useLanguage();
   const [temples, setTemples] = useState<any[]>([]);
   const [poojas, setPoojas] = useState<any[]>([]);
 
@@ -55,12 +53,12 @@ export default function Footer() {
                 Mandirlok
               </span>
               <span className="block text-[10px] text-[#ff9b30] -mt-0.5 tracking-widest uppercase">
-                {t("footer.divineBookings")}
+                Divine Bookings
               </span>
             </div>
           </div>
           <p className="text-sm leading-relaxed text-[#b89b7a] mb-5">
-            {t("footer.brandDesc")}
+            Connect with holy pilgrimage sites and divine temples of India. Book pooja from the comfort of your home.
           </p>
           {/* Social */}
           <div className="flex gap-3">
@@ -70,7 +68,7 @@ export default function Footer() {
                 href="#"
                 className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#ff7f0a] flex items-center justify-center transition-colors text-sm font-bold uppercase"
               >
-                 {s === "wa" ? "📞" : s === "fb" ? "fb" : s === "in" ? "ig" : "yt"}
+                {s === "wa" ? "📞" : s === "fb" ? "fb" : s === "in" ? "ig" : "yt"}
               </a>
             ))}
           </div>
@@ -79,7 +77,7 @@ export default function Footer() {
         {/* Popular Temples */}
         <div>
           <h4 className="text-white font-display font-semibold mb-4 text-sm tracking-wide uppercase">
-            {t("footer.popularTemples")}
+            Popular Temples
           </h4>
           <ul className="space-y-2.5">
             {temples.length > 0 ? (
@@ -89,12 +87,12 @@ export default function Footer() {
                     href={`/temples/${t.slug}`}
                     className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
                   >
-                     <span className="text-[#ff7f0a] text-xs">🛕</span> {t.name}
+                    <span className="text-[#ff7f0a] text-xs">🛕</span> {t.name}
                   </Link>
                 </li>
               ))
             ) : (
-              <p className="text-xs text-[#b89b7a]/50">{t("common.loadingTemples")}</p>
+              <p className="text-xs text-[#b89b7a]/50">Loading temples...</p>
             )}
           </ul>
         </div>
@@ -102,7 +100,7 @@ export default function Footer() {
         {/* Popular Poojas */}
         <div>
           <h4 className="text-white font-display font-semibold mb-4 text-sm tracking-wide uppercase">
-            {t("footer.popularPoojas")}
+            Popular Poojas
           </h4>
           <ul className="space-y-2.5">
             {poojas.length > 0 ? (
@@ -112,12 +110,12 @@ export default function Footer() {
                     href={`/poojas/${p.slug}`}
                     className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
                   >
-                     <span className="text-[#f0bc00] text-xs">🌸</span> {p.name}
+                    <span className="text-[#f0bc00] text-xs">🌸</span> {p.name}
                   </Link>
                 </li>
               ))
             ) : (
-              <p className="text-xs text-[#b89b7a]/50">{t("common.loadingPoojas")}</p>
+              <p className="text-xs text-[#b89b7a]/50">Loading poojas...</p>
             )}
           </ul>
         </div>
@@ -125,10 +123,10 @@ export default function Footer() {
         {/* Company */}
         <div>
           <h4 className="text-white font-display font-semibold mb-4 text-sm tracking-wide uppercase">
-            {t("footer.company")}
+            Company
           </h4>
           <ul className="space-y-2.5">
-            {getLinks(t).map((l) => (
+            {getLinks().map((l) => (
               <li key={l.label}>
                 <Link
                   href={l.href}
@@ -146,12 +144,12 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="container-app py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#7a6050]">
           <p>
-             © {new Date().getFullYear()} Mandirlok. {t("footer.rights")}
+            © {new Date().getFullYear()} Mandirlok. Made in India
           </p>
           <div className="flex items-center gap-4">
-            <span>🔒 {t("footer.secured")}</span>
-            <span>💬 {t("footer.updates")}</span>
-            <span>✅ {t("footer.verified")}</span>
+            <span>🔒 Razorpay Secured</span>
+            <span>💬 WhatsApp Updates</span>
+            <span>✅ Verified Pandits</span>
           </div>
         </div>
       </div>

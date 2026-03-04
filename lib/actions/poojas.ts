@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/db";
 import Pooja from "@/models/Pooja";
 import Temple from "@/models/Temple"; // Required for population
 
+import { getLocalizedValue } from "@/lib/utils/localization";
+
 export async function getFeaturedPoojas(lang: string = "en") {
   try {
     await connectDB();
@@ -15,15 +17,13 @@ export async function getFeaturedPoojas(lang: string = "en") {
 
     const poojas = poojasRaw.map((p: any) => {
       const puja = { ...p };
-      ["name", "description", "tag"].forEach(field => {
-        if (puja[field] && typeof puja[field] === "object") {
-          puja[field] = puja[field][lang] || puja[field].en || "";
+      ["name", "description", "tag", "duration", "about"].forEach(field => {
+        if (puja[field]) {
+          puja[field] = getLocalizedValue(puja[field], lang);
         }
       });
       if (puja.templeId) {
-        if (puja.templeId.name && typeof puja.templeId.name === "object") {
-          puja.templeId.name = puja.templeId.name[lang] || puja.templeId.name.en || "";
-        }
+        puja.templeId.name = getLocalizedValue(puja.templeId.name, lang);
       }
       return puja;
     });

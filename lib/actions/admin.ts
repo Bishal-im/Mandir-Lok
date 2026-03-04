@@ -100,10 +100,32 @@ export async function getTempleById(id: string) {
 // =======================
 // POOJA CRUD
 // =======================
+import { getLocalizedValue } from "../utils/localization";
+
 export async function getPoojasAdmin() {
     await connectDB();
-    const poojas = await Pooja.find().populate("templeIds", "name").sort({ createdAt: -1 }).lean();
-    return JSON.parse(JSON.stringify(poojas));
+    const poojas = await Pooja.find()
+        .populate("templeId", "name")
+        .populate("templeIds", "name")
+        .sort({ createdAt: -1 })
+        .lean();
+
+    // Localize pooja names for admin display
+    const localizedPoojas = poojas.map((p: any) => ({
+        ...p,
+        name: getLocalizedValue(p.name, 'en'),
+        tag: getLocalizedValue(p.tag, 'en'),
+        templeId: p.templeId ? {
+            ...p.templeId,
+            name: getLocalizedValue(p.templeId.name, 'en')
+        } : null,
+        templeIds: (p.templeIds || []).map((t: any) => ({
+            ...t,
+            name: getLocalizedValue(t.name, 'en')
+        }))
+    }));
+
+    return JSON.parse(JSON.stringify(localizedPoojas));
 }
 
 export async function createPooja(data: any) {

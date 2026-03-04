@@ -17,6 +17,7 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
+import { getLocalizedValue } from "@/lib/utils/localization";
 
 const dates = Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
@@ -143,7 +144,7 @@ export default function PoojaDetailPage() {
               Poojas
             </Link>
             <ChevronRight size={12} />
-            <span className="text-[#1a1209] font-medium">{pooja.name}</span>
+            <span className="text-[#1a1209] font-medium">{getLocalizedValue(pooja.name)}</span>
           </div>
         </div>
 
@@ -156,7 +157,7 @@ export default function PoojaDetailPage() {
                 <div className="flex items-start gap-5">
                   <div className="w-20 h-20 rounded-2xl bg-[#fff8f0] flex items-center justify-center text-4xl flex-shrink-0 shadow-sm overflow-hidden">
                     {pooja.images && pooja.images.length > 0 ? (
-                      <img src={pooja.images[0]} alt={pooja.name} className="w-full h-full object-cover" />
+                      <img src={pooja.images[0]} alt={getLocalizedValue(pooja.name)} className="w-full h-full object-cover" />
                     ) : (
                       <div className="flex flex-col items-center text-amber-200 gap-1">
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,14 +170,14 @@ export default function PoojaDetailPage() {
                     <div className="mb-2">
                       {pooja.tag && (
                         <span className={`badge-saffron text-xs mb-2 inline-block ${pooja.tagColor}`}>
-                          {pooja.tag}
+                          {getLocalizedValue(pooja.tag)}
                         </span>
                       )}
                       <h1 className="heading-md text-[#1a1209]">
-                        {pooja.name}
+                        {getLocalizedValue(pooja.name)}
                       </h1>
                       <p className="text-sm text-[#ff7f0a] mt-0.5">
-                        {pooja.templeIds?.[0]?.name} {pooja.templeIds?.length > 1 && `+ ${pooja.templeIds.length - 1} more temples`}
+                        {getLocalizedValue(pooja.templeIds?.[0]?.name)} {pooja.templeIds?.length > 1 && `+ ${pooja.templeIds.length - 1} more temples`}
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-[#6b5b45]">
@@ -192,7 +193,7 @@ export default function PoojaDetailPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock size={12} className="text-[#ff7f0a]" />{" "}
-                        {pooja.duration}
+                        {getLocalizedValue(pooja.duration)}
                       </span>
                       <span>Experienced Pandit</span>
                     </div>
@@ -200,7 +201,7 @@ export default function PoojaDetailPage() {
                 </div>
                 <div className="mt-4 pt-4 border-t border-[#f0dcc8]">
                   <p className="text-sm text-[#6b5b45] leading-relaxed">
-                    {pooja.description}
+                    {getLocalizedValue(pooja.description)}
                   </p>
                 </div>
               </div>
@@ -217,7 +218,7 @@ export default function PoojaDetailPage() {
                         key={b}
                         className="flex items-center gap-2 text-sm text-[#6b5b45]"
                       >
-                        <span className="text-[#ff7f0a]">✦</span> {b}
+                        <span className="text-[#ff7f0a]">✦</span> {getLocalizedValue(b)}
                       </div>
                     ))}
                   </div>
@@ -241,7 +242,7 @@ export default function PoojaDetailPage() {
                           : "border-[#f0dcc8] text-[#6b5b45] hover:border-[#ffbd6e]"
                           }`}
                       >
-                        <span className="font-bold text-sm">{t.name}</span>
+                        <span className="font-bold text-sm">{getLocalizedValue(t.name)}</span>
                         <span className="text-[10px] opacity-70">{t.city}, {t.state}</span>
                       </button>
                     ))}
@@ -301,7 +302,7 @@ export default function PoojaDetailPage() {
                         <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-3 w-fit ${selectedPackageIndex === i ? "bg-[#ff7f0a] text-white" : "bg-[#fff8f0] text-[#ff7f0a]"}`}>
                           {pkg.members} {pkg.members === 1 ? 'Person' : 'Persons'}
                         </span>
-                        <h4 className="font-bold text-[#1a1209] mb-4 h-10 overflow-hidden text-sm line-clamp-2">{pkg.name}</h4>
+                        <h4 className="font-bold text-[#1a1209] mb-4 h-10 overflow-hidden text-sm line-clamp-2">{getLocalizedValue(pkg.name)}</h4>
                         <div className="mt-auto pt-2 border-t border-dashed border-[#f0dcc8]">
                           <p className="text-xl font-bold text-[#ff7f0a]">₹{pkg.price}</p>
                         </div>
@@ -333,7 +334,7 @@ export default function PoojaDetailPage() {
                         >
                           <div className="w-12 h-12 rounded-lg bg-gray-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
                             {item.image ? (
-                              <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                              <img src={item.image} alt={getLocalizedValue(item.name)} className="w-full h-full object-cover" />
                             ) : (
                               <div className="flex flex-col items-center text-amber-100">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,7 +345,7 @@ export default function PoojaDetailPage() {
                           </div>
                           <div className="flex-1">
                             <p className="text-sm font-medium text-[#1a1209]">
-                              {item.name}
+                              {getLocalizedValue(item.name)}
                             </p>
                             <p className="text-xs text-[#6b5b45]">
                               Sacred offering at the temple
@@ -380,7 +381,7 @@ export default function PoojaDetailPage() {
                       key={item}
                       className="flex items-center gap-2 text-sm text-[#6b5b45] py-1.5 border-b border-[#f0dcc8] last:border-0"
                     >
-                      <span className="text-[#ff7f0a]"></span> {item}
+                      <span className="text-[#ff7f0a]"></span> {getLocalizedValue(item)}
                     </div>
                   ))}
                 </div>
@@ -412,13 +413,13 @@ export default function PoojaDetailPage() {
                           <span>
                             <div className="inline-flex items-center gap-2">
                               {o.image ? (
-                                <img src={o.image} alt={o.name} className="w-4 h-4 rounded-sm object-cover" />
+                                <img src={o.image} alt={getLocalizedValue(o.name)} className="w-4 h-4 rounded-sm object-cover" />
                               ) : (
                                 <svg className="w-3 h-3 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                               )}
-                              {o.name}
+                              {getLocalizedValue(o.name)}
                             </div>
                           </span>
                           <span className="font-semibold">₹{o.price}</span>
@@ -432,7 +433,7 @@ export default function PoojaDetailPage() {
                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-3 mb-4">
                   {selectedPackageIndex !== null && (
                     <div className="flex justify-between items-center text-sm font-semibold text-[#1a1209] mb-2">
-                      <span>Package: {pooja.packages[selectedPackageIndex].name}</span>
+                      <span>Package: {getLocalizedValue(pooja.packages[selectedPackageIndex].name)}</span>
                       <span>₹{pooja.packages[selectedPackageIndex].price.toLocaleString()}</span>
                     </div>
                   )}

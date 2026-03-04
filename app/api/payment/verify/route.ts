@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       } else {
         poojaAmount = pooja.price * qty;
       }
-      poojaName = pooja.name;
+      poojaName = typeof pooja.name === "object" ? (pooja.name.en || pooja.name.hi || "") : pooja.name;
     }
 
     // Build chadhava items array for DB

@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [pandit, setPandit] = useState<any>(null)
-  
+
   const languages = [
     { code: "en", name: "English" },
     { code: "hi", name: "Hindi" },
@@ -35,7 +35,7 @@ export default function ProfilePage() {
 
   const ensureLocalized = (val: any) => {
     if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-        return { en: "", hi: "", ne: "", mr: "", ta: "", ...val };
+      return { en: "", hi: "", ne: "", mr: "", ta: "", ...val };
     }
     return { en: typeof val === "string" ? val : "", hi: "", ne: "", mr: "", ta: "" };
   };
@@ -61,8 +61,8 @@ export default function ProfilePage() {
 
   const handleLocalizedBioChange = (val: string, lang: string) => {
     setFormData(prev => ({
-        ...prev,
-        bio: { ...prev.bio, [lang]: val }
+      ...prev,
+      bio: { ...prev.bio, [lang]: val }
     }));
   };
 
@@ -200,7 +200,7 @@ export default function ProfilePage() {
                           className="flex-1 input-divine"
                           placeholder="https://..."
                         />
-                        <CloudinaryUploader 
+                        <CloudinaryUploader
                           onUploadSuccess={(url) => setFormData({ ...formData, photo: url })}
                           folder="pandits"
                           resourceType="image"
@@ -280,7 +280,7 @@ export default function ProfilePage() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Aadhaar Card Section - Read Only */}
               <div className="bg-white border border-[#f0dcc8] rounded-3xl shadow-card p-8 space-y-4">
                 <div className="flex items-center gap-2 border-b border-[#fdf6ee] pb-4">
@@ -288,8 +288,8 @@ export default function ProfilePage() {
                   <p className="text-sm font-bold text-gray-900">Aadhaar Card Verification</p>
                   {pandit?.aadhaarStatus && pandit.aadhaarStatus !== 'none' && (
                     <span className={`ml-auto px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${pandit.aadhaarStatus === 'verified' ? 'bg-green-100 text-green-700 border border-green-200' :
-                        pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600 border border-red-200' :
-                          'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                      pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600 border border-red-200' :
+                        'bg-yellow-100 text-yellow-700 border border-yellow-200'
                       }`}>
                       {pandit.aadhaarStatus}
                     </span>

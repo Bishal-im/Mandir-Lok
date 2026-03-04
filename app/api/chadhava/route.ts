@@ -50,6 +50,9 @@ export async function GET(req: Request) {
           typeof b === "object" ? b[lang] || b.en || "" : b
         );
       }
+      if (localized.templeId && localized.templeId.name && typeof localized.templeId.name === "object") {
+        localized.templeId.name = localized.templeId.name[lang] || localized.templeId.name.en || "";
+      }
       return localized;
     });
 

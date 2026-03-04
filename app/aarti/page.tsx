@@ -6,7 +6,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
 import MusicPlayer from "@/components/MusicPlayer";
-import { useLanguage } from "@/lib/context/LanguageContext";
 
 const DEFAULT_DEITIES = [
     { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png", color: "from-blue-500 to-indigo-800" },
@@ -26,7 +25,6 @@ export default function AartiPage() {
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
     const [isMusicPlayerOpen, setIsMusicPlayerOpen] = useState(false);
     const [playbackProgress, setPlaybackProgress] = useState<{ currentTime: number; duration: number; isPlaying: boolean } | null>(null);
-    const { t } = useLanguage();
 
     useEffect(() => {
         async function fetchSettings() {
@@ -140,7 +138,7 @@ export default function AartiPage() {
                                     }`}
                             >
                                 <span className="text-xl">🕉️</span>
-                                <span className="font-bold">{t(`aarti.deities.${deity.id}`)}</span>
+                                <span className="font-bold">{deity.name}</span>
                             </button>
                         ))
                     )}
@@ -265,7 +263,7 @@ export default function AartiPage() {
                                 <span className="text-[10px] font-bold mt-1 text-white">
                                     {playbackProgress && playbackProgress.currentTime > 0
                                         ? formatTime(playbackProgress.currentTime)
-                                        : t('aarti.music')}
+                                        : "Music"}
                                 </span>
                             </div>
                         </div>
@@ -285,9 +283,9 @@ export default function AartiPage() {
 
                 {/* Informational Text */}
                 <div className="mt-12 text-center px-6 max-w-2xl">
-                    <h2 className="text-2xl font-bold mb-4 text-orange-400">{t('aarti.title')}</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-orange-400">Perform Virtual Aarti</h2>
                     <p className="text-gray-400 leading-relaxed">
-                        {t('aarti.desc')}
+                        Experience the divine presence from your home. Perform virtual aarti, offer flowers, and listen to sacred bhajans with full devotion.
                     </p>
                 </div>
             </main>

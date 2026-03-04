@@ -154,6 +154,16 @@ export async function GET(req: NextRequest) {
         "templeId.website": 0,
         "templeId.mapUrl": 0
       }
+    }, {
+      $addFields: {
+        "templeId.name": {
+          $cond: {
+            if: { $eq: [{ $type: "$templeId.name" }, "string"] },
+            then: "$templeId.name",
+            else: { $ifNull: [`$templeId.name.${lang}`, "$templeId.name.en"] }
+          }
+        }
+      }
     });
 
     const [poojas, total] = await Promise.all([

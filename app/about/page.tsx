@@ -5,7 +5,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useEffect, useState } from "react";
 import { getSettings } from "@/lib/actions/admin";
-import { useLanguage } from "@/lib/context/LanguageContext";
 // ── Data ──────────────────────────────────────────────────────────────────────
 const DEFAULT_STATS = [
   {
@@ -115,19 +114,55 @@ function ImagePlaceholder({
 
 // ── Main Export ────────────────────────────────────────────────────────────────
 export default function AboutPage() {
-  const { t } = useLanguage();
-  const TEAM = Object.keys(TEAM_CONFIG).map(key => ({
-    ...TEAM_CONFIG[key],
-    name: t(`about.team.items.${key}.name`),
-    role: t(`about.team.items.${key}.role`),
-    desc: t(`about.team.items.${key}.desc`),
-  }));
+  const TEAM = [
+    {
+      ...TEAM_CONFIG.arjun,
+      name: "Arjun Mehta",
+      role: "Founder & CEO",
+      desc: "Passionate about preserving Vedic traditions through modern technology.",
+    },
+    {
+      ...TEAM_CONFIG.priya,
+      name: "Priya Sharma",
+      role: "Head of Operations",
+      desc: "Ensuring every puja is performed with absolute devotion and accuracy.",
+    },
+    {
+      ...TEAM_CONFIG.ramesh,
+      name: "Pandit Ramesh Shastri",
+      role: "Religious Advisor",
+      desc: "Vedic scholar guiding our rituals and temple partnerships.",
+    },
+    {
+      ...TEAM_CONFIG.kavya,
+      name: "Kavya Iyer",
+      role: "Community Manager",
+      desc: "Connecting with millions of devotees to build a sacred community.",
+    },
+  ];
 
-  const VALUES = Object.keys(VALUES_CONFIG).map(key => ({
-    ...VALUES_CONFIG[key],
-    title: t(`about.values.items.${key}.title`),
-    desc: t(`about.values.items.${key}.desc`),
-  }));
+  const VALUES = [
+    {
+      ...VALUES_CONFIG.rituals,
+      title: "Authentic Rituals",
+      desc: "We ensure every puja is performed exactly as per Vedic scriptures.",
+    },
+    {
+      ...VALUES_CONFIG.trust,
+      title: "Full Transparency",
+      desc: "Receive clear video proof of your personalized rituals at holy shrines.",
+    },
+    {
+      ...VALUES_CONFIG.accessibility,
+      title: "Spiritual Access",
+      desc: "Breaking distance barriers to connect you with India's most sacred sites.",
+    },
+    {
+      ...VALUES_CONFIG.devotee,
+      title: "Devotee First",
+      desc: "Every service is designed to enhance your spiritual experience and peace.",
+    },
+  ];
 
   const [settings, setSettings] = useState<any>(null);
   const [stats, setStats] = useState(DEFAULT_STATS);
@@ -180,9 +215,9 @@ export default function AboutPage() {
         {/* Hero Banner */}
         <section className="relative h-72 md:h-96 overflow-hidden">
           {settings?.bannerUrl ? (
-            <img 
-              src={settings.bannerUrl} 
-              alt="Hero Banner" 
+            <img
+              src={settings.bannerUrl}
+              alt="Hero Banner"
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
@@ -195,7 +230,7 @@ export default function AboutPage() {
           <div className="relative z-10 h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
               <p className="text-orange-300 text-xs font-semibold tracking-widest uppercase mb-3">
-                {t('about.ourStory')}
+                Our Story
               </p>
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
                 {settings?.heroTitle || "About Mandirlok"}
@@ -227,7 +262,7 @@ export default function AboutPage() {
               {/* Content */}
               <div>
                 <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                  {t('about.ourMission')}
+                  Our Mission
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   {settings?.missionTitle || "Committed to Building the Most Trusted Devotional Platform"}
@@ -259,7 +294,7 @@ export default function AboutPage() {
                   href="/poojas"
                   className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-orange-200 text-sm"
                 >
-                  {t('about.bookPuja')}
+                  Book a Puja
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -284,10 +319,10 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-[#1a0500] mb-2">
-                {t('home.statsTitle')}
+                Impact & Reach
               </h2>
               <p className="text-[#1a0500]/70 text-sm font-medium">
-                {t('common.countries')}
+                across all countries
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -313,10 +348,10 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                {t('about.ourValues')}
+                Our Values
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                {t('about.whatWeStandFor')}
+                What We Stand For
               </h2>
               <p className="text-gray-500 text-sm max-w-xl mx-auto">
                 Our core values guide every decision, every partnership and
@@ -351,10 +386,10 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                {t('about.team.title')}
+                Our Team
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                {t('about.team.subtitle')}
+                The Minds Behind Mandirlok
               </h2>
             </div>
 
@@ -362,8 +397,8 @@ export default function AboutPage() {
               {TEAM.map((member) => (
                 <div key={member.name} className="flex flex-col items-center text-center group">
                   <div className={`w-28 h-28 md:w-32 md:h-32 rounded-full ${member.color} flex items-center justify-center text-white text-3xl font-bold mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 relative overflow-hidden`}>
-                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                     {member.initials}
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {member.initials}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
                   <p className="text-orange-600 text-xs font-bold uppercase tracking-wider mb-3">{member.role}</p>
@@ -386,17 +421,17 @@ export default function AboutPage() {
           />
           <div className="relative z-10 text-center max-w-2xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              {t('about.beginJourney')}
+              Begin Your Spiritual Journey
             </h2>
             <p className="text-white/70 text-sm mb-8 leading-relaxed">
-              {t('about.journeyDesc')}
+              Join millions of devotees and start your journey towards spiritual peace and divine blessings today.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link
                 href="/poojas"
                 className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-full transition-all duration-200 shadow-lg hover:shadow-orange-500/30 hover:scale-105"
               >
-                {t('about.bookPuja')}
+                Book a Puja
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -415,7 +450,7 @@ export default function AboutPage() {
                 href="/chadhava"
                 className="inline-flex items-center gap-2 border border-white/50 text-white font-bold px-8 py-3.5 rounded-full hover:bg-white/10 transition-all duration-200 backdrop-blur-sm"
               >
-                {t('about.exploreChadhava')}
+                Explore Chadhava
               </Link>
             </div>
           </div>
@@ -427,9 +462,9 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-3 gap-12">
               <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><circle cx="12" cy="10" r="3" /></svg>
                 </div>
-                <h4 className="font-bold text-gray-900 mb-3 text-lg">{t('contact.office')}</h4>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Corporate Office</h4>
                 <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-line">
                   {contactSettings?.address || "Mandirlok Technologies Pvt. Ltd.\nNoida, Uttar Pradesh - 201301"}
                 </p>
@@ -437,9 +472,9 @@ export default function AboutPage() {
 
               <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
-                <h4 className="font-bold text-gray-900 mb-3 text-lg">{t('nav.contact')}</h4>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Contact Us</h4>
                 <div className="space-y-1">
                   <p className="text-gray-500 text-sm font-medium">Phone: {contactSettings?.phone || "+91 98765 43210"}</p>
                   <p className="text-orange-600 text-sm font-bold break-all">
@@ -450,9 +485,9 @@ export default function AboutPage() {
 
               <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
-                <h4 className="font-bold text-gray-900 mb-3 text-lg">{t('contact.workingHours')}</h4>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Working Hours</h4>
                 <p className="text-gray-500 text-sm whitespace-pre-line leading-relaxed">
                   {contactSettings?.workingHours || "Mon – Sat: 9 AM – 9 PM\nSun: 10 AM – 6 PM"}
                 </p>
@@ -474,11 +509,11 @@ export default function AboutPage() {
               <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 px-5 py-2 rounded-full mb-8">
                 <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
                 <p className="text-[10px] font-bold text-orange-200/80 uppercase tracking-[0.3em]">
-                  {t('about.designedBy')}
+                  Designed & Developed by
                 </p>
                 <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
               </div>
-              
+
               <div className="flex flex-wrap justify-center gap-8 md:gap-20">
                 <div className="flex flex-col items-center gap-2 group">
                   <span className="text-base font-bold text-white group-hover:text-orange-400 transition-colors tracking-wide">Bishal Pandey</span>
