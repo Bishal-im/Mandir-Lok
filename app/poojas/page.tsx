@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
+import { useLanguage } from "@/lib/context/LanguageContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -52,6 +53,7 @@ const SORT_OPTIONS = [
 
 // ── Pooja Card ────────────────────────────────────────────────────────────────
 function PujaCard({ puja }: { puja: Pooja }) {
+  const { t } = useLanguage();
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col">
       {/* Image Area */}
@@ -85,7 +87,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
         )}
         <div className="absolute bottom-3 right-3">
           <span className="bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
-            {puja.deity}
+            {t(`pujas.filters.${puja.deity}`) || puja.deity}
           </span>
         </div>
       </div>
@@ -132,7 +134,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
             />
           </svg>
           <p className="text-xs text-gray-500 font-medium">
-            {puja.availableDays}
+            {t(`pujas.availableDays.${puja.availableDays}`) || puja.availableDays}
           </p>
         </div>
 
@@ -161,7 +163,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
             href={`/poojas/${puja.slug || puja._id}`}
             className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
           >
-            Participate Puja
+            {t('common.participatePuja')}
             <svg
               className="w-3.5 h-3.5"
               fill="none"
@@ -199,6 +201,7 @@ function SkeletonCard() {
 
 // ── Page Banner ───────────────────────────────────────────────────────────────
 function PageBanner({ bannerBg }: { bannerBg?: string }) {
+  const { t } = useLanguage();
   return (
     <section className="relative h-64 md:h-80 overflow-hidden">
       {bannerBg ? (
@@ -215,21 +218,20 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-wrap gap-3 mb-4">
             <span className="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">
-              Divine Blessings through Puja
+              {t('home.heroTag')}
             </span>
             <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              Vedic Rituals by Expert Pandits
+              {t('common.authentic')}
             </span>
             <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              Video in 24–48 Hours
+              {t('common.videoProof')}
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Mandirlok Special Pujas
+            {t('pujas.title')}
           </h1>
           <p className="text-white/80 text-base max-w-xl leading-relaxed">
-            Get authentic Vedic pujas performed at India's most powerful temples
-            on your behalf.
+            {t('pujas.subtitle')}
           </p>
         </div>
       </div>
@@ -239,22 +241,23 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
 
 // ── How It Works Banner ───────────────────────────────────────────────────────
 function HowItWorksBanner() {
+  const { t } = useLanguage();
   const steps = [
     {
-      title: "Choose Puja",
-      desc: "Select from 200+ authentic pujas across India's sacred temples",
+      title: t('pujas.step1Title'),
+      desc: t('pujas.step1Desc'),
     },
     {
-      title: "Enter Your Name",
-      desc: "Panditji will chant your name in the Sankalp during the puja",
+      title: t('pujas.step2Title'),
+      desc: t('pujas.step2Desc'),
     },
     {
-      title: "Secure Payment",
-      desc: "Pay securely via UPI, card or net banking through Razorpay",
+      title: t('pujas.step3Title'),
+      desc: t('pujas.step3Desc'),
     },
     {
-      title: "Get Puja Video",
-      desc: "Receive the video proof of your completed puja within 24–48 hrs",
+      title: t('pujas.step4Title'),
+      desc: t('pujas.step4Desc'),
     },
   ];
   return (
@@ -281,6 +284,7 @@ function HowItWorksBanner() {
 
 // ── Main Export ───────────────────────────────────────────────────────────────
 export default function PoojasPage() {
+  const { t, language } = useLanguage();
   const [poojas, setPoojas] = useState<Pooja[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -288,6 +292,23 @@ export default function PoojasPage() {
   const [sortBy, setSortBy] = useState("Most Popular");
   const [search, setSearch] = useState("");
   const [bannerBg, setBannerBg] = useState("");
+
+  const filters = [
+    { id: "All Pujas", label: t('pujas.filters.all') },
+    { id: "Shiva", label: t('pujas.filters.shiva') },
+    { id: "Vishnu", label: t('pujas.filters.vishnu') },
+    { id: "Devi", label: t('pujas.filters.devi') },
+    { id: "Ganesha", label: t('pujas.filters.ganesha') },
+    { id: "Surya", label: t('pujas.filters.surya') },
+    { id: "Navgraha", label: t('pujas.filters.navgraha') },
+  ];
+
+  const sortOptions = [
+    { id: "Most Popular", label: t('pujas.sort.popular') },
+    { id: "Price: Low to High", label: t('pujas.sort.priceLow') },
+    { id: "Price: High to Low", label: t('pujas.sort.priceHigh') },
+    { id: "A-Z", label: t('pujas.sort.az') },
+  ];
 
   // Fetch poojas from API
   useEffect(() => {
@@ -310,6 +331,7 @@ export default function PoojasPage() {
         const params = new URLSearchParams();
         if (activeFilter !== "All Pujas") params.set("deity", activeFilter);
         if (search) params.set("search", search);
+        params.set("lang", language);
 
         const res = await fetch(`/api/poojas?${params.toString()}`);
         const data = await res.json();
@@ -338,7 +360,7 @@ export default function PoojasPage() {
 
     const timer = setTimeout(fetchPoojas, search ? 400 : 0);
     return () => clearTimeout(timer);
-  }, [activeFilter, sortBy, search]);
+  }, [activeFilter, sortBy, search, language]);
 
   return (
     <>
@@ -351,16 +373,16 @@ export default function PoojasPage() {
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-2 overflow-x-auto py-3 no-scrollbar">
-              {FILTERS.map((f) => (
+              {filters.map((f) => (
                 <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
-                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeFilter === f
+                  key={f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeFilter === f.id
                     ? "bg-orange-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
-                  {f}
+                  {f.label}
                 </button>
               ))}
             </div>
@@ -386,7 +408,7 @@ export default function PoojasPage() {
               </svg>
               <input
                 type="text"
-                placeholder="Search pujas, temples, deities..."
+                placeholder={t('common.searchPlaceholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
@@ -397,12 +419,12 @@ export default function PoojasPage() {
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white text-gray-700"
             >
-              {SORT_OPTIONS.map((s) => (
-                <option key={s}>{s}</option>
+              {sortOptions.map((s) => (
+                <option key={s.id} value={s.id}>{s.label}</option>
               ))}
             </select>
             <span className="text-sm text-gray-400 ml-auto">
-              {loading ? "Loading..." : `${poojas.length} pujas found`}
+              {loading ? t('common.loading') : `${poojas.length} ${t('common.pujasFound')}`}
             </span>
           </div>
 
@@ -417,7 +439,7 @@ export default function PoojasPage() {
                 }}
                 className="bg-orange-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold"
               >
-                Try Again
+                {t('common.tryAgain')}
               </button>
             </div>
           )}
@@ -445,10 +467,10 @@ export default function PoojasPage() {
             <div className="text-center py-20">
             <div className="text-6xl mb-4"></div>
               <h3 className="text-xl font-bold text-gray-700 mb-2">
-                No pujas found
+                {t('common.noResults')}
               </h3>
               <p className="text-gray-500 mb-6">
-                Try a different filter or search keyword
+                {t('common.adjustFilters')}
               </p>
               <button
                 onClick={() => {
@@ -457,7 +479,7 @@ export default function PoojasPage() {
                 }}
                 className="bg-orange-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-orange-600 transition-colors"
               >
-                Clear Filters
+                {t('common.clearFilters')}
               </button>
             </div>
           )}

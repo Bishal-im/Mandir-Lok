@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
 import MusicPlayer from "@/components/MusicPlayer";
+import { useLanguage } from "@/lib/context/LanguageContext";
 
 const DEFAULT_DEITIES = [
     { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png", color: "from-blue-500 to-indigo-800" },
@@ -23,6 +24,7 @@ export default function AartiPage() {
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
     const [isMusicPlayerOpen, setIsMusicPlayerOpen] = useState(false);
+    const { t } = useLanguage();
 
     useEffect(() => {
         async function fetchSettings() {
@@ -111,7 +113,7 @@ export default function AartiPage() {
                                 }`}
                         >
                             <span className="text-xl">🕉️</span>
-                            <span className="font-bold">{deity.name}</span>
+                            <span className="font-bold">{t(`aarti.deities.${deity.id}`)}</span>
                         </button>
                     ))}
                 </div>
@@ -230,7 +232,7 @@ export default function AartiPage() {
                                 >
                                     🎵
                                 </button>
-                                <span className="text-[10px] font-bold mt-1 text-white">Music</span>
+                                <span className="text-[10px] font-bold mt-1 text-white">{t('aarti.music')}</span>
                             </div>
                         </div>
                     </div>
@@ -245,10 +247,9 @@ export default function AartiPage() {
 
                 {/* Informational Text */}
                 <div className="mt-12 text-center px-6 max-w-2xl">
-                    <h2 className="text-2xl font-bold mb-4 text-orange-400">Digital Aarti Seva</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-orange-400">{t('aarti.title')}</h2>
                     <p className="text-gray-400 leading-relaxed">
-                        Experience the divine connection through our virtual Aarti. Select your deity, offer flowers,
-                        and light the sacred lamp from anywhere in the world. May the divine blessings be with you always.
+                        {t('aarti.desc')}
                     </p>
                 </div>
             </main>

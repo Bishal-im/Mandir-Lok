@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   },
 }
 
+import { LanguageProvider } from '@/lib/context/LanguageContext'
+
 export default function RootLayout({
   children,
 }: {
@@ -32,7 +34,9 @@ export default function RootLayout({
         <script src="https://checkout.razorpay.com/v1/checkout.js" async />
       </head>
       <body className="bg-[#fdf6ee] text-[#1a1209] antialiased">
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   )

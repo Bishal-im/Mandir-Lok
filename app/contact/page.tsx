@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getSettings } from "@/lib/actions/admin";
+import { useLanguage } from "@/lib/context/LanguageContext";
 import {
   MapPin,
   Phone,
@@ -25,6 +26,7 @@ const SUBJECTS = [
 ];
 
 export default function ContactPage() {
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -110,7 +112,7 @@ export default function ContactPage() {
         <div className="section-container text-center relative z-10">
           <span className="bg-orange-500/20 text-orange-200 border border-orange-500/30 px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-widest uppercase mb-6 inline-flex items-center gap-2 backdrop-blur-sm">
             <MessageSquare size={12} />
-            GET IN TOUCH
+            {t('contact.getInTouch')}
           </span>
           <h1 className="text-4xl md:text-6xl font-black text-white mt-2 leading-tight">
             {settings.heroTitle}
@@ -127,35 +129,35 @@ export default function ContactPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">
-                Contact Info
+                {t('contact.contactInfo')}
               </h2>
               <p className="text-gray-500 text-sm">
-                We usually reply within 24 hours
+                {t('contact.replyTime')}
               </p>
             </div>
 
             {[
               {
                 icon: <Phone size={18} className="text-orange-500" />,
-                label: "Phone / WhatsApp",
+                label: t('contact.phone'),
                 value: settings.phone,
                 sub: settings.workingHours,
               },
               {
                 icon: <Mail size={18} className="text-orange-500" />,
-                label: "Email",
+                label: t('contact.email'),
                 value: settings.supportEmail,
-                sub: "We reply within 24 hours",
+                sub: t('contact.replyTime'),
               },
               {
                 icon: <MapPin size={18} className="text-orange-500" />,
-                label: "Office",
+                label: t('contact.office'),
                 value: settings.address,
                 sub: "India",
               },
               {
                 icon: <Clock size={18} className="text-orange-500" />,
-                label: "Working Hours",
+                label: t('contact.workingHours'),
                 value: settings.workingHours,
                 sub: "Standard IST Time",
               },
@@ -182,11 +184,10 @@ export default function ContactPage() {
             {/* Social / trust */}
             <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
               <p className="text-sm font-semibold text-orange-700 mb-1">
-                We're here for you
+                {t('contact.hereForYou')}
               </p>
               <p className="text-xs text-orange-600 leading-relaxed">
-                Whether it's a booking question, a payment concern, or just a
-                prayer request — we're always happy to help.
+                {t('contact.supportDesc')}
               </p>
             </div>
           </div>
@@ -200,28 +201,26 @@ export default function ContactPage() {
                     <CheckCircle2 size={40} className="text-green-500" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Message Sent!
+                    {t('contact.successTitle')}
                   </h3>
                   <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">
-                    Thank you for reaching out. We've received your message and
-                    will reply within 24 hours. Check your email for
-                    confirmation.
+                    {t('contact.successDesc')}
                   </p>
                   <button
                     onClick={() => setSuccess(false)}
                     className="btn-outline text-sm px-6 py-2.5"
                   >
-                    Send Another Message
+                    {t('contact.sendAnother')}
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">
-                      Send us a message
+                      {t('contact.sendMessage')}
                     </h2>
                     <p className="text-gray-400 text-sm mt-0.5">
-                      Fill the form below and we'll get back to you
+                      {t('contact.fillForm')}
                     </p>
                   </div>
 
@@ -229,7 +228,7 @@ export default function ContactPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Full Name <span className="text-red-500">*</span>
+                        {t('contact.fullName')} <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -243,7 +242,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Email Address <span className="text-red-500">*</span>
+                        {t('contact.emailAddress')} <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="email"
@@ -274,7 +273,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Subject
+                        {t('contact.subject')}
                       </label>
                       <select
                         name="subject"
@@ -283,7 +282,7 @@ export default function ContactPage() {
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition bg-white"
                       >
                         <option value="">Select a subject</option>
-                        {SUBJECTS.map((s) => (
+                        {Object.values(t('contact.subjects') as any).map((s: any) => (
                           <option key={s} value={s}>
                             {s}
                           </option>
@@ -295,7 +294,7 @@ export default function ContactPage() {
                   {/* Message */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Message <span className="text-red-500">*</span>
+                      {t('contact.message')} <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       name="message"
@@ -307,7 +306,7 @@ export default function ContactPage() {
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition resize-none"
                     />
                     <p className="text-xs text-gray-400 mt-1 text-right">
-                      {form.message.length}/500 characters
+                      {form.message.length}/500 {t('contact.charLimit')}
                     </p>
                   </div>
 
@@ -345,12 +344,12 @@ export default function ContactPage() {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                           />
                         </svg>
-                        Sending...
+                        {t('contact.sending')}
                       </>
                     ) : (
                       <>
                         <Send size={16} />
-                        Send Message
+                        {t('contact.sendButton')}
                       </>
                     )}
                   </button>

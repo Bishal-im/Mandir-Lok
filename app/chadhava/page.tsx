@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import { Search, MapPin, ChevronRight, Filter, Sparkles, Heart } from "lucide-react";
 import { getUserFavorites, toggleChadhavaFavorite } from "@/lib/actions/user";
 import { getSettings } from "@/lib/actions/admin";
+import { useLanguage } from "@/lib/context/LanguageContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -50,6 +51,7 @@ function ChadhavaCard({
   isFavorite: boolean;
   onToggle: (id: string) => void;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col h-full">
       {/* Image Area */}
@@ -114,14 +116,14 @@ function ChadhavaCard({
         {/* Price + CTA */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
           <div>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Contribution</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">{t('chadhava.contribution')}</p>
             <p className="text-lg font-black text-orange-600">₹{item.price}</p>
           </div>
           <Link
             href={`/chadhava/${item._id}`}
             className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
           >
-            Offer Seva
+            {t('chadhava.offerSeva')}
           </Link>
         </div>
       </div>
@@ -149,6 +151,7 @@ function DonationCard({ temples }: { temples: Temple[] }) {
   const [selectedTemple, setSelectedTemple] = useState("");
   const [amount, setAmount] = useState("");
   const router = useRouter();
+  const { t } = useLanguage();
 
   const handleDonate = () => {
     if (!selectedTemple) return alert("Please select a temple");
@@ -165,14 +168,14 @@ function DonationCard({ temples }: { temples: Temple[] }) {
         <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6">
           <Heart size={24} className="text-white fill-white" />
         </div>
-        <h3 className="text-2xl font-black mb-2">Direct Temple Donation</h3>
+        <h3 className="text-2xl font-black mb-2">{t('chadhava.donationTitle')}</h3>
         <p className="text-white/80 text-[11px] leading-relaxed mb-6">
-          Your contribution goes directly to the temple's maintenance and sacred services. Receive a divine certificate of devotion.
+          {t('chadhava.donationDesc')}
         </p>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">Select Temple</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">{t('chadhava.selectTemple')}</label>
             <select
               value={selectedTemple}
               onChange={(e) => setSelectedTemple(e.target.value)}
@@ -186,7 +189,7 @@ function DonationCard({ temples }: { temples: Temple[] }) {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">Donation Amount (₹)</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">{t('chadhava.donationAmount')}</label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 font-bold text-xs">₹</span>
               <input
@@ -205,7 +208,7 @@ function DonationCard({ temples }: { temples: Temple[] }) {
         onClick={handleDonate}
         className="w-full bg-white text-orange-700 font-bold py-3.5 rounded-2xl shadow-xl hover:bg-amber-50 active:scale-[0.98] transition-all mt-8 text-sm"
       >
-        Proceed to Donate
+        {t('chadhava.proceedDonate')}
       </button>
     </div>
   );
@@ -213,6 +216,7 @@ function DonationCard({ temples }: { temples: Temple[] }) {
 
 // ── Page Banner ───────────────────────────────────────────────────────────────
 function PageBanner({ bannerBg }: { bannerBg?: string }) {
+  const { t } = useLanguage();
   return (
     <section className="relative h-64 md:h-80 overflow-hidden">
       {bannerBg ? (
@@ -229,21 +233,14 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-wrap gap-3 mb-4">
             <span className="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">
-              Divine Offerings Seva
-            </span>
-            <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              Authentic Prasad & Bhog
-            </span>
-            <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              Sankalp Video Included
+              {t('home.heroTag')}
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Sacred Chadhava & Offerings
+            {t('chadhava.title')}
           </h1>
           <p className="text-white/80 text-base max-w-xl leading-relaxed">
-            Express your devotion through traditional offerings at 500+ sacred temples.
-            Receive divine blessings and proof of your seva.
+            {t('chadhava.subtitle')}
           </p>
         </div>
       </div>
@@ -252,6 +249,7 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
 }
 
 export default function ChadhavaPage() {
+  const { t, language } = useLanguage();
   const [items, setItems] = useState<Chadhava[]>([]);
   const [temples, setTemples] = useState<Temple[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -260,6 +258,15 @@ export default function ChadhavaPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [bannerBg, setBannerBg] = useState("");
+
+  const categories = [
+    { id: "all", name: t('common.filterAll'), icon: "" },
+    { id: "Bhog", name: t('chadhava.offerSeva'), icon: "" }, // Simplified for matching
+    { id: "Vastra", name: "Vastra", icon: "" },
+    { id: "Deep Daan", name: "Deep Daan", icon: "" },
+    { id: "Flowers", name: "Flowers", icon: "" },
+    { id: "Seva", name: "Seva", icon: "" },
+  ];
 
   useEffect(() => {
     async function fetchBanner() {
@@ -282,7 +289,7 @@ export default function ChadhavaPage() {
     }
     async function fetchTemples() {
       try {
-        const res = await fetch("/api/temples");
+        const res = await fetch(`/api/temples?lang=${language}`);
         const data = await res.json();
         if (data.success) setTemples(data.data);
       } catch (e) {
@@ -301,6 +308,7 @@ export default function ChadhavaPage() {
         const params = new URLSearchParams();
         if (search) params.set("search", search);
         if (activeCategory !== "all") params.set("category", activeCategory);
+        params.set("lang", language);
 
         const res = await fetch(`/api/chadhava?${params.toString()}`);
         const data = await res.json();
@@ -319,7 +327,7 @@ export default function ChadhavaPage() {
 
     const timer = setTimeout(fetchItems, search ? 400 : 0);
     return () => clearTimeout(timer);
-  }, [activeCategory, search]);
+  }, [activeCategory, search, language]);
 
   const handleToggleFavorite = async (id: string) => {
     const res = await toggleChadhavaFavorite(id);
@@ -353,7 +361,7 @@ export default function ChadhavaPage() {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               {/* Categories */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
@@ -373,7 +381,7 @@ export default function ChadhavaPage() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-amber-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search offerings or temples..."
+                  placeholder={t('common.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 bg-white border border-amber-100 rounded-[1.25rem] text-xs focus:outline-none focus:ring-4 focus:ring-amber-500/5 focus:border-amber-500 transition-all shadow-sm"
@@ -426,9 +434,9 @@ export default function ChadhavaPage() {
               <div className="w-24 h-24 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="w-10 h-10 text-amber-200" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No offerings found</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('common.noResults')}</h3>
               <p className="text-gray-500 text-xs mb-8">Try adjusting your filters or search terms.</p>
-              <button onClick={() => { setSearch(""); setActiveCategory("all"); }} className="btn-primary">Clear all filters</button>
+              <button onClick={() => { setSearch(""); setActiveCategory("all"); }} className="btn-primary">{t('common.clearFilters')}</button>
             </div>
           )}
         </div>
@@ -438,13 +446,13 @@ export default function ChadhavaPage() {
           <div className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-[3rem] p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
             <div className="relative z-10 space-y-6">
-              <h2 className="text-3xl md:text-4xl font-black">Need a Special Seva?</h2>
+              <h2 className="text-3xl md:text-4xl font-black">{t('chadhava.specialSevaTitle')}</h2>
               <p className="max-w-lg mx-auto text-white/80 text-sm leading-relaxed">
-                If you wish to perform a specific ritual or offering not listed here, our team can arrange it personally for you.
+                {t('chadhava.specialSevaDesc')}
               </p>
               <div className="flex flex-wrap justify-center gap-4 pt-4">
-                <a href="https://wa.me/yournumber" className="bg-white text-amber-700 font-bold px-8 py-3 rounded-2xl hover:bg-amber-50 transition-colors shadow-lg">WhatsApp Us</a>
-                <Link href="/contact" className="bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-3 rounded-2xl hover:bg-white/20 transition-colors">Contact Support</Link>
+                <a href="https://wa.me/yournumber" className="bg-white text-amber-700 font-bold px-8 py-3 rounded-2xl hover:bg-amber-50 transition-colors shadow-lg">{t('chadhava.whatsappUs')}</a>
+                <Link href="/contact" className="bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-3 rounded-2xl hover:bg-white/20 transition-colors">{t('chadhava.contactSupport')}</Link>
               </div>
             </div>
           </div>

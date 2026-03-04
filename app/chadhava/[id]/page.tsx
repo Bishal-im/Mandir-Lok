@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, MapPin, CheckCircle2, Info, Share2, Heart, ShieldCheck, Clock } from "lucide-react";
 import { getUserFavorites, toggleChadhavaFavorite } from "@/lib/actions/user";
+import { useLanguage } from "@/lib/context/LanguageContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -34,6 +35,7 @@ export default function ChadhavaDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
+  const { t, language } = useLanguage();
 
   const [item, setItem] = useState<Chadhava | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ export default function ChadhavaDetailPage() {
       try {
         setLoading(true);
         // Fetch item
-        const res = await fetch(`/api/chadhava/${id}`);
+        const res = await fetch(`/api/chadhava/${id}?lang=${language}`);
         const data = await res.json();
 
         if (data.success) {
@@ -72,7 +74,7 @@ export default function ChadhavaDetailPage() {
     }
 
     fetchItemAndFavorite();
-  }, [id]);
+  }, [id, language]);
 
   const handleToggleFavorite = async () => {
     if (!id) return;

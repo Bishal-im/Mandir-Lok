@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
       ];
     }
 
+    const lang = searchParams.get("lang") || "en";
     const skip = (page - 1) * limit;
 
     // Use aggregation to calculate dynamic fields
@@ -59,6 +60,68 @@ export async function GET(req: NextRequest) {
               if: { $gt: [{ $size: "$approvedReviews" }, 0] },
               then: { $avg: "$approvedReviews.rating" },
               else: "$rating" // Keep existing rating as default if no reviews
+            }
+          },
+          // Localize fields
+          name: {
+            $cond: {
+              if: { $eq: [{ $type: "$name" }, "string"] },
+              then: "$name",
+              else: { $ifNull: [`$name.${lang}`, "$name.en"] }
+            }
+          },
+          description: {
+            $cond: {
+              if: { $eq: [{ $type: "$description" }, "string"] },
+              then: "$description",
+              else: { $ifNull: [`$description.${lang}`, "$description.en"] }
+            }
+          },
+          about: {
+            $cond: {
+              if: { $eq: [{ $type: "$about" }, "string"] },
+              then: "$about",
+              else: { $ifNull: [`$about.${lang}`, "$about.en"] }
+            }
+          },
+          duration: {
+            $cond: {
+              if: { $eq: [{ $type: "$duration" }, "string"] },
+              then: "$duration",
+              else: { $ifNull: [`$duration.${lang}`, "$duration.en"] }
+            }
+          },
+          tag: {
+            $cond: {
+              if: { $eq: [{ $type: "$tag" }, "string"] },
+              then: "$tag",
+              else: { $ifNull: [`$tag.${lang}`, "$tag.en"] }
+            }
+          },
+          benefits: {
+            $map: {
+              input: "$benefits",
+              as: "b",
+              in: {
+                $cond: {
+                  if: { $eq: [{ $type: "$$b" }, "string"] },
+                  then: "$$b",
+                  else: { $ifNull: [`$$b.${lang}`, "$$b.en"] }
+                }
+              }
+            }
+          },
+          includes: {
+            $map: {
+              input: "$includes",
+              as: "i",
+              in: {
+                $cond: {
+                  if: { $eq: [{ $type: "$$i" }, "string"] },
+                  then: "$$i",
+                  else: { $ifNull: [`$$i.${lang}`, "$$i.en"] }
+                }
+              }
             }
           }
         }
@@ -105,6 +168,7 @@ export async function GET(req: NextRequest) {
       total,
       page,
       totalPages: Math.ceil(total / limit),
+      lang,
     });
   } catch (error) {
     console.error("GET /api/poojas error:", error);

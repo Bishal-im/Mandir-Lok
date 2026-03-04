@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import StarRating from "@/components/ui/StarRating";
 import Badge from "@/components/ui/Badge";
+import { useLanguage } from "@/lib/context/LanguageContext";
 import { MapPin, Clock, Globe, Phone, ChevronRight, Heart } from "lucide-react";
 import { getUserTempleFavorites, toggleTempleFavorite } from "@/lib/actions/user";
 
@@ -219,6 +220,7 @@ function PageSkeleton() {
 export default function TempleDetailPage() {
   const params = useParams();
   const id = params?.id as string;
+  const { language, t } = useLanguage();
 
   const [temple, setTemple] = useState<Temple | null>(null);
   const [poojas, setPoojas] = useState<Pooja[]>([]);
@@ -234,7 +236,7 @@ export default function TempleDetailPage() {
     async function fetchTempleAndStatus() {
       try {
         setLoading(true);
-        const res = await fetch(`/api/temples/${id}`);
+        const res = await fetch(`/api/temples/${id}?lang=${language}`);
         const data = await res.json();
 
         if (!data.success) {
@@ -261,7 +263,7 @@ export default function TempleDetailPage() {
     }
 
     fetchTempleAndStatus();
-  }, [id]);
+  }, [id, language]);
 
   const handleToggleWishlist = async () => {
     if (!temple?._id) return;

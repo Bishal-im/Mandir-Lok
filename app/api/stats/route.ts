@@ -21,21 +21,25 @@ export async function GET(req: NextRequest) {
             success: true,
             stats: [
                 {
+                    key: "devotees",
                     value: totalUsers > 1000 ? `${(totalUsers / 1000).toFixed(1)}K+` : `${totalUsers}+`,
                     label: "Devotees Served",
                     raw: totalUsers
                 },
                 {
+                    key: "temples",
                     value: `${totalTemples}+`,
                     label: "Sacred Temples",
                     raw: totalTemples
                 },
                 {
+                    key: "pujas",
                     value: completedPujas > 1000 ? `${(completedPujas / 1000).toFixed(1)}K+` : `${completedPujas}+`,
                     label: "Pujas Completed",
                     raw: completedPujas
                 },
                 {
+                    key: "states",
                     value: `${uniqueStates.length}+`,
                     label: "States Covered",
                     raw: uniqueStates.length

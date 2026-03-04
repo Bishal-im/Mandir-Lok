@@ -2,15 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/context/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 import { getSettings } from "@/lib/actions/admin";
 
-const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Pujas", href: "/poojas" },
-  { label: "Chadhava", href: "/chadhava" },
-  { label: "Temples", href: "/temples" },
-  { label: "Aarti", href: "/aarti" },
+const getNavLinks = (t: (path: string) => string) => [
+  { label: t("nav.home"), href: "/" },
+  { label: t("nav.pujas"), href: "/poojas" },
+  { label: t("nav.chadhava"), href: "/chadhava" },
+  { label: t("nav.temples"), href: "/temples" },
+  { label: t("nav.aarti"), href: "/aarti" },
 ];
 
 const SPIRITUAL_WORDS = [
@@ -29,6 +31,7 @@ interface UserInfo {
 }
 
 export default function Navbar() {
+  const { t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
@@ -164,14 +167,14 @@ export default function Navbar() {
           >
             {SPIRITUAL_WORDS[wordIndex]}
           </span>
-          <span className="text-[#1a0500]/70 font-medium hidden md:inline text-[10px] sm:text-xs">Services</span>
+          <span className="text-[#1a0500]/70 font-medium hidden md:inline text-[10px] sm:text-xs">{t("common.services")}</span>
         </div>
         <div className="flex whitespace-nowrap ml-48">
           <div className="top-marquee flex items-center gap-0">
             {[
-              "Trusted by 1 Million+ Devotees", "100% Secure Payments", "500+ Sacred Temples",
-              "Video Proof Delivered", "Participate in 2 Minutes", "Devotees in 30+ Countries",
-              "Prasad Home Delivery", "100% Authentic Rituals"
+              t("common.trusted"), t("common.secure"), t("common.sacredTemples"),
+              t("common.videoProof"), t("common.participateEasy"), t("common.countries"),
+              t("common.prasad"), t("common.authentic")
             ].map((item, i) => (
               <span key={i} className="flex items-center gap-5 px-6 text-[#1a0500]/90 font-medium text-[10px] sm:text-[11px]">
                 {item}<span className="text-orange-900/30">·</span>
@@ -179,9 +182,9 @@ export default function Navbar() {
             ))}
             {/* Duplicate for seamless loop */}
             {[
-              "Trusted by 1 Million+ Devotees", "100% Secure Payments", "500+ Sacred Temples",
-              "Video Proof Delivered", "Participate in 2 Minutes", "Devotees in 30+ Countries",
-              "Prasad Home Delivery", "100% Authentic Rituals"
+              t("common.trusted"), t("common.secure"), t("common.sacredTemples"),
+              t("common.videoProof"), t("common.participateEasy"), t("common.countries"),
+              t("common.prasad"), t("common.authentic")
             ].map((item, i) => (
               <span key={i + 'dup'} className="flex items-center gap-5 px-6 text-white/90 font-medium text-[10px] sm:text-[11px]">
                 {item}<span className="text-orange-300/50">·</span>
@@ -217,13 +220,13 @@ export default function Navbar() {
               )}
               <div className="flex flex-col leading-none">
                 <span className="text-[15px] font-extrabold text-[#1a0500] tracking-tight">Mandirlok</span>
-                <span className="text-[10px] text-orange-500 font-semibold tracking-widest uppercase">Sacred Services</span>
+                <span className="text-[10px] text-orange-500 font-semibold tracking-widest uppercase">{t("common.services")}</span>
               </div>
             </Link>
 
             {/* DESKTOP NAV */}
             <div className="hidden md:flex items-center gap-1">
-              {NAV_LINKS.map((link) => (
+              {getNavLinks(t).map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -236,6 +239,7 @@ export default function Navbar() {
 
             {/* DESKTOP CTA */}
             <div className="hidden md:flex items-center gap-3">
+              <LanguageSwitcher />
               {authLoading ? (
                 // Loading skeleton
                 <div className="w-24 h-9 bg-gray-100 rounded-xl animate-pulse" />
@@ -255,7 +259,7 @@ export default function Navbar() {
                     )}
                     <div className="text-left hidden sm:block">
                       <p className="text-xs font-bold text-[#1a0500] leading-none">{user!.name.split(" ")[0]}</p>
-                      <p className="text-[10px] text-gray-400 leading-none mt-0.5">My Account</p>
+                      <p className="text-[10px] text-gray-400 leading-none mt-0.5">{t("nav.myAccount")}</p>
                     </div>
                     <svg className={`w-3.5 h-3.5 text-gray-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -285,12 +289,12 @@ export default function Navbar() {
                       <div className="max-h-[70vh] overflow-y-auto">
                         {/* Account section */}
                         <div className="px-4 py-3">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 px-1">Account</p>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 px-1">{t("nav.myAccount")}</p>
                           {[
-                            { icon: "", label: "My Profile", href: "/dashboard/profile" },
-                            { icon: "", label: "My Bookings", href: "/dashboard" },
-                            { icon: "", label: "Book a Puja", href: "/poojas", badge: "New" },
-                            { icon: "", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
+                            { icon: "", label: t("nav.profile"), href: "/dashboard/profile" },
+                            { icon: "", label: t("nav.bookings"), href: "/dashboard" },
+                            { icon: "", label: t("nav.pujas"), href: "/poojas", badge: t("common.new") },
+                            { icon: "", label: t("nav.chadhava"), href: "/chadhava", badge: t("common.new") },
                           ].map((item) => (
                             <Link
                               key={item.label}
@@ -319,7 +323,7 @@ export default function Navbar() {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>
-                            Logout
+                            {t("nav.logout")}
                           </button>
                         </div>
                       </div>
@@ -336,7 +340,7 @@ export default function Navbar() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    Login
+                    {t("nav.login")}
                   </Link>
                   <Link
                     href="/poojas"
@@ -346,7 +350,7 @@ export default function Navbar() {
                       <span className="ping absolute inline-flex h-full w-full rounded-full bg-yellow-200 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-100"></span>
                     </span>
-                    Participate in Puja
+                    {t("nav.participate")}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -372,14 +376,14 @@ export default function Navbar() {
                               onClick={() => setProfileOpen(false)}
                               className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 rounded-xl transition-colors"
                             >
-                              Login / Create an account
+                              {t("nav.login")} / {t("nav.createAccount")}
                             </Link>
                           </div>
                           <div className="px-4 py-3">
                             {[
-                              { icon: "", label: "My Bookings", href: "/login" },
-                              { icon: "", label: "Book a Puja", href: "/poojas", badge: "New" },
-                              { icon: "", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
+                              { icon: "", label: t("nav.bookings"), href: "/login" },
+                              { icon: "", label: t("nav.pujas"), href: "/poojas", badge: t("common.new") },
+                              { icon: "", label: t("nav.chadhava"), href: "/chadhava", badge: t("common.new") },
                             ].map((item) => (
                               <Link
                                 key={item.label}
@@ -420,7 +424,11 @@ export default function Navbar() {
         {menuOpen && (
           <div className="mobile-menu md:hidden bg-white border-t border-orange-100 shadow-xl">
             <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
-              {NAV_LINKS.map((link) => (
+              <div className="flex justify-between items-center px-4 py-2 border-b border-orange-50 mb-2">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t("common.selectLanguage")}</span>
+                <LanguageSwitcher />
+              </div>
+              {getNavLinks(t).map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -439,13 +447,13 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-xl transition-colors"
                   >
-                    My Bookings
+                    {t("nav.bookings")}
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                   >
-                    Logout
+                    {t("nav.logout")}
                   </button>
                 </>
               ) : (
@@ -462,7 +470,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="flex-1 btn-book flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-bold shadow-md"
                   >
-                    Book Puja
+                    {t("nav.pujas")}
                   </Link>
                 </div>
               )}
