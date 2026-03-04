@@ -8,6 +8,7 @@ import { useLanguage } from "@/lib/context/LanguageContext";
 import { getSettings } from "@/lib/actions/admin";
 import { getHomepageReviews } from "@/lib/actions/reviews";
 import { getFeaturedPoojas } from "@/lib/actions/poojas";
+import * as LucideIcons from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Pooja {
@@ -62,12 +63,7 @@ const getHeroSlides = (t: any) => [
   },
 ];
 
-const getTrustBadges = (t: any) => [
-  { icon: "🙏", label: t('common.trusted') },
-  { icon: "🛡️", label: t('common.secure') },
-  { icon: "🛕", label: t('common.sacredTemples') },
-  { icon: "📹", label: t('common.videoProof') },
-];
+
 
 
 
@@ -555,24 +551,43 @@ function HeroSection() {
 
 // ── Trust Bar — infinite scrolling marquee ──────────────────────────────────
 const getMarqueeItems = (t: any) => [
-  { icon: "🙏", label: t('common.trusted') },
-  { icon: "🛡️", label: t('common.secure') },
-  { icon: "🛕", label: t('common.sacredTemples') },
-  { icon: "📹", label: t('common.videoProof') },
-  { icon: "🚀", label: t('common.participateEasy') },
-  { icon: "🕉️", label: t('common.authentic') },
-  { icon: "🌍", label: t('common.countries') },
-  { icon: "💬", label: t('home.feature5Title') },
-  { icon: "🚚", label: t('common.prasad') },
-  { icon: "✅", label: t('common.authentic') },
+  { icon: "Users", label: t('common.trusted') },
+  { icon: "ShieldCheck", label: t('common.secure') },
+  { icon: "Building2", label: t('common.sacredTemples') },
+  { icon: "Video", label: t('common.videoProof') },
+  { icon: "Zap", label: t('common.participateEasy') },
+  { icon: "CheckCircle2", label: t('common.authentic') },
+  { icon: "Globe", label: t('common.countries') },
+  { icon: "MessageSquare", label: t('home.feature5Title') },
+  { icon: "Truck", label: t('common.prasad') },
 ];
+
+function MarqueeIcon({ name, className }: { name: string; className?: string }) {
+  const Icon = (LucideIcons as any)[name];
+  if (!Icon) return null;
+  return <Icon className={className} />;
+}
 
 function TrustBar() {
   const { t } = useLanguage();
-  const trustBadges = getTrustBadges(t);
-  const marqueeItems = getMarqueeItems(t);
+  const [items, setItems] = useState(getMarqueeItems(t));
+
+  useEffect(() => {
+    setItems(getMarqueeItems(t));
+  }, [t]);
+
+  useEffect(() => {
+    async function fetchMarquee() {
+      const res = await getSettings("marquee_items");
+      if (res && res.value && res.value.length > 0) {
+        setItems(res.value);
+      }
+    }
+    fetchMarquee();
+  }, []);
+
   return (
-    <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-b border-orange-200/30 shadow-sm overflow-hidden py-3 relative">
+    <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-b border-orange-200/30 shadow-sm overflow-hidden py-4 relative">
       <div
         className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
         style={{
@@ -598,16 +613,20 @@ function TrustBar() {
         .marquee-track:hover { animation-play-state: paused; }
       `}</style>
       <div className="marquee-track">
-        {[...marqueeItems, ...marqueeItems].map((item, i) => (
+        {[...items, ...items].map((item, i) => (
           <div
             key={i}
-            className="flex items-center gap-2.5 px-7 whitespace-nowrap"
+            className="flex items-center gap-3 px-8 whitespace-nowrap"
           >
-            <span className="text-xl leading-none">{item.icon}</span>
-            <span className="text-sm font-bold text-[#1a0500]">
+            {item.icon.length > 2 ? (
+              <MarqueeIcon name={item.icon} className="w-5 h-5 text-orange-950" />
+            ) : (
+              <span className="text-xl leading-none">{item.icon}</span>
+            )}
+            <span className="text-sm font-bold text-[#1a0500] uppercase tracking-tight">
               {item.label}
             </span>
-            <span className="text-orange-950 text-lg ml-4">✦</span>
+            <span className="text-orange-950/20 text-xs ml-6 font-black tracking-widest hidden sm:inline">●</span>
           </div>
         ))}
       </div>

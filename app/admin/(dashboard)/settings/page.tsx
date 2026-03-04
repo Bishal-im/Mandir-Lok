@@ -21,6 +21,7 @@ export default function SettingsPage() {
     const [saving, setSaving] = useState(false);
 
     const [slides, setSlides] = useState<any[]>([]);
+    const [marqueeItems, setMarqueeItems] = useState<any[]>([]);
     const [dashboardSettings, setDashboardSettings] = useState({
         bannerUrl: "",
         welcomeMessage: "Welcome to your Divine Journey"
@@ -60,6 +61,7 @@ export default function SettingsPage() {
     const tabs = [
         { id: "general", label: "General", icon: <Globe size={18} /> },
         { id: "landing", label: "Landing Page", icon: <Layout size={18} /> },
+        { id: "marquee", label: "Marquee", icon: <Layout size={18} /> },
         { id: "page_banners", label: "Page Banners", icon: <ImageIcon size={18} /> },
         { id: "user_dashboard", label: "User Dashboard", icon: <Layout size={18} /> },
         { id: "aarti", label: "Aarti Settings", icon: <Layout size={18} /> },
@@ -71,8 +73,9 @@ export default function SettingsPage() {
     useEffect(() => {
         async function fetchSettings() {
             setLoading(true);
-            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes] = await Promise.all([
+            const [slideRes, marqueeRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes] = await Promise.all([
                 getSettings("landing_page_slides"),
+                getSettings("marquee_items"),
                 getSettings("dashboard_settings"),
                 getSettings("page_banners"),
                 getSettings("website_logo"),
@@ -82,6 +85,7 @@ export default function SettingsPage() {
             ]);
 
             if (slideRes && slideRes.value) setSlides(slideRes.value);
+            if (marqueeRes && marqueeRes.value) setMarqueeItems(marqueeRes.value);
             if (dashRes && dashRes.value) setDashboardSettings(dashRes.value);
             if (bannerRes && bannerRes.value) setPageBanners(bannerRes.value);
             if (logoRes && logoRes.value) setLogoUrl(logoRes.value);
@@ -146,6 +150,8 @@ export default function SettingsPage() {
         try {
             if (activeTab === "landing") {
                 await updateSettings("landing_page_slides", slides, "Banner slides for the landing page");
+            } else if (activeTab === "marquee") {
+                await updateSettings("marquee_items", marqueeItems, "Scrolling marquee items for home page");
             } else if (activeTab === "user_dashboard") {
                 await updateSettings("dashboard_settings", dashboardSettings, "Banner and welcome info for user dashboard");
             } else if (activeTab === "page_banners") {
@@ -344,6 +350,79 @@ export default function SettingsPage() {
                                                 <button onClick={handleAddSlide} className="text-[#ff7f0a] font-bold text-xs hover:underline">Add First Slide</button>
                                             </div>
                                         )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "marquee" && (
+                                <div className="space-y-8">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-bold text-gray-900">Home Page Marquee Items</h3>
+                                            <p className="text-xs text-gray-500">Manage the scrolling text and icons in the Trust Bar.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setMarqueeItems([...marqueeItems, { icon: "CheckCircle2", label: "New Item" }])}
+                                            className="p-2 bg-orange-50 text-[#ff7f0a] rounded-lg hover:bg-orange-100 transition-colors"
+                                        >
+                                            <Plus size={20} />
+                                        </button>
+                                    </div>
+
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        {marqueeItems.map((item, index) => (
+                                            <div key={index} className="p-4 rounded-2xl border border-gray-100 bg-gray-50/50 space-y-4 relative group">
+                                                <button
+                                                    onClick={() => setMarqueeItems(marqueeItems.filter((_, i) => i !== index))}
+                                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+
+                                                <div className="space-y-3">
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Lucide Icon Name</label>
+                                                        <input
+                                                            value={item.icon}
+                                                            onChange={(e) => {
+                                                                const newItems = [...marqueeItems];
+                                                                newItems[index].icon = e.target.value;
+                                                                setMarqueeItems(newItems);
+                                                            }}
+                                                            placeholder="Users, ShieldCheck, etc."
+                                                            className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Label Text</label>
+                                                        <input
+                                                            value={item.label}
+                                                            onChange={(e) => {
+                                                                const newItems = [...marqueeItems];
+                                                                newItems[index].label = e.target.value;
+                                                                setMarqueeItems(newItems);
+                                                            }}
+                                                            className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {marqueeItems.length === 0 && (
+                                            <div className="col-span-full py-10 text-center border-2 border-dashed border-gray-100 rounded-3xl text-gray-400 flex flex-col items-center gap-2">
+                                                <Layout size={32} />
+                                                <p className="text-sm">No marquee items added. Home page will use default content.</p>
+                                                <button onClick={() => setMarqueeItems([{ icon: "CheckCircle2", label: "Authentic Rituals" }])} className="text-[#ff7f0a] font-bold text-xs hover:underline">Add First Item</button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                        <p className="text-xs text-blue-600 leading-relaxed font-medium">
+                                            💡 <strong>Tip:</strong> Use Lucide icon names (PascalCase) for premium icons. Common ones: 
+                                            Users, ShieldCheck, Building2, Video, Zap, CheckCircle2, Globe, MessageSquare, Truck, Heart, Star, Award.
+                                        </p>
                                     </div>
                                 </div>
                             )}
