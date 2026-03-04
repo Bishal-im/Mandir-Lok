@@ -30,7 +30,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const t = (path: string): string => {
     const keys = path.split('.');
     let result: any = translations[language];
-    
+
     for (const key of keys) {
       if (result && result[key]) {
         result = result[key];
@@ -38,16 +38,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         // Fallback to English if translation is missing
         let fallback: any = translations['en'];
         for (const fKey of keys) {
-            if (fallback && fallback[fKey]) {
-                fallback = fallback[fKey];
-            } else {
-                return path;
-            }
+          if (fallback && fallback[fKey]) {
+            fallback = fallback[fKey];
+          } else {
+            return path;
+          }
         }
         return fallback;
       }
     }
-    
+
     return typeof result === 'string' ? result : path;
   };
 

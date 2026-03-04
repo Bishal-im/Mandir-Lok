@@ -172,7 +172,7 @@ function CartContent() {
 
   let totalObj = { base: 0, offerings: 0, sum: 0 };
   const selectedPackage = (pooja && packageIndex !== null) ? pooja.packages[parseInt(packageIndex)] : null;
-  
+
   if (pooja) {
     totalObj.base = selectedPackage ? selectedPackage.price : (pooja.price * qty);
     totalObj.offerings = selectedOfferings.reduce((sum, o) => sum + (o.price * (o.quantity || 1)), 0);

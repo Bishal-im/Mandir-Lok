@@ -216,7 +216,7 @@ export default function SettingsPage() {
                                                 placeholder="https://cloudinary.com/..."
                                                 className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
                                             />
-                                            <CloudinaryImageUploader 
+                                            <CloudinaryImageUploader
                                                 onUploadSuccess={(url) => setLogoUrl(url)}
                                                 folder="branding"
                                                 label="Upload Logo"
@@ -273,7 +273,7 @@ export default function SettingsPage() {
                                                                     className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-200"
                                                                 />
                                                             </div>
-                                                            <CloudinaryImageUploader 
+                                                            <CloudinaryImageUploader
                                                                 onUploadSuccess={(url) => handleUpdateSlide(index, "src", url)}
                                                                 folder="landing_banners"
                                                                 label="Upload"
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader 
+                                                <CloudinaryImageUploader
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, poojas: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -385,7 +385,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader 
+                                                <CloudinaryImageUploader
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, chadhava: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -407,7 +407,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader 
+                                                <CloudinaryImageUploader
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, temples: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader 
+                                                <CloudinaryImageUploader
                                                     onUploadSuccess={(url) => setDashboardSettings({ ...dashboardSettings, bannerUrl: url })}
                                                     folder="dashboard"
                                                     label="Upload"
@@ -547,7 +547,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader 
+                                                <CloudinaryImageUploader
                                                     onUploadSuccess={(url) => setContactSettings({ ...contactSettings, bannerUrl: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -563,19 +563,19 @@ export default function SettingsPage() {
                                         <div className="space-y-6 flex flex-col justify-center">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Title</label>
-                                                <input 
+                                                <input
                                                     value={contactSettings.heroTitle}
                                                     onChange={e => setContactSettings({ ...contactSettings, heroTitle: e.target.value })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200"
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Subtitle</label>
-                                                <textarea 
+                                                <textarea
                                                     value={contactSettings.heroSubtitle}
                                                     onChange={e => setContactSettings({ ...contactSettings, heroSubtitle: e.target.value })}
                                                     rows={2}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none" 
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none"
                                                 />
                                             </div>
                                         </div>
@@ -584,35 +584,35 @@ export default function SettingsPage() {
                                     <div className="grid md:grid-cols-2 gap-6 pt-4">
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Support Email (Recipient)</label>
-                                            <input 
+                                            <input
                                                 value={contactSettings.supportEmail}
                                                 onChange={e => setContactSettings({ ...contactSettings, supportEmail: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 font-mono" 
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 font-mono"
                                             />
                                             <p className="text-[10px] text-gray-400 italic">User submissions will be sent to this email.</p>
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Phone / WhatsApp</label>
-                                            <input 
+                                            <input
                                                 value={contactSettings.phone}
                                                 onChange={e => setContactSettings({ ...contactSettings, phone: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Office Address</label>
-                                            <input 
+                                            <input
                                                 value={contactSettings.address}
                                                 onChange={e => setContactSettings({ ...contactSettings, address: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Working Hours</label>
-                                            <input 
+                                            <input
                                                 value={contactSettings.workingHours}
                                                 onChange={e => setContactSettings({ ...contactSettings, workingHours: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
                                             />
                                         </div>
                                     </div>
@@ -642,7 +642,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm"
                                                     placeholder="Banner URL"
                                                 />
-                                                <CloudinaryImageUploader 
+                                                <CloudinaryImageUploader
                                                     onUploadSuccess={(url) => setAboutSettings({ ...aboutSettings, bannerUrl: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -657,19 +657,19 @@ export default function SettingsPage() {
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Title</label>
-                                                <input 
+                                                <input
                                                     value={aboutSettings.heroTitle}
                                                     onChange={e => setAboutSettings({ ...aboutSettings, heroTitle: e.target.value })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200"
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Subtitle</label>
-                                                <textarea 
+                                                <textarea
                                                     value={aboutSettings.heroSubtitle}
                                                     onChange={e => setAboutSettings({ ...aboutSettings, heroSubtitle: e.target.value })}
                                                     rows={2}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -682,10 +682,10 @@ export default function SettingsPage() {
                                             <div className="space-y-4">
                                                 <div className="space-y-1.5">
                                                     <label className="text-xs font-bold text-gray-400">Mission Title</label>
-                                                    <input 
+                                                    <input
                                                         value={aboutSettings.missionTitle}
                                                         onChange={e => setAboutSettings({ ...aboutSettings, missionTitle: e.target.value })}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200" 
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200"
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
@@ -697,7 +697,7 @@ export default function SettingsPage() {
                                                             className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm"
                                                             placeholder="Image URL"
                                                         />
-                                                        <CloudinaryImageUploader 
+                                                        <CloudinaryImageUploader
                                                             onUploadSuccess={(url) => setAboutSettings({ ...aboutSettings, missionImage: url })}
                                                             folder="about"
                                                             label="Upload"
@@ -708,20 +708,20 @@ export default function SettingsPage() {
                                             <div className="space-y-4">
                                                 <div className="space-y-1.5">
                                                     <label className="text-xs font-bold text-gray-400">Story Paragraph 1</label>
-                                                    <textarea 
+                                                    <textarea
                                                         value={aboutSettings.missionDescription1}
                                                         onChange={e => setAboutSettings({ ...aboutSettings, missionDescription1: e.target.value })}
                                                         rows={3}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm"
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <label className="text-xs font-bold text-gray-400">Story Paragraph 2</label>
-                                                    <textarea 
+                                                    <textarea
                                                         value={aboutSettings.missionDescription2}
                                                         onChange={e => setAboutSettings({ ...aboutSettings, missionDescription2: e.target.value })}
                                                         rows={3}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm"
                                                     />
                                                 </div>
                                             </div>

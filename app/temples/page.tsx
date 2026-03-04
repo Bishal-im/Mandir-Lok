@@ -109,8 +109,8 @@ function TempleCard({
             onToggle(temple._id);
           }}
           className={`absolute top-3 right-3 w-9 h-9 backdrop-blur-md rounded-xl flex items-center justify-center transition-all shadow-sm z-20 ${isFavorite
-              ? "bg-rose-500 text-white"
-              : "bg-white/80 text-gray-400 hover:text-rose-500 hover:bg-white"
+            ? "bg-rose-500 text-white"
+            : "bg-white/80 text-gray-400 hover:text-rose-500 hover:bg-white"
             }`}
         >
           <Heart size={16} fill={isFavorite ? "currentColor" : "none"} />
@@ -120,9 +120,9 @@ function TempleCard({
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
           {temple.isFeatured && (
             <span className="bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-lg">
-            <span className="bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-lg">
-              {t('common.new')}
-            </span>
+              <span className="bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-lg">
+                {t('common.new')}
+              </span>
             </span>
           )}
           {temple.isPopular && (
@@ -340,8 +340,8 @@ export default function TemplesPage() {
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeCategory === cat.id
-                      ? "bg-orange-500 text-white shadow-md"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-orange-500 text-white shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
                   {cat.label}
