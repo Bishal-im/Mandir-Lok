@@ -15,35 +15,21 @@ const DEFAULT_DEITIES = [
 ];
 
 export default function AartiPage() {
-    const [deities, setDeities] = useState<any[]>([]);
-    const [selectedDeity, setSelectedDeity] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [deities, setDeities] = useState(DEFAULT_DEITIES);
+    const [selectedDeity, setSelectedDeity] = useState(DEFAULT_DEITIES[0]);
     const [counts, setCounts] = useState({ deep: 0, pushpa: 0, shankh: 0 });
     const [flowers, setFlowers] = useState<any[]>([]);
     const [isLampGlowing, setIsLampGlowing] = useState(false);
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
     const [isMusicPlayerOpen, setIsMusicPlayerOpen] = useState(false);
-    const [playbackProgress, setPlaybackProgress] = useState<{ currentTime: number; duration: number; isPlaying: boolean } | null>(null);
 
     useEffect(() => {
         async function fetchSettings() {
-            try {
-                const res = await getSettings("aarti_settings");
-                if (res && res.value && res.value.deities && res.value.deities.length > 0) {
-                    setDeities(res.value.deities);
-                    setSelectedDeity(res.value.deities[0]);
-                } else {
-                    // Fallback to defaults if DB is empty, but only after attempt
-                    setDeities(DEFAULT_DEITIES);
-                    setSelectedDeity(DEFAULT_DEITIES[0]);
-                }
-            } catch (error) {
-                console.error("Failed to fetch aarti settings:", error);
-                setDeities(DEFAULT_DEITIES);
-                setSelectedDeity(DEFAULT_DEITIES[0]);
-            } finally {
-                setIsLoading(false);
+            const res = await getSettings("aarti_settings");
+            if (res && res.value && res.value.deities && res.value.deities.length > 0) {
+                setDeities(res.value.deities);
+                setSelectedDeity(res.value.deities[0]);
             }
         }
         fetchSettings();
@@ -105,43 +91,29 @@ export default function AartiPage() {
         setTimeout(() => setConchPlaying(false), 5000); // Sync with sound duration roughly
     };
 
-    const formatTime = (time: number) => {
-        const mins = Math.floor(time / 60);
-        const secs = Math.floor(time % 60);
-        return `${mins}:${secs.toString().padStart(2, "0")}`;
-    };
-
     return (
         <div className="min-h-screen bg-[#0f0a05] text-white flex flex-col">
             <Navbar />
 
             <main className="flex-1 relative flex flex-col items-center pt-8 pb-16 overflow-hidden">
                 {/* Background Atmosphere */}
-                <div className={`absolute inset-0 bg-gradient-to-b ${selectedDeity?.color || 'from-orange-900/20'} opacity-10 pointer-events-none transition-colors duration-1000`} />
+                <div className={`absolute inset-0 bg-gradient-to-b ${selectedDeity.color} opacity-10 pointer-events-none transition-colors duration-1000`} />
 
                 {/* Deity Selection Header */}
-                <div className="flex gap-4 mb-8 z-10 overflow-x-auto px-4 max-w-full no-scrollbar min-h-[48px]">
-                    {isLoading ? (
-                        <div className="flex gap-4">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="w-32 h-10 bg-white/5 animate-pulse rounded-full border-2 border-white/10" />
-                            ))}
-                        </div>
-                    ) : (
-                        deities.map((deity) => (
-                            <button
-                                key={deity.id}
-                                onClick={() => setSelectedDeity(deity)}
-                                className={`flex items-center gap-2 px-6 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap ${selectedDeity?.id === deity.id
-                                    ? "bg-orange-600 border-orange-400 shadow-[0_0_15px_rgba(234,88,12,0.5)]"
-                                    : "bg-white/5 border-white/20 hover:bg-white/10"
-                                    }`}
-                            >
-                                <span className="text-xl">🕉️</span>
-                                <span className="font-bold">{deity.name}</span>
-                            </button>
-                        ))
-                    )}
+                <div className="flex gap-4 mb-8 z-10 overflow-x-auto px-4 max-w-full no-scrollbar">
+                    {deities.map((deity) => (
+                        <button
+                            key={deity.id}
+                            onClick={() => setSelectedDeity(deity)}
+                            className={`flex items-center gap-2 px-6 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap ${selectedDeity.id === deity.id
+                                ? "bg-orange-600 border-orange-400 shadow-[0_0_15px_rgba(234,88,12,0.5)]"
+                                : "bg-white/5 border-white/20 hover:bg-white/10"
+                                }`}
+                        >
+                            <span className="text-xl">🕉️</span>
+                            <span className="font-bold">{deity.name}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {/* Main Aarti Frame Container */}
@@ -157,18 +129,16 @@ export default function AartiPage() {
                     {/* Deity Image Content */}
                     <div className="absolute inset-0 z-10 overflow-hidden">
                         <AnimatePresence mode="wait">
-                            {selectedDeity && (
-                                <motion.img
-                                    key={selectedDeity.id}
-                                    src={selectedDeity.image}
-                                    alt={selectedDeity.name}
-                                    className="w-full h-full object-cover"
-                                    initial={{ opacity: 0, scale: 1.1 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.8 }}
-                                />
-                            )}
+                            <motion.img
+                                key={selectedDeity.id}
+                                src={selectedDeity.image}
+                                alt={selectedDeity.name}
+                                className="w-full h-full object-cover"
+                                initial={{ opacity: 0, scale: 1.1 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.8 }}
+                            />
                         </AnimatePresence>
 
                         {/* Static/Animating Aarti Image at Bottom Center */}
@@ -183,7 +153,7 @@ export default function AartiPage() {
                                     src="/images/aarti/aarti.png"
                                     alt="Aarti"
                                     className="w-32 sm:w-44 h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
-                                    animate={isAartiPerforming ? {
+                                    animate={isAartiPerforming ? { 
                                         rotate: -360,
                                         scale: [1, 1.05, 1],
                                     } : { rotate: 0, scale: 1 }}
@@ -258,34 +228,27 @@ export default function AartiPage() {
                                     onClick={() => setIsMusicPlayerOpen(true)}
                                     className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center text-xl shadow-lg hover:bg-rose-700 transition-colors"
                                 >
-                                    {playbackProgress?.isPlaying ? "⏸️" : "🎵"}
+                                    🎵
                                 </button>
-                                <span className="text-[10px] font-bold mt-1 text-white">
-                                    {playbackProgress && playbackProgress.currentTime > 0
-                                        ? formatTime(playbackProgress.currentTime)
-                                        : "Music"}
-                                </span>
+                                <span className="text-[10px] font-bold mt-1 text-white">Music</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {selectedDeity && (
-                    <MusicPlayer
-                        isOpen={isMusicPlayerOpen}
-                        onClose={() => setIsMusicPlayerOpen(false)}
-                        deityId={selectedDeity.id}
-                        deityName={selectedDeity.name}
-                        autoPlay={false}
-                        onProgress={setPlaybackProgress}
-                    />
-                )}
+                <MusicPlayer
+                    isOpen={isMusicPlayerOpen}
+                    onClose={() => setIsMusicPlayerOpen(false)}
+                    deityId={selectedDeity.id}
+                    deityName={selectedDeity.name}
+                />
 
                 {/* Informational Text */}
                 <div className="mt-12 text-center px-6 max-w-2xl">
-                    <h2 className="text-2xl font-bold mb-4 text-orange-400">Perform Virtual Aarti</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-orange-400">Digital Aarti Seva</h2>
                     <p className="text-gray-400 leading-relaxed">
-                        Experience the divine presence from your home. Perform virtual aarti, offer flowers, and listen to sacred bhajans with full devotion.
+                        Experience the divine connection through our virtual Aarti. Select your deity, offer flowers,
+                        and light the sacred lamp from anywhere in the world. May the divine blessings be with you always.
                     </p>
                 </div>
             </main>

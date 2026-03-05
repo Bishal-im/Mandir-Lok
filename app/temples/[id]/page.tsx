@@ -9,7 +9,6 @@ import StarRating from "@/components/ui/StarRating";
 import Badge from "@/components/ui/Badge";
 import { MapPin, Clock, Globe, Phone, ChevronRight, Heart } from "lucide-react";
 import { getUserTempleFavorites, toggleTempleFavorite } from "@/lib/actions/user";
-import { getLocalizedValue } from "@/lib/utils/localization";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -108,7 +107,7 @@ function PoojaRow({
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-gray-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
           {pooja.images && pooja.images.length > 0 ? (
-            <img src={pooja.images[0]} alt={getLocalizedValue(pooja.name)} className="w-full h-full object-cover" />
+            <img src={pooja.images[0]} alt={pooja.name} className="w-full h-full object-cover" />
           ) : (
             <svg className="w-4 h-4 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -117,9 +116,9 @@ function PoojaRow({
         </div>
         <div>
           <p className="text-xs font-semibold text-[#1a1209] line-clamp-1">
-            {getLocalizedValue(pooja.name)}
+            {pooja.name}
           </p>
-          <p className="text-[10px] text-[#6b5b45]">{getLocalizedValue(pooja.duration)}</p>
+          <p className="text-[10px] text-[#6b5b45]">{pooja.duration}</p>
         </div>
       </div>
       {showPrice && (
@@ -141,7 +140,7 @@ function PoojaCard({ pooja }: { pooja: Pooja }) {
       {/* Emoji / image thumb */}
       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-50 to-amber-100 flex items-center justify-center shrink-0 relative overflow-hidden">
         {pooja.images && pooja.images.length > 0 ? (
-          <img src={pooja.images[0]} alt={getLocalizedValue(pooja.name)} className="w-full h-full object-cover" />
+          <img src={pooja.images[0]} alt={pooja.name} className="w-full h-full object-cover" />
         ) : (
           <svg className="w-8 h-8 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -151,7 +150,7 @@ function PoojaCard({ pooja }: { pooja: Pooja }) {
           <span
             className={`absolute top-1 left-1 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full ${pooja.tagColor || "bg-orange-500"}`}
           >
-            {getLocalizedValue(pooja.tag)}
+            {pooja.tag}
           </span>
         )}
       </div>
@@ -159,20 +158,20 @@ function PoojaCard({ pooja }: { pooja: Pooja }) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-[#1a1209] text-sm group-hover:text-[#ff7f0a] transition-colors line-clamp-1">
-          {getLocalizedValue(pooja.name)}
+          {pooja.name}
         </h3>
         <p className="text-[#6b5b45] text-xs line-clamp-1 mb-2">
-          {getLocalizedValue(pooja.description)}
+          {pooja.description}
         </p>
 
         <div className="flex items-center gap-3 text-[10px] text-[#6b5b45]">
           <span className="flex items-center gap-1">
-            <Clock size={10} /> {getLocalizedValue(pooja.duration)}
+            <Clock size={10} /> {pooja.duration}
           </span>
           <span className="flex items-center gap-1">
             {pooja.rating?.toFixed(1)} ({pooja.totalReviews?.toLocaleString()})
           </span>
-          <span className="text-[#ff7f0a]">{getLocalizedValue(pooja.availableDays)}</span>
+          <span className="text-[#ff7f0a]">{pooja.availableDays}</span>
         </div>
       </div>
 
@@ -235,7 +234,7 @@ export default function TempleDetailPage() {
     async function fetchTempleAndStatus() {
       try {
         setLoading(true);
-        const res = await fetch(`/api/temples/${id}?lang=en`);
+        const res = await fetch(`/api/temples/${id}`);
         const data = await res.json();
 
         if (!data.success) {
@@ -328,7 +327,7 @@ export default function TempleDetailPage() {
               Temples
             </Link>
             <ChevronRight size={12} />
-            <span className="text-[#1a1209] font-medium">{getLocalizedValue(temple.name)}</span>
+            <span className="text-[#1a1209] font-medium">{temple.name}</span>
           </div>
         </div>
 
@@ -337,11 +336,11 @@ export default function TempleDetailPage() {
           {temple.images?.[0] ? (
             <img
               src={temple.images[0]}
-              alt={getLocalizedValue(temple.name)}
+              alt={temple.name}
               className="w-full h-full object-cover"
             />
           ) : (
-            <ImagePlaceholder className="w-full h-full" label={getLocalizedValue(temple.name)} />
+            <ImagePlaceholder className="w-full h-full" label={temple.name} />
           )}
 
           {/* Dark gradient overlay */}
@@ -356,11 +355,11 @@ export default function TempleDetailPage() {
                     {temple.deity}
                   </Badge>
                   <h1 className="font-display font-bold text-3xl md:text-4xl text-white mb-1 leading-tight">
-                    {getLocalizedValue(temple.name)}
+                    {temple.name}
                   </h1>
                   <div className="flex items-center gap-1.5 text-white/80 text-sm">
                     <MapPin size={14} className="text-[#ffd9a8]" />
-                    {getLocalizedValue(temple.location)}
+                    {temple.location}
                   </div>
                 </div>
 
@@ -409,7 +408,7 @@ export default function TempleDetailPage() {
                   About the Temple
                 </h2>
                 <p className="text-sm text-[#6b5b45] leading-relaxed mb-4">
-                  {getLocalizedValue(temple.about) || getLocalizedValue(temple.description)}
+                  {temple.about || temple.description}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#6b5b45]">
@@ -419,7 +418,7 @@ export default function TempleDetailPage() {
                       <p className="font-semibold text-[#1a1209] text-[11px]">
                         Temple Hours
                       </p>
-                      <p>{getLocalizedValue(temple.openTime) || "6:00 AM – 10:00 PM"}</p>
+                      <p>{temple.openTime || "6:00 AM – 10:00 PM"}</p>
                     </div>
                   </div>
                   {temple.phone && (
@@ -467,7 +466,7 @@ export default function TempleDetailPage() {
                       >
                         <img
                           src={img}
-                          alt={`${getLocalizedValue(temple.name)} ${i + 1}`}
+                          alt={`${temple.name} ${i + 1}`}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                         />
                       </div>
@@ -515,7 +514,7 @@ export default function TempleDetailPage() {
                       >
                         <div className="w-12 h-12 mx-auto rounded-lg bg-gray-50 flex-shrink-0 overflow-hidden flex items-center justify-center mb-2">
                           {item.image ? (
-                            <img src={item.image} alt={getLocalizedValue(item.name)} className="w-full h-full object-cover" />
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                           ) : (
                             <svg className="w-6 h-6 text-amber-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -523,11 +522,11 @@ export default function TempleDetailPage() {
                           )}
                         </div>
                         <p className="text-xs font-semibold text-[#1a1209] mb-1">
-                          {getLocalizedValue(item.name)}
+                          {item.name}
                         </p>
                         {item.description && (
                           <p className="text-[10px] text-[#6b5b45] mb-2 line-clamp-2">
-                            {getLocalizedValue(item.description)}
+                            {item.description}
                           </p>
                         )}
                         <Link
@@ -595,9 +594,9 @@ export default function TempleDetailPage() {
                   <p className="text-4xl"></p>
                   <div className="text-center">
                     <p className="font-semibold text-[#1a1209] text-sm">
-                      {getLocalizedValue(temple.name)}
+                      {temple.name}
                     </p>
-                    <p className="text-xs text-[#6b5b45]">{getLocalizedValue(temple.location)}</p>
+                    <p className="text-xs text-[#6b5b45]">{temple.location}</p>
                   </div>
                   {temple.mapUrl && (
                     <a

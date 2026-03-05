@@ -125,8 +125,8 @@ export default function PanditDashboard() {
                           </div>
                         </div>
                         <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${order.orderStatus === 'in-progress'
-                          ? 'bg-blue-50 text-blue-600 border-blue-100'
-                          : 'bg-orange-50 text-orange-600 border-orange-100'
+                            ? 'bg-blue-50 text-blue-600 border-blue-100'
+                            : 'bg-orange-50 text-orange-600 border-orange-100'
                           }`}>
                           {order.orderStatus === 'in-progress' ? 'In Progress' : 'Confirmed'}
                         </div>

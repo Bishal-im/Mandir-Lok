@@ -1,13 +1,5 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
-export interface ILocalizedString {
-  en: string;
-  hi?: string;
-  ne?: string;
-  mr?: string;
-  ta?: string;
-}
-
 export interface IPandit extends Document {
   name: string;
   phone: string;
@@ -17,7 +9,7 @@ export interface IPandit extends Document {
   assignedTemples: Types.ObjectId[];
   experienceYears: number;
   languages: string[];
-  bio: string | ILocalizedString;
+  bio: string;
   commissionPercentage: number;
   totalEarnings: number;
   unpaidEarnings: number;
@@ -41,7 +33,7 @@ const PanditSchema = new Schema<IPandit>(
     assignedTemples: [{ type: Schema.Types.ObjectId, ref: "Temple" }],
     experienceYears: { type: Number, default: 0 },
     languages: [{ type: String }],
-    bio: { type: Schema.Types.Mixed, default: "" },
+    bio: { type: String, default: "" },
     commissionPercentage: { type: Number, default: 80 }, // Default 80% to Pandit, 20% to Platform
     totalEarnings: { type: Number, default: 0 },
     unpaidEarnings: { type: Number, default: 0 },

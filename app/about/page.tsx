@@ -33,45 +33,76 @@ const DEFAULT_STATS = [
   },
 ];
 
-const TEAM_CONFIG: any = {
-  arjun: { initials: "AM", color: "bg-orange-500" },
-  priya: { initials: "PS", color: "bg-rose-500" },
-  ramesh: { initials: "RS", color: "bg-amber-500" },
-  kavya: { initials: "KI", color: "bg-teal-500" },
-};
+const TEAM = [
+  {
+    name: "Arjun Mehta",
+    role: "Co-Founder & CEO",
+    desc: "Spiritual technologist with 10+ years building devotional platforms. IIT alumnus.",
+    initials: "AM",
+    color: "bg-orange-500",
+  },
+  {
+    name: "Priya Sharma",
+    role: "Co-Founder & CTO",
+    desc: "Engineering lead with deep passion for bridging tradition and technology.",
+    initials: "PS",
+    color: "bg-rose-500",
+  },
+  {
+    name: "Pandit Ramesh Shastri",
+    role: "Head of Rituals",
+    desc: "Vedic scholar with 25+ years of experience performing authentic Vedic rituals.",
+    initials: "RS",
+    color: "bg-amber-500",
+  },
+  {
+    name: "Kavya Iyer",
+    role: "Head of Temple Relations",
+    desc: "Manages partnerships with 500+ temples across India and ensures service quality.",
+    initials: "KI",
+    color: "bg-teal-500",
+  },
+];
 
-const VALUES_CONFIG: any = {
-  rituals: {
+const VALUES = [
+  {
     icon: (
       <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
       </svg>
     ),
+    title: "Authentic Rituals",
+    desc: "Every puja follows the traditional Vedic procedure. We never compromise on authenticity.",
   },
-  trust: {
+  {
     icon: (
       <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
+    title: "Trust & Transparency",
+    desc: "Video proof of every ritual, real-time tracking and honest communication always.",
   },
-  accessibility: {
+  {
     icon: (
       <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.003 9.003 0 008.313-5.547M12 3a9.003 9.003 0 018.313 5.547M3.687 8.453A9.003 9.003 0 0112 3v18a9.003 9.003 0 01-8.313-5.547M12 3c-1.123 0-2.2.203-3.187.575m0 16.85c.987.372 2.064.575 3.187.575" />
       </svg>
     ),
+    title: "Accessibility",
+    desc: "Making sacred temple rituals accessible to every devotee, regardless of location.",
   },
-  devotee: {
+  {
     icon: (
       <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
       </svg>
     ),
+    title: "Devotee First",
+    desc: "We exist to serve the devotional needs of our community — not for profit at their expense.",
   },
-};
-
+];
 
 const MEDIA_LOGOS = [
   "Hindustan Times",
@@ -114,56 +145,6 @@ function ImagePlaceholder({
 
 // ── Main Export ────────────────────────────────────────────────────────────────
 export default function AboutPage() {
-  const TEAM = [
-    {
-      ...TEAM_CONFIG.arjun,
-      name: "Arjun Mehta",
-      role: "Founder & CEO",
-      desc: "Passionate about preserving Vedic traditions through modern technology.",
-    },
-    {
-      ...TEAM_CONFIG.priya,
-      name: "Priya Sharma",
-      role: "Head of Operations",
-      desc: "Ensuring every puja is performed with absolute devotion and accuracy.",
-    },
-    {
-      ...TEAM_CONFIG.ramesh,
-      name: "Pandit Ramesh Shastri",
-      role: "Religious Advisor",
-      desc: "Vedic scholar guiding our rituals and temple partnerships.",
-    },
-    {
-      ...TEAM_CONFIG.kavya,
-      name: "Kavya Iyer",
-      role: "Community Manager",
-      desc: "Connecting with millions of devotees to build a sacred community.",
-    },
-  ];
-
-  const VALUES = [
-    {
-      ...VALUES_CONFIG.rituals,
-      title: "Authentic Rituals",
-      desc: "We ensure every puja is performed exactly as per Vedic scriptures.",
-    },
-    {
-      ...VALUES_CONFIG.trust,
-      title: "Full Transparency",
-      desc: "Receive clear video proof of your personalized rituals at holy shrines.",
-    },
-    {
-      ...VALUES_CONFIG.accessibility,
-      title: "Spiritual Access",
-      desc: "Breaking distance barriers to connect you with India's most sacred sites.",
-    },
-    {
-      ...VALUES_CONFIG.devotee,
-      title: "Devotee First",
-      desc: "Every service is designed to enhance your spiritual experience and peace.",
-    },
-  ];
-
   const [settings, setSettings] = useState<any>(null);
   const [stats, setStats] = useState(DEFAULT_STATS);
   const [contactSettings, setContactSettings] = useState<any>(null);
@@ -215,9 +196,9 @@ export default function AboutPage() {
         {/* Hero Banner */}
         <section className="relative h-72 md:h-96 overflow-hidden">
           {settings?.bannerUrl ? (
-            <img
-              src={settings.bannerUrl}
-              alt="Hero Banner"
+            <img 
+              src={settings.bannerUrl} 
+              alt="Hero Banner" 
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
@@ -294,7 +275,7 @@ export default function AboutPage() {
                   href="/poojas"
                   className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-orange-200 text-sm"
                 >
-                  Book a Puja
+                  Book a Puja Today
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -319,10 +300,10 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-[#1a0500] mb-2">
-                Impact & Reach
+                India's Largest Devotional Platform
               </h2>
               <p className="text-[#1a0500]/70 text-sm font-medium">
-                across all countries
+                Trusted by devotees in 30+ countries
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -381,34 +362,6 @@ export default function AboutPage() {
 
 
 
-        {/* Team Section */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-                Our Team
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                The Minds Behind Mandirlok
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {TEAM.map((member) => (
-                <div key={member.name} className="flex flex-col items-center text-center group">
-                  <div className={`w-28 h-28 md:w-32 md:h-32 rounded-full ${member.color} flex items-center justify-center text-white text-3xl font-bold mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 relative overflow-hidden`}>
-                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {member.initials}
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
-                  <p className="text-orange-600 text-xs font-bold uppercase tracking-wider mb-3">{member.role}</p>
-                  <p className="text-gray-500 text-sm leading-relaxed">{member.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="py-16 bg-gradient-to-br from-[#1a0500] to-[#3d1500] relative overflow-hidden">
           <div
@@ -421,10 +374,11 @@ export default function AboutPage() {
           />
           <div className="relative z-10 text-center max-w-2xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Begin Your Spiritual Journey
+              Begin Your Devotional Journey Today
             </h2>
             <p className="text-white/70 text-sm mb-8 leading-relaxed">
-              Join millions of devotees and start your journey towards spiritual peace and divine blessings today.
+              Join over 1 million devotees who trust Mandirlok to connect them
+              with India's most sacred temples. Book your first puja in minutes.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link
@@ -462,9 +416,9 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-3 gap-12">
               <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </div>
-                <h4 className="font-bold text-gray-900 mb-3 text-lg">Corporate Office</h4>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Our Address</h4>
                 <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-line">
                   {contactSettings?.address || "Mandirlok Technologies Pvt. Ltd.\nNoida, Uttar Pradesh - 201301"}
                 </p>
@@ -472,7 +426,7 @@ export default function AboutPage() {
 
               <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 </div>
                 <h4 className="font-bold text-gray-900 mb-3 text-lg">Contact Us</h4>
                 <div className="space-y-1">
@@ -485,9 +439,9 @@ export default function AboutPage() {
 
               <div className="flex flex-col items-center text-center p-8 bg-white rounded-3xl shadow-sm border border-orange-100 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <h4 className="font-bold text-gray-900 mb-3 text-lg">Working Hours</h4>
+                <h4 className="font-bold text-gray-900 mb-3 text-lg">Support Hours</h4>
                 <p className="text-gray-500 text-sm whitespace-pre-line leading-relaxed">
                   {contactSettings?.workingHours || "Mon – Sat: 9 AM – 9 PM\nSun: 10 AM – 6 PM"}
                 </p>
@@ -509,11 +463,11 @@ export default function AboutPage() {
               <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 px-5 py-2 rounded-full mb-8">
                 <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
                 <p className="text-[10px] font-bold text-orange-200/80 uppercase tracking-[0.3em]">
-                  Designed & Developed by
+                  Designed & Developed By
                 </p>
                 <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
               </div>
-
+              
               <div className="flex flex-wrap justify-center gap-8 md:gap-20">
                 <div className="flex flex-col items-center gap-2 group">
                   <span className="text-base font-bold text-white group-hover:text-orange-400 transition-colors tracking-wide">Bishal Pandey</span>

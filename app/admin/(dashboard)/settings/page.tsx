@@ -21,7 +21,6 @@ export default function SettingsPage() {
     const [saving, setSaving] = useState(false);
 
     const [slides, setSlides] = useState<any[]>([]);
-    const [marqueeItems, setMarqueeItems] = useState<any[]>([]);
     const [dashboardSettings, setDashboardSettings] = useState({
         bannerUrl: "",
         welcomeMessage: "Welcome to your Divine Journey"
@@ -61,7 +60,6 @@ export default function SettingsPage() {
     const tabs = [
         { id: "general", label: "General", icon: <Globe size={18} /> },
         { id: "landing", label: "Landing Page", icon: <Layout size={18} /> },
-        { id: "marquee", label: "Marquee", icon: <Layout size={18} /> },
         { id: "page_banners", label: "Page Banners", icon: <ImageIcon size={18} /> },
         { id: "user_dashboard", label: "User Dashboard", icon: <Layout size={18} /> },
         { id: "aarti", label: "Aarti Settings", icon: <Layout size={18} /> },
@@ -73,9 +71,8 @@ export default function SettingsPage() {
     useEffect(() => {
         async function fetchSettings() {
             setLoading(true);
-            const [slideRes, marqueeRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes] = await Promise.all([
+            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes] = await Promise.all([
                 getSettings("landing_page_slides"),
-                getSettings("marquee_items"),
                 getSettings("dashboard_settings"),
                 getSettings("page_banners"),
                 getSettings("website_logo"),
@@ -85,7 +82,6 @@ export default function SettingsPage() {
             ]);
 
             if (slideRes && slideRes.value) setSlides(slideRes.value);
-            if (marqueeRes && marqueeRes.value) setMarqueeItems(marqueeRes.value);
             if (dashRes && dashRes.value) setDashboardSettings(dashRes.value);
             if (bannerRes && bannerRes.value) setPageBanners(bannerRes.value);
             if (logoRes && logoRes.value) setLogoUrl(logoRes.value);
@@ -150,8 +146,6 @@ export default function SettingsPage() {
         try {
             if (activeTab === "landing") {
                 await updateSettings("landing_page_slides", slides, "Banner slides for the landing page");
-            } else if (activeTab === "marquee") {
-                await updateSettings("marquee_items", marqueeItems, "Scrolling marquee items for home page");
             } else if (activeTab === "user_dashboard") {
                 await updateSettings("dashboard_settings", dashboardSettings, "Banner and welcome info for user dashboard");
             } else if (activeTab === "page_banners") {
@@ -222,7 +216,7 @@ export default function SettingsPage() {
                                                 placeholder="https://cloudinary.com/..."
                                                 className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
                                             />
-                                            <CloudinaryImageUploader
+                                            <CloudinaryImageUploader 
                                                 onUploadSuccess={(url) => setLogoUrl(url)}
                                                 folder="branding"
                                                 label="Upload Logo"
@@ -279,7 +273,7 @@ export default function SettingsPage() {
                                                                     className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-200"
                                                                 />
                                                             </div>
-                                                            <CloudinaryImageUploader
+                                                            <CloudinaryImageUploader 
                                                                 onUploadSuccess={(url) => handleUpdateSlide(index, "src", url)}
                                                                 folder="landing_banners"
                                                                 label="Upload"
@@ -354,79 +348,6 @@ export default function SettingsPage() {
                                 </div>
                             )}
 
-                            {activeTab === "marquee" && (
-                                <div className="space-y-8">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-bold text-gray-900">Home Page Marquee Items</h3>
-                                            <p className="text-xs text-gray-500">Manage the scrolling text and icons in the Trust Bar.</p>
-                                        </div>
-                                        <button
-                                            onClick={() => setMarqueeItems([...marqueeItems, { icon: "CheckCircle2", label: "New Item" }])}
-                                            className="p-2 bg-orange-50 text-[#ff7f0a] rounded-lg hover:bg-orange-100 transition-colors"
-                                        >
-                                            <Plus size={20} />
-                                        </button>
-                                    </div>
-
-                                    <div className="grid sm:grid-cols-2 gap-4">
-                                        {marqueeItems.map((item, index) => (
-                                            <div key={index} className="p-4 rounded-2xl border border-gray-100 bg-gray-50/50 space-y-4 relative group">
-                                                <button
-                                                    onClick={() => setMarqueeItems(marqueeItems.filter((_, i) => i !== index))}
-                                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-
-                                                <div className="space-y-3">
-                                                    <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Lucide Icon Name</label>
-                                                        <input
-                                                            value={item.icon}
-                                                            onChange={(e) => {
-                                                                const newItems = [...marqueeItems];
-                                                                newItems[index].icon = e.target.value;
-                                                                setMarqueeItems(newItems);
-                                                            }}
-                                                            placeholder="Users, ShieldCheck, etc."
-                                                            className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Label Text</label>
-                                                        <input
-                                                            value={item.label}
-                                                            onChange={(e) => {
-                                                                const newItems = [...marqueeItems];
-                                                                newItems[index].label = e.target.value;
-                                                                setMarqueeItems(newItems);
-                                                            }}
-                                                            className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-
-                                        {marqueeItems.length === 0 && (
-                                            <div className="col-span-full py-10 text-center border-2 border-dashed border-gray-100 rounded-3xl text-gray-400 flex flex-col items-center gap-2">
-                                                <Layout size={32} />
-                                                <p className="text-sm">No marquee items added. Home page will use default content.</p>
-                                                <button onClick={() => setMarqueeItems([{ icon: "CheckCircle2", label: "Authentic Rituals" }])} className="text-[#ff7f0a] font-bold text-xs hover:underline">Add First Item</button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                                        <p className="text-xs text-blue-600 leading-relaxed font-medium">
-                                            💡 <strong>Tip:</strong> Use Lucide icon names (PascalCase) for premium icons. Common ones: 
-                                            Users, ShieldCheck, Building2, Video, Zap, CheckCircle2, Globe, MessageSquare, Truck, Heart, Star, Award.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
                             {activeTab === "page_banners" && (
                                 <div className="space-y-6">
                                     <h3 className="font-bold text-gray-900">Frontend Page Banners</h3>
@@ -442,7 +363,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, poojas: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -464,7 +385,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, chadhava: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -486,7 +407,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setPageBanners({ ...pageBanners, temples: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -515,7 +436,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setDashboardSettings({ ...dashboardSettings, bannerUrl: url })}
                                                     folder="dashboard"
                                                     label="Upload"
@@ -626,7 +547,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white"
                                                     placeholder="https://..."
                                                 />
-                                                <CloudinaryImageUploader
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setContactSettings({ ...contactSettings, bannerUrl: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -642,19 +563,19 @@ export default function SettingsPage() {
                                         <div className="space-y-6 flex flex-col justify-center">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Title</label>
-                                                <input
+                                                <input 
                                                     value={contactSettings.heroTitle}
                                                     onChange={e => setContactSettings({ ...contactSettings, heroTitle: e.target.value })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200" 
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Subtitle</label>
-                                                <textarea
+                                                <textarea 
                                                     value={contactSettings.heroSubtitle}
                                                     onChange={e => setContactSettings({ ...contactSettings, heroSubtitle: e.target.value })}
                                                     rows={2}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none"
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none" 
                                                 />
                                             </div>
                                         </div>
@@ -663,35 +584,35 @@ export default function SettingsPage() {
                                     <div className="grid md:grid-cols-2 gap-6 pt-4">
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Support Email (Recipient)</label>
-                                            <input
+                                            <input 
                                                 value={contactSettings.supportEmail}
                                                 onChange={e => setContactSettings({ ...contactSettings, supportEmail: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 font-mono"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 font-mono" 
                                             />
                                             <p className="text-[10px] text-gray-400 italic">User submissions will be sent to this email.</p>
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Phone / WhatsApp</label>
-                                            <input
+                                            <input 
                                                 value={contactSettings.phone}
                                                 onChange={e => setContactSettings({ ...contactSettings, phone: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
                                             />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Office Address</label>
-                                            <input
+                                            <input 
                                                 value={contactSettings.address}
                                                 onChange={e => setContactSettings({ ...contactSettings, address: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
                                             />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Working Hours</label>
-                                            <input
+                                            <input 
                                                 value={contactSettings.workingHours}
                                                 onChange={e => setContactSettings({ ...contactSettings, workingHours: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200" 
                                             />
                                         </div>
                                     </div>
@@ -721,7 +642,7 @@ export default function SettingsPage() {
                                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm"
                                                     placeholder="Banner URL"
                                                 />
-                                                <CloudinaryImageUploader
+                                                <CloudinaryImageUploader 
                                                     onUploadSuccess={(url) => setAboutSettings({ ...aboutSettings, bannerUrl: url })}
                                                     folder="banners"
                                                     label="Upload"
@@ -736,19 +657,19 @@ export default function SettingsPage() {
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Title</label>
-                                                <input
+                                                <input 
                                                     value={aboutSettings.heroTitle}
                                                     onChange={e => setAboutSettings({ ...aboutSettings, heroTitle: e.target.value })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200" 
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Subtitle</label>
-                                                <textarea
+                                                <textarea 
                                                     value={aboutSettings.heroSubtitle}
                                                     onChange={e => setAboutSettings({ ...aboutSettings, heroSubtitle: e.target.value })}
                                                     rows={2}
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm"
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
                                                 />
                                             </div>
                                         </div>
@@ -761,10 +682,10 @@ export default function SettingsPage() {
                                             <div className="space-y-4">
                                                 <div className="space-y-1.5">
                                                     <label className="text-xs font-bold text-gray-400">Mission Title</label>
-                                                    <input
+                                                    <input 
                                                         value={aboutSettings.missionTitle}
                                                         onChange={e => setAboutSettings({ ...aboutSettings, missionTitle: e.target.value })}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200" 
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
@@ -776,7 +697,7 @@ export default function SettingsPage() {
                                                             className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm"
                                                             placeholder="Image URL"
                                                         />
-                                                        <CloudinaryImageUploader
+                                                        <CloudinaryImageUploader 
                                                             onUploadSuccess={(url) => setAboutSettings({ ...aboutSettings, missionImage: url })}
                                                             folder="about"
                                                             label="Upload"
@@ -787,20 +708,20 @@ export default function SettingsPage() {
                                             <div className="space-y-4">
                                                 <div className="space-y-1.5">
                                                     <label className="text-xs font-bold text-gray-400">Story Paragraph 1</label>
-                                                    <textarea
+                                                    <textarea 
                                                         value={aboutSettings.missionDescription1}
                                                         onChange={e => setAboutSettings({ ...aboutSettings, missionDescription1: e.target.value })}
                                                         rows={3}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm"
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <label className="text-xs font-bold text-gray-400">Story Paragraph 2</label>
-                                                    <textarea
+                                                    <textarea 
                                                         value={aboutSettings.missionDescription2}
                                                         onChange={e => setAboutSettings({ ...aboutSettings, missionDescription2: e.target.value })}
                                                         rows={3}
-                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm"
+                                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 resize-none text-sm" 
                                                     />
                                                 </div>
                                             </div>

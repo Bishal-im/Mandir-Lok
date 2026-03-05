@@ -8,7 +8,6 @@ import Footer from "@/components/layout/Footer";
 import { Search, MapPin, ChevronRight, Filter, Sparkles, Heart } from "lucide-react";
 import { getUserFavorites, toggleChadhavaFavorite } from "@/lib/actions/user";
 import { getSettings } from "@/lib/actions/admin";
-import { getLocalizedValue } from "@/lib/utils/localization";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -58,7 +57,7 @@ function ChadhavaCard({
         {item.image ? (
           <img
             src={item.image}
-            alt={getLocalizedValue(item.name)}
+            alt={item.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
@@ -71,7 +70,7 @@ function ChadhavaCard({
           <span
             className={`absolute top-3 left-3 ${item.tagColor || "bg-orange-500"} text-white text-xs font-bold px-3 py-1 rounded-full`}
           >
-            {getLocalizedValue(item.tag)}
+            {item.tag}
           </span>
         )}
 
@@ -97,19 +96,19 @@ function ChadhavaCard({
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 leading-snug">
-          {getLocalizedValue(item.name)}
+          {item.name}
         </h3>
 
         {/* Temple */}
         <div className="flex items-start gap-1.5 mb-1.5">
           <MapPin size={14} className="text-orange-500 shrink-0 mt-0.5" />
           <span className="text-xs text-gray-500 line-clamp-1">
-            {getLocalizedValue(item.templeId?.name) || "Sacred Temple"}
+            {item.templeId?.name || "Sacred Temple"}
           </span>
         </div>
 
         <p className="text-xs text-gray-400 line-clamp-2 mb-4">
-          {getLocalizedValue(item.description)}
+          {item.description}
         </p>
 
         {/* Price + CTA */}
@@ -166,9 +165,9 @@ function DonationCard({ temples }: { temples: Temple[] }) {
         <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6">
           <Heart size={24} className="text-white fill-white" />
         </div>
-        <h3 className="text-2xl font-black mb-2">Sacred Donation</h3>
+        <h3 className="text-2xl font-black mb-2">Direct Temple Donation</h3>
         <p className="text-white/80 text-[11px] leading-relaxed mb-6">
-          Make a direct contribution to temple upkeep, anna-seva, and spiritual activities.
+          Your contribution goes directly to the temple's maintenance and sacred services. Receive a divine certificate of devotion.
         </p>
 
         <div className="space-y-4">
@@ -181,13 +180,13 @@ function DonationCard({ temples }: { temples: Temple[] }) {
             >
               <option value="" className="text-gray-900">Choose a temple...</option>
               {temples.map(t => (
-                <option key={t._id} value={t._id} className="text-gray-900">{getLocalizedValue(t.name)}</option>
+                <option key={t._id} value={t._id} className="text-gray-900">{t.name}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">Donation Amount</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">Donation Amount (₹)</label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 font-bold text-xs">₹</span>
               <input
@@ -230,14 +229,21 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-wrap gap-3 mb-4">
             <span className="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">
-              Mandirlok Sacred Services
+              Divine Offerings Seva
+            </span>
+            <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+              Authentic Prasad & Bhog
+            </span>
+            <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+              Sankalp Video Included
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             Sacred Chadhava & Offerings
           </h1>
           <p className="text-white/80 text-base max-w-xl leading-relaxed">
-            Offer sacred items, vastra, and bhog to your beloved deities at renowned temples across India.
+            Express your devotion through traditional offerings at 500+ sacred temples.
+            Receive divine blessings and proof of your seva.
           </p>
         </div>
       </div>
@@ -254,15 +260,6 @@ export default function ChadhavaPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [bannerBg, setBannerBg] = useState("");
-
-  const categories = [
-    { id: "all", name: "All Offerings", icon: "" },
-    { id: "Bhog", name: "Prasad & Bhog", icon: "" },
-    { id: "Vastra", name: "Vastra", icon: "" },
-    { id: "Deep Daan", name: "Deep Daan", icon: "" },
-    { id: "Flowers", name: "Flowers", icon: "" },
-    { id: "Seva", name: "Seva", icon: "" },
-  ];
 
   useEffect(() => {
     async function fetchBanner() {
@@ -285,7 +282,7 @@ export default function ChadhavaPage() {
     }
     async function fetchTemples() {
       try {
-        const res = await fetch(`/api/temples?lang=en`);
+        const res = await fetch("/api/temples");
         const data = await res.json();
         if (data.success) setTemples(data.data);
       } catch (e) {
@@ -304,7 +301,6 @@ export default function ChadhavaPage() {
         const params = new URLSearchParams();
         if (search) params.set("search", search);
         if (activeCategory !== "all") params.set("category", activeCategory);
-        params.set("lang", 'en');
 
         const res = await fetch(`/api/chadhava?${params.toString()}`);
         const data = await res.json();
@@ -357,7 +353,7 @@ export default function ChadhavaPage() {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               {/* Categories */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
-                {categories.map((cat) => (
+                {CATEGORIES.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
@@ -377,7 +373,7 @@ export default function ChadhavaPage() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-amber-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search offerings, temples..."
+                  placeholder="Search offerings or temples..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 bg-white border border-amber-100 rounded-[1.25rem] text-xs focus:outline-none focus:ring-4 focus:ring-amber-500/5 focus:border-amber-500 transition-all shadow-sm"
@@ -430,9 +426,9 @@ export default function ChadhavaPage() {
               <div className="w-24 h-24 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="w-10 h-10 text-amber-200" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No Results Found</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No offerings found</h3>
               <p className="text-gray-500 text-xs mb-8">Try adjusting your filters or search terms.</p>
-              <button onClick={() => { setSearch(""); setActiveCategory("all"); }} className="btn-primary">Clear Filters</button>
+              <button onClick={() => { setSearch(""); setActiveCategory("all"); }} className="btn-primary">Clear all filters</button>
             </div>
           )}
         </div>
@@ -442,9 +438,9 @@ export default function ChadhavaPage() {
           <div className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-[3rem] p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
             <div className="relative z-10 space-y-6">
-              <h2 className="text-3xl md:text-4xl font-black">Special Seva & Custom Offerings</h2>
+              <h2 className="text-3xl md:text-4xl font-black">Need a Special Seva?</h2>
               <p className="max-w-lg mx-auto text-white/80 text-sm leading-relaxed">
-                Interested in a custom puja or a large-scale seva at a specific temple? Contact our spiritual coordinators.
+                If you wish to perform a specific ritual or offering not listed here, our team can arrange it personally for you.
               </p>
               <div className="flex flex-wrap justify-center gap-4 pt-4">
                 <a href="https://wa.me/yournumber" className="bg-white text-amber-700 font-bold px-8 py-3 rounded-2xl hover:bg-amber-50 transition-colors shadow-lg">WhatsApp Us</a>

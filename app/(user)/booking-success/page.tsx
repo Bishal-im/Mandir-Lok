@@ -420,7 +420,7 @@ function BookingSuccessContent() {
         : ""
       }
         ${order.extraDonation > 0
-        ? `    
+        ? `
         <div class="price-row">
           <span style="color:#6b7280">Additional Donation</span>
           <span>₹${order.extraDonation.toLocaleString("en-IN")}</span>

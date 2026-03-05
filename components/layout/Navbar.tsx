@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { getSettings } from "@/lib/actions/admin";
 
-const getNavLinks = () => [
+const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Pujas", href: "/poojas" },
   { label: "Chadhava", href: "/chadhava" },
@@ -217,13 +217,13 @@ export default function Navbar() {
               )}
               <div className="flex flex-col leading-none">
                 <span className="text-[15px] font-extrabold text-[#1a0500] tracking-tight">Mandirlok</span>
-                <span className="text-[10px] text-orange-500 font-semibold tracking-widest uppercase">Services</span>
+                <span className="text-[10px] text-orange-500 font-semibold tracking-widest uppercase">Sacred Services</span>
               </div>
             </Link>
 
             {/* DESKTOP NAV */}
             <div className="hidden md:flex items-center gap-1">
-              {getNavLinks().map((link) => (
+              {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -285,12 +285,12 @@ export default function Navbar() {
                       <div className="max-h-[70vh] overflow-y-auto">
                         {/* Account section */}
                         <div className="px-4 py-3">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 px-1">My Account</p>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 px-1">Account</p>
                           {[
-                            { icon: "", label: "Profile", href: "/dashboard/profile" },
+                            { icon: "", label: "My Profile", href: "/dashboard/profile" },
                             { icon: "", label: "My Bookings", href: "/dashboard" },
-                            { icon: "", label: "Pujas", href: "/poojas", badge: "New" },
-                            { icon: "", label: "Chadhava", href: "/chadhava", badge: "New" },
+                            { icon: "", label: "Book a Puja", href: "/poojas", badge: "New" },
+                            { icon: "", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
                           ].map((item) => (
                             <Link
                               key={item.label}
@@ -372,14 +372,14 @@ export default function Navbar() {
                               onClick={() => setProfileOpen(false)}
                               className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 rounded-xl transition-colors"
                             >
-                              Login / Create account
+                              Login / Create an account
                             </Link>
                           </div>
                           <div className="px-4 py-3">
                             {[
                               { icon: "", label: "My Bookings", href: "/login" },
-                              { icon: "", label: "Pujas", href: "/poojas", badge: "New" },
-                              { icon: "", label: "Chadhava", href: "/chadhava", badge: "New" },
+                              { icon: "", label: "Book a Puja", href: "/poojas", badge: "New" },
+                              { icon: "", label: "Chadhava Offerings", href: "/chadhava", badge: "New" },
                             ].map((item) => (
                               <Link
                                 key={item.label}
@@ -420,7 +420,7 @@ export default function Navbar() {
         {menuOpen && (
           <div className="mobile-menu md:hidden bg-white border-t border-orange-100 shadow-xl">
             <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
-              {getNavLinks().map((link) => (
+              {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -462,7 +462,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="flex-1 btn-book flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-bold shadow-md"
                   >
-                    Pujas
+                    Book Puja
                   </Link>
                 </div>
               )}

@@ -28,7 +28,6 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const lang = searchParams.get("lang") || "en";
     const skip = (page - 1) * limit;
 
     // Use aggregation to calculate dynamic fields
@@ -84,28 +83,6 @@ export async function GET(req: NextRequest) {
               then: { $avg: "$approvedReviews.rating" },
               else: "$rating" // Keep existing rating as default if no reviews
             }
-          },
-          // Localize fields
-          name: {
-            $cond: {
-              if: { $eq: [{ $type: "$name" }, "string"] },
-              then: "$name",
-              else: { $ifNull: [`$name.${lang}`, "$name.en"] }
-            }
-          },
-          description: {
-            $cond: {
-              if: { $eq: [{ $type: "$description" }, "string"] },
-              then: "$description",
-              else: { $ifNull: [`$description.${lang}`, "$description.en"] }
-            }
-          },
-          about: {
-            $cond: {
-              if: { $eq: [{ $type: "$about" }, "string"] },
-              then: "$about",
-              else: { $ifNull: [`$about.${lang}`, "$about.en"] }
-            }
           }
         }
       },
@@ -130,7 +107,6 @@ export async function GET(req: NextRequest) {
       total,
       page,
       totalPages: Math.ceil(total / limit),
-      lang, // Return requested lang for debugging
     });
   } catch (error) {
     console.error("GET /api/temples error:", error);

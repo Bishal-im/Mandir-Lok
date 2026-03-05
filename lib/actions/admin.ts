@@ -100,32 +100,10 @@ export async function getTempleById(id: string) {
 // =======================
 // POOJA CRUD
 // =======================
-import { getLocalizedValue } from "../utils/localization";
-
 export async function getPoojasAdmin() {
     await connectDB();
-    const poojas = await Pooja.find()
-        .populate("templeId", "name")
-        .populate("templeIds", "name")
-        .sort({ createdAt: -1 })
-        .lean();
-
-    // Localize pooja names for admin display
-    const localizedPoojas = poojas.map((p: any) => ({
-        ...p,
-        name: getLocalizedValue(p.name, 'en'),
-        tag: getLocalizedValue(p.tag, 'en'),
-        templeId: p.templeId ? {
-            ...p.templeId,
-            name: getLocalizedValue(p.templeId.name, 'en')
-        } : null,
-        templeIds: (p.templeIds || []).map((t: any) => ({
-            ...t,
-            name: getLocalizedValue(t.name, 'en')
-        }))
-    }));
-
-    return JSON.parse(JSON.stringify(localizedPoojas));
+    const poojas = await Pooja.find().populate("templeIds", "name").sort({ createdAt: -1 }).lean();
+    return JSON.parse(JSON.stringify(poojas));
 }
 
 export async function createPooja(data: any) {
@@ -199,13 +177,13 @@ export async function updatePooja(id: string, data: any) {
         try {
             revalidatePath("/admin/poojas");
             revalidatePath("/poojas");
-            if (PoojaDoc.slug) revalidatePath(`/poojas/${PoojaDoc.slug}`);
+            if (pooja.slug) revalidatePath(`/poojas/${pooja.slug}`);
             revalidatePath(`/poojas/${id}`);
         } catch (revalError) {
             console.error("Revalidation error (non-fatal):", revalError);
         }
 
-        return { success: true, pooja: JSON.parse(JSON.stringify(PoojaDoc)) };
+        return { success: true, pooja: JSON.parse(JSON.stringify(pooja)) };
     } catch (error: any) {
         console.error("updatePooja error:", error);
         return { success: false, error: error.message || "Failed to update pooja" };

@@ -7,7 +7,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, MapPin, CheckCircle2, Info, Share2, Heart, ShieldCheck, Clock } from "lucide-react";
 import { getUserFavorites, toggleChadhavaFavorite } from "@/lib/actions/user";
-import { getLocalizedValue } from "@/lib/utils/localization";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -35,6 +34,7 @@ export default function ChadhavaDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
+
   const [item, setItem] = useState<Chadhava | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,7 +50,7 @@ export default function ChadhavaDetailPage() {
       try {
         setLoading(true);
         // Fetch item
-        const res = await fetch(`/api/chadhava/${id}?lang=en`);
+        const res = await fetch(`/api/chadhava/${id}`);
         const data = await res.json();
 
         if (data.success) {
@@ -121,7 +121,7 @@ export default function ChadhavaDetailPage() {
             <ChevronRight size={12} />
             <Link href="/chadhava" className="hover:text-amber-600">Chadhava</Link>
             <ChevronRight size={12} />
-            <span className="text-gray-900 font-medium">{getLocalizedValue(item.name)}</span>
+            <span className="text-gray-900 font-medium">{item.name}</span>
           </div>
         </div>
 
@@ -137,7 +137,7 @@ export default function ChadhavaDetailPage() {
                     {item.image ? (
                       <img
                         src={item.image}
-                        alt={getLocalizedValue(item.name)}
+                        alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     ) : (
@@ -147,7 +147,7 @@ export default function ChadhavaDetailPage() {
                     )}
                     {item.tag && (
                       <div className={`absolute top-4 left-4 ${item.tagColor || "bg-orange-500"} text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg`}>
-                        {getLocalizedValue(item.tag)}
+                        {item.tag}
                       </div>
                     )}
                   </div>
@@ -159,11 +159,11 @@ export default function ChadhavaDetailPage() {
                         <span>{item.category || "General Offering"}</span>
                         <span className="w-1 h-1 bg-amber-300 rounded-full"></span>
                         <span className="flex items-center gap-1">
-                          <MapPin size={10} /> {getLocalizedValue(item.templeId?.location) || "India"}
+                          <MapPin size={10} /> {item.templeId?.location || "India"}
                         </span>
                       </div>
                       <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                        {getLocalizedValue(item.name)}
+                        {item.name}
                       </h1>
                     </div>
 
@@ -174,13 +174,13 @@ export default function ChadhavaDetailPage() {
                     </div>
 
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      {getLocalizedValue(item.description)}
+                      {item.description}
                     </p>
 
                     <div className="pt-4 border-t border-amber-50 space-y-3">
                       <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
                         <CheckCircle2 size={16} className="text-green-500" />
-                        <span>Offered at {getLocalizedValue(item.templeId?.name)}</span>
+                        <span>Offered at {item.templeId?.name}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
                         <CheckCircle2 size={16} className="text-green-500" />
@@ -208,7 +208,7 @@ export default function ChadhavaDetailPage() {
                         <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
                           <CheckCircle2 size={16} className="text-amber-600" />
                         </div>
-                        <p className="text-xs text-gray-700 font-medium leading-relaxed">{getLocalizedValue(benefit)}</p>
+                        <p className="text-xs text-gray-700 font-medium leading-relaxed">{benefit}</p>
                       </div>
                     ))}
                   </div>

@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { getSettings, getTemplesAdmin } from "@/lib/actions/admin";
-import { getLocalizedValue } from "@/lib/utils/localization";
+import { getSettings } from "@/lib/actions/admin";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -32,7 +31,6 @@ interface Pooja {
   totalReviews: number;
   availableDays: string;
   images: string[];
-  templeId?: Temple;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -61,7 +59,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
         {puja.images?.[0] ? (
           <img
             src={puja.images[0]}
-            alt={getLocalizedValue(puja.name)}
+            alt={puja.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
@@ -82,7 +80,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
           <span
             className={`absolute top-3 left-3 ${puja.tagColor} text-white text-xs font-bold px-3 py-1 rounded-full`}
           >
-            {getLocalizedValue(puja.tag)}
+            {puja.tag}
           </span>
         )}
         <div className="absolute bottom-3 right-3">
@@ -95,7 +93,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 leading-snug">
-          {getLocalizedValue(puja.name)}
+          {puja.name}
         </h3>
 
         {/* Temple */}
@@ -114,7 +112,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
             />
           </svg>
           <p className="text-xs text-gray-500 line-clamp-1">
-            {getLocalizedValue(puja.templeId?.name || puja.templeIds?.[0]?.name)} {puja.templeIds?.length > 1 && `+ ${puja.templeIds.length - 1} more`}
+            {puja.templeIds?.[0]?.name} {puja.templeIds?.length > 1 && `+ ${puja.templeIds.length - 1} more`}
           </p>
         </div>
 
@@ -139,7 +137,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
         </div>
 
         <p className="text-xs text-gray-600 mb-4 line-clamp-2 leading-relaxed flex-1">
-          {getLocalizedValue(puja.description)}
+          {puja.description}
         </p>
 
         {/* Benefits */}
@@ -149,7 +147,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
               key={b}
               className="bg-orange-50 text-orange-700 text-xs px-2 py-0.5 rounded-full border border-orange-100"
             >
-              {getLocalizedValue(b)}
+              {b}
             </span>
           ))}
         </div>
@@ -157,13 +155,13 @@ function PujaCard({ puja }: { puja: Pooja }) {
         {/* Duration + CTA - Price removed */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
           <div>
-            <p className="text-xs text-gray-400">{getLocalizedValue(puja.duration)}</p>
+            <p className="text-xs text-gray-400">{puja.duration}</p>
           </div>
           <Link
             href={`/poojas/${puja.slug || puja._id}`}
             className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
           >
-            Participate in Puja
+            Participate Puja
             <svg
               className="w-3.5 h-3.5"
               fill="none"
@@ -217,20 +215,21 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-wrap gap-3 mb-4">
             <span className="bg-orange-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full">
-              Mandirlok Sacred Services
+              Divine Blessings through Puja
             </span>
             <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              100% Authentic Rituals
+              Vedic Rituals by Expert Pandits
             </span>
             <span className="bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              Video Proof Delivered
+              Video in 24–48 Hours
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Participate in Sacred Pujas
+            Mandirlok Special Pujas
           </h1>
           <p className="text-white/80 text-base max-w-xl leading-relaxed">
-            Select from 500+ puja services at India's most sacred temples and receive blessings from home.
+            Get authentic Vedic pujas performed at India's most powerful temples
+            on your behalf.
           </p>
         </div>
       </div>
@@ -243,19 +242,19 @@ function HowItWorksBanner() {
   const steps = [
     {
       title: "Choose Puja",
-      desc: "Select a puja and sacred temple.",
+      desc: "Select from 200+ authentic pujas across India's sacred temples",
     },
     {
-      title: "Add Details",
-      desc: "Provide your name and gotra.",
+      title: "Enter Your Name",
+      desc: "Panditji will chant your name in the Sankalp during the puja",
     },
     {
-      title: "Book & Pay",
-      desc: "Secure payment with Razorpay.",
+      title: "Secure Payment",
+      desc: "Pay securely via UPI, card or net banking through Razorpay",
     },
     {
-      title: "Puja Video",
-      desc: "Get video of your completed puja.",
+      title: "Get Puja Video",
+      desc: "Receive the video proof of your completed puja within 24–48 hrs",
     },
   ];
   return (
@@ -290,23 +289,6 @@ export default function PoojasPage() {
   const [search, setSearch] = useState("");
   const [bannerBg, setBannerBg] = useState("");
 
-  const filters = [
-    { id: "All Pujas", label: "All Pujas" },
-    { id: "Shiva", label: "Shiva" },
-    { id: "Vishnu", label: "Vishnu" },
-    { id: "Devi", label: "Devi" },
-    { id: "Ganesha", label: "Ganesha" },
-    { id: "Surya", label: "Surya" },
-    { id: "Navgraha", label: "Navgraha" },
-  ];
-
-  const sortOptions = [
-    { id: "Most Popular", label: "Most Popular" },
-    { id: "Price: Low to High", label: "Price: Low to High" },
-    { id: "Price: High to Low", label: "Price: High to Low" },
-    { id: "A-Z", label: "A-Z" },
-  ];
-
   // Fetch poojas from API
   useEffect(() => {
     const fetchBanner = async () => {
@@ -328,7 +310,6 @@ export default function PoojasPage() {
         const params = new URLSearchParams();
         if (activeFilter !== "All Pujas") params.set("deity", activeFilter);
         if (search) params.set("search", search);
-        params.set("lang", 'en');
 
         const res = await fetch(`/api/poojas?${params.toString()}`);
         const data = await res.json();
@@ -370,16 +351,16 @@ export default function PoojasPage() {
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-2 overflow-x-auto py-3 no-scrollbar">
-              {filters.map((f) => (
+              {FILTERS.map((f) => (
                 <button
-                  key={f.id}
-                  onClick={() => setActiveFilter(f.id)}
-                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeFilter === f.id
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeFilter === f
                     ? "bg-orange-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
-                  {f.label}
+                  {f}
                 </button>
               ))}
             </div>
@@ -416,8 +397,8 @@ export default function PoojasPage() {
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white text-gray-700"
             >
-              {sortOptions.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
+              {SORT_OPTIONS.map((s) => (
+                <option key={s}>{s}</option>
               ))}
             </select>
             <span className="text-sm text-gray-400 ml-auto">
@@ -462,12 +443,12 @@ export default function PoojasPage() {
           {/* Empty State */}
           {!loading && !error && poojas.length === 0 && (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4"></div>
+            <div className="text-6xl mb-4"></div>
               <h3 className="text-xl font-bold text-gray-700 mb-2">
-                No Results Found
+                No pujas found
               </h3>
               <p className="text-gray-500 mb-6">
-                Try adjusting your filters or search terms.
+                Try a different filter or search keyword
               </p>
               <button
                 onClick={() => {

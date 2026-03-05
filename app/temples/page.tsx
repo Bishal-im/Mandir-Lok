@@ -8,7 +8,6 @@ import Footer from "@/components/layout/Footer";
 import { Search, MapPin, ChevronRight, Heart, Star } from "lucide-react";
 import { getUserTempleFavorites, toggleTempleFavorite } from "@/lib/actions/user";
 import { getSettings } from "@/lib/actions/admin";
-import { getLocalizedValue } from "@/lib/utils/localization";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -90,13 +89,13 @@ function TempleCard({
         {temple.images?.[0] ? (
           <img
             src={temple.images[0]}
-            alt={getLocalizedValue(temple.name)}
+            alt={temple.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <ImagePlaceholder
             className="w-full h-full group-hover:scale-105 transition-transform duration-500"
-            label={getLocalizedValue(temple.name)}
+            label={temple.name}
           />
         )}
 
@@ -108,8 +107,8 @@ function TempleCard({
             onToggle(temple._id);
           }}
           className={`absolute top-3 right-3 w-9 h-9 backdrop-blur-md rounded-xl flex items-center justify-center transition-all shadow-sm z-20 ${isFavorite
-            ? "bg-rose-500 text-white"
-            : "bg-white/80 text-gray-400 hover:text-rose-500 hover:bg-white"
+              ? "bg-rose-500 text-white"
+              : "bg-white/80 text-gray-400 hover:text-rose-500 hover:bg-white"
             }`}
         >
           <Heart size={16} fill={isFavorite ? "currentColor" : "none"} />
@@ -119,7 +118,7 @@ function TempleCard({
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
           {temple.isFeatured && (
             <span className="bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-lg shadow-lg">
-              NEW
+              FEATURED
             </span>
           )}
           {temple.isPopular && (
@@ -139,16 +138,14 @@ function TempleCard({
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1 z-10 pointer-events-none">
-        <h3 className="font-bold text-gray-900 text-base mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{getLocalizedValue(temple.name)}</h3>
+        <h3 className="font-bold text-gray-900 text-base mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{temple.name}</h3>
 
         <div className="flex items-center gap-1.5 mb-2">
           <MapPin size={12} className="text-orange-400" />
-          <span className="text-xs text-gray-500 font-medium">
-            {temple.city}, {temple.state}
-          </span>
+          <span className="text-xs text-gray-500 font-medium">{temple.location}</span>
         </div>
 
-        <p className="text-xs text-gray-500 mb-4 leading-relaxed line-clamp-2 flex-1">{getLocalizedValue(temple.description)}</p>
+        <p className="text-xs text-gray-500 mb-4 leading-relaxed line-clamp-2 flex-1">{temple.description}</p>
 
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
           <div className="flex items-center gap-1">
@@ -198,13 +195,14 @@ function PageBanner({ bannerBg }: { bannerBg?: string }) {
       <div className="relative z-10 h-full flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <p className="text-orange-400 text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
-            <span className="w-8 h-[1px] bg-orange-500"></span> Mandirlok Sacred Services
+            <span className="w-8 h-[1px] bg-orange-500"></span> Sacred Pilgrimage Sites
           </p>
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            Temples
+            Temples of India
           </h1>
           <p className="text-white/80 text-base max-w-xl leading-relaxed">
-            Connect with holy pilgrimage sites and divine temples of India. Book pooja from the comfort of your home.
+            Explore 500+ sacred temples from Jyotirlingas to Shaktipeeths. Book authentic pujas and
+            receive divine blessings from India's most powerful spiritual destinations.
           </p>
         </div>
       </div>
@@ -223,27 +221,6 @@ export default function TemplesPage() {
   const [search, setSearch] = useState("");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const [bannerBg, setBannerBg] = useState("");
-
-  const categories = [
-    { id: "All Temples", label: "All Temples" },
-    { id: "Jyotirlinga", label: "Jyotirlinga" },
-    { id: "Shaktipeeth", label: "Shaktipeeth" },
-    { id: "Vaishnavite", label: "Vaishnavite" },
-    { id: "Char Dham", label: "Char Dham" },
-    { id: "Famous Temples", label: "Famous Temples" },
-  ];
-
-  const states = [
-    { id: "All States", label: "All States" },
-    { id: "Uttar Pradesh", label: "Uttar Pradesh" },
-    { id: "Gujarat", label: "Gujarat" },
-    { id: "Rajasthan", label: "Rajasthan" },
-    { id: "Uttarakhand", label: "Uttarakhand" },
-    { id: "Maharashtra", label: "Maharashtra" },
-    { id: "Tamil Nadu", label: "Tamil Nadu" },
-    { id: "Himachal Pradesh", label: "Himachal Pradesh" },
-    { id: "Madhya Pradesh", label: "Madhya Pradesh" },
-  ];
 
   // Fetch settings on mount
   useEffect(() => {
@@ -279,7 +256,6 @@ export default function TemplesPage() {
         if (activeState !== "All States") params.set("state", activeState);
         if (showFeaturedOnly) params.set("featured", "true");
         if (search) params.set("search", search);
-        params.set("lang", 'en');
 
         const res = await fetch(`/api/temples?${params.toString()}`);
         const data = await res.json();
@@ -330,16 +306,16 @@ export default function TemplesPage() {
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-2 overflow-x-auto py-3 no-scrollbar">
-              {categories.map((cat) => (
+              {CATEGORIES.map((cat) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeCategory === cat.id
-                    ? "bg-orange-500 text-white shadow-md"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeCategory === cat
+                      ? "bg-orange-500 text-white shadow-md"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
-                  {cat.label}
+                  {cat}
                 </button>
               ))}
             </div>
@@ -356,7 +332,7 @@ export default function TemplesPage() {
               </svg>
               <input
                 type="text"
-                placeholder="Search temples, cities, deities..."
+                placeholder="Search temples, deities, locations..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
@@ -369,7 +345,7 @@ export default function TemplesPage() {
               onChange={(e) => setActiveState(e.target.value)}
               className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white text-gray-700"
             >
-              {states.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+              {STATES.map((s) => <option key={s}>{s}</option>)}
             </select>
 
             {/* Featured Toggle */}
@@ -426,8 +402,8 @@ export default function TemplesPage() {
           {!loading && !error && temples.length === 0 && (
             <div className="text-center py-20">
               <div className="text-6xl mb-4"></div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">No Results Found</h3>
-              <p className="text-gray-500 mb-6">Try adjusting your filters or search terms.</p>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">No temples found</h3>
+              <p className="text-gray-500 mb-6">Try adjusting your filters or search query</p>
               <button
                 onClick={() => {
                   setSearch("");

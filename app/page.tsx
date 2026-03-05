@@ -7,8 +7,6 @@ import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
 import { getHomepageReviews } from "@/lib/actions/reviews";
 import { getFeaturedPoojas } from "@/lib/actions/poojas";
-import * as LucideIcons from "lucide-react";
-import { getLocalizedValue } from "@/lib/utils/localization";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Pooja {
@@ -33,42 +31,60 @@ interface Pooja {
 }
 
 // ── Temple Images (real Wikimedia Commons photos) ────────────────────────────
-const getHeroSlides = () => [
+const SLIDE_IMAGES = [
   {
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kashi_Vishwanath_Temple.jpg/1200px-Kashi_Vishwanath_Temple.jpg",
     title: "Perform Your Puja with Mandirlok",
-    subtitle: "Let your prayers reach the Divine through authentic Vedic rituals performed on your behalf at India's holiest temples.",
-    cta: "Participate in Puja",
+    subtitle:
+      "Let your prayers reach the Divine through authentic Vedic rituals performed on your behalf at India's holiest temples.",
+    cta: "Participate in a Puja",
     ctaLink: "/poojas",
-    secondary: "Temples",
+    secondary: "Explore Temples",
     secondaryLink: "/temples",
   },
   {
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Tirumala_temple_shoot.jpg/1200px-Tirumala_temple_shoot.jpg",
     title: "Sacred Chadhava Offerings",
-    subtitle: "Offer sacred items at renowned temples across India — from the comfort of your home.",
-    cta: "Chadhava",
+    subtitle:
+      "Offer sacred items at renowned temples across India — from the comfort of your home.",
+    cta: "Participate in Chadhava",
     ctaLink: "/chadhava",
-    secondary: "Temples",
+    secondary: "View All Temples",
     secondaryLink: "/temples",
   },
   {
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Mahakaleshwar_Jyotirlinga.jpg/1200px-Mahakaleshwar_Jyotirlinga.jpg",
     title: "Seek Divine Blessings Today",
-    subtitle: "Connect with 500+ temples. Participate in pujas, chadhava and receive videos of completed rituals delivered on WhatsApp.",
+    subtitle:
+      "Connect with 500+ temples. Participate in pujas, chadhava and receive videos of completed rituals delivered on WhatsApp.",
     cta: "Get Started",
     ctaLink: "/poojas",
-    secondary: "How Mandirlok Works",
+    secondary: "How It Works",
     secondaryLink: "#how-it-works",
   },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Vaishno-devi-bhavan.jpg/1200px-Vaishno-devi-bhavan.jpg",
+    title: "Experience Mata's Blessings",
+    subtitle:
+      "Can't travel to Mata Vaishno Devi? Let us carry your prayers to the divine abode in the Trikuta Mountains.",
+    cta: "Participate in Aarti Seva",
+    ctaLink: "/poojas",
+    secondary: "Explore Devi Temples",
+    secondaryLink: "/temples",
+  },
+];
+
+const TRUST_BADGES = [
+  { icon: "🙏", label: "Trusted by 1 Million+ Devotees" },
+  { icon: "🛡️", label: "100% Secure Payments" },
+  { icon: "🛕", label: "500+ Sacred Temples" },
+  { icon: "📹", label: "Video Proof of Every Puja" },
 ];
 
 
 
 
-
-
-const getHowItWorks = () => [
+const HOW_IT_WORKS = [
   {
     step: "01",
     title: "Choose Your Puja",
@@ -113,14 +129,14 @@ const getHowItWorks = () => [
   },
 ];
 
-const getStats = () => [
+const STATS = [
   { value: "1M+", label: "Devotees Served" },
   { value: "500+", label: "Sacred Temples" },
   { value: "50K+", label: "Pujas Completed" },
   { value: "25+", label: "States Covered" },
 ];
 
-const getFeatures = () => [
+const FEATURES = [
   {
     icon: (
       <svg className="w-8 h-8 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -242,7 +258,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
         {puja.images?.[0] ? (
           <img
             src={puja.images[0]}
-            alt={getLocalizedValue(puja.name)}
+            alt={puja.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
@@ -260,7 +276,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
         {puja.tag && (
           <div className="absolute top-4 right-4 z-10">
             <span className={`${puja.tagColor || "bg-orange-500"} text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg backdrop-blur-sm`}>
-              {getLocalizedValue(puja.tag)}
+              {puja.tag}
             </span>
           </div>
         )}
@@ -270,12 +286,12 @@ function PujaCard({ puja }: { puja: Pooja }) {
         <div className="flex items-center gap-2 mb-3">
           <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
           <span className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
-            {puja.deity || "Sacred"} Pujas
+            {puja.deity || "Sacred"} Special
           </span>
         </div>
 
         <h3 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300 mb-2 line-clamp-2">
-          {getLocalizedValue(puja.name)}
+          {puja.name}
         </h3>
 
         <div className="flex items-start gap-2 mb-4">
@@ -283,22 +299,22 @@ function PujaCard({ puja }: { puja: Pooja }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          <p className="text-sm text-gray-600 leading-snug">{getLocalizedValue(puja.templeId?.name)}, {puja.templeId?.city}</p>
+          <p className="text-sm text-gray-600 leading-snug">{puja.templeId?.name}, {puja.templeId?.city}</p>
         </div>
 
         <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-3">
-          {getLocalizedValue(puja.description)}
+          {puja.description}
         </p>
 
         <div className="mt-auto flex flex-col gap-4">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100/50">
             <div>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Contribution</p>
-              <p className="font-bold text-gray-900 text-sm">{getLocalizedValue(puja.benefits?.[0]) || "Grace"}</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Benefit</p>
+              <p className="font-bold text-gray-900 text-sm">{puja.benefits?.[0] || "Grace"}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Available Days</p>
-              <p className="font-bold text-orange-600 text-sm">{getLocalizedValue(puja.availableDays) || "Daily"}</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Schedule</p>
+              <p className="font-bold text-orange-600 text-sm">{puja.availableDays || "Daily"}</p>
             </div>
           </div>
 
@@ -308,7 +324,7 @@ function PujaCard({ puja }: { puja: Pooja }) {
             href={`/poojas/${puja.slug}`}
             className="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl text-center group-hover:bg-orange-600 transition-all duration-300 shadow-xl shadow-gray-200 group-hover:shadow-orange-200"
           >
-            Participate Puja
+            Participate Now
           </Link>
         </div>
       </div>
@@ -335,11 +351,7 @@ function HeroSection() {
     }, 800);
   };
 
-  const [heroSlides, setHeroSlides] = useState(getHeroSlides());
-
-  useEffect(() => {
-    setHeroSlides(getHeroSlides());
-  }, []);
+  const [heroSlides, setHeroSlides] = useState(SLIDE_IMAGES);
 
   useEffect(() => {
     async function fetchSlides() {
@@ -548,43 +560,22 @@ function HeroSection() {
 }
 
 // ── Trust Bar — infinite scrolling marquee ──────────────────────────────────
-const getMarqueeItems = () => [
-  { icon: "Users", label: "Trusted by 1 Million+ Devotees" },
-  { icon: "ShieldCheck", label: "100% Secure Payments" },
-  { icon: "Building2", label: "500+ Sacred Temples" },
-  { icon: "Video", label: "Video Proof Delivered" },
-  { icon: "Zap", label: "Participate in 2 Minutes" },
-  { icon: "CheckCircle2", label: "100% Authentic Rituals" },
-  { icon: "Globe", label: "Devotees in 30+ Countries" },
-  { icon: "MessageSquare", label: "WhatsApp Support" },
-  { icon: "Truck", label: "Prasad Home Delivery" },
+const MARQUEE_ITEMS = [
+  { icon: "", label: "Trusted by 1 Million+ Devotees" },
+  { icon: "", label: "100% Secure Payments" },
+  { icon: "", label: "500+ Sacred Temples" },
+  { icon: "", label: "Video Proof of Every Puja" },
+  { icon: "", label: "Participation in Under 2 Minutes" },
+  { icon: "", label: "Authentic Vedic Rituals" },
+  { icon: "", label: "Devotees in 30+ Countries" },
+  { icon: "", label: "WhatsApp Support 24/7" },
+  { icon: "", label: "Prasad Delivered to Door" },
+  { icon: "", label: "100% Money-Back Guarantee" },
 ];
 
-function MarqueeIcon({ name, className }: { name: string; className?: string }) {
-  const Icon = (LucideIcons as any)[name];
-  if (!Icon) return null;
-  return <Icon className={className} />;
-}
-
 function TrustBar() {
-  const [items, setItems] = useState(getMarqueeItems());
-
-  useEffect(() => {
-    setItems(getMarqueeItems());
-  }, []);
-
-  useEffect(() => {
-    async function fetchMarquee() {
-      const res = await getSettings("marquee_items");
-      if (res && res.value && res.value.length > 0) {
-        setItems(res.value);
-      }
-    }
-    fetchMarquee();
-  }, []);
-
   return (
-    <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-b border-orange-200/30 shadow-sm overflow-hidden py-4 relative">
+    <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-b border-orange-200/30 shadow-sm overflow-hidden py-3 relative">
       <div
         className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
         style={{
@@ -610,20 +601,16 @@ function TrustBar() {
         .marquee-track:hover { animation-play-state: paused; }
       `}</style>
       <div className="marquee-track">
-        {[...items, ...items].map((item, i) => (
+        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 px-8 whitespace-nowrap"
+            className="flex items-center gap-2.5 px-7 whitespace-nowrap"
           >
-            {item.icon.length > 2 ? (
-              <MarqueeIcon name={item.icon} className="w-5 h-5 text-orange-950" />
-            ) : (
-              <span className="text-xl leading-none">{item.icon}</span>
-            )}
-            <span className="text-sm font-bold text-[#1a0500] uppercase tracking-tight">
+            <span className="text-xl leading-none">{item.icon}</span>
+            <span className="text-sm font-bold text-[#1a0500]">
               {item.label}
             </span>
-            <span className="text-orange-950/20 text-xs ml-6 font-black tracking-widest hidden sm:inline">●</span>
+            <span className="text-orange-950 text-lg ml-4">✦</span>
           </div>
         ))}
       </div>
@@ -633,7 +620,6 @@ function TrustBar() {
 
 // ── How It Works ─────────────────────────────────────────────────────────────
 function HowItWorksSection() {
-  const howItWorks = getHowItWorks();
   return (
     <section
       id="how-it-works"
@@ -646,9 +632,9 @@ function HowItWorksSection() {
           subtitle="A seamless 4-step process to get authentic puja performed at India's sacred temples on your behalf."
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {howItWorks.map((step, i) => (
+          {HOW_IT_WORKS.map((step, i) => (
             <div key={i} className="relative text-center group">
-              {i < howItWorks.length - 1 && (
+              {i < HOW_IT_WORKS.length - 1 && (
                 <div className="hidden lg:block absolute top-10 left-[calc(50%+3rem)] w-full h-px border-t-2 border-dashed border-orange-200 z-0" />
               )}
               <div className="relative z-10">
@@ -725,7 +711,6 @@ function StatsSection({ stats }: { stats: any[] }) {
 
 // ── Features ──────────────────────────────────────────────────────────────────
 function FeaturesSection() {
-  const features = getFeatures();
   return (
     <section className="py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -735,7 +720,7 @@ function FeaturesSection() {
           subtitle="Mandirlok brings together the most sacred temples, trained pandits, and modern technology to serve your spiritual journey."
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((f, i) => (
+          {FEATURES.map((f, i) => (
             <div
               key={i}
               className="flex gap-4 p-6 rounded-2xl hover:bg-orange-50 transition-colors duration-200 group border border-transparent hover:border-orange-100"
@@ -839,11 +824,7 @@ function TestimonialsSection() {
 export default function HomePage() {
   const [poojas, setPoojas] = useState<Pooja[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState(getStats());
-
-  useEffect(() => {
-    setStats(getStats());
-  }, []);
+  const [stats, setStats] = useState(STATS);
 
   useEffect(() => {
     async function fetchStats() {
@@ -851,15 +832,7 @@ export default function HomePage() {
         const res = await fetch("/api/stats");
         const data = await res.json();
         if (data.success) {
-          const mappedStats = data.stats.map((s: any) => {
-            let label = s.label;
-            if (s.key === "devotees") label = "Devotees Served";
-            if (s.key === "temples") label = "Sacred Temples";
-            if (s.key === "pujas") label = "Pujas Completed";
-            if (s.key === "states") label = "States Covered";
-            return { value: s.value, label };
-          });
-          setStats(mappedStats);
+          setStats(data.stats);
         }
       } catch (err) {
         console.error("fetchStats error:", err);
@@ -870,7 +843,7 @@ export default function HomePage() {
     async function fetchPoojas() {
       try {
         setLoading(true);
-        const res = await getFeaturedPoojas('en');
+        const res = await getFeaturedPoojas();
         if (res.success) {
           setPoojas(res.data);
         }
@@ -894,9 +867,9 @@ export default function HomePage() {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader
-              tag="Special Pujas"
-              title="Upcoming Sacred Rituals"
-              subtitle="Participate in specially curated pujas performed at holy shrines for divine blessings."
+              tag="Mandirlok Special Pujas"
+              title="Upcoming Sacred Pujas & Rituals"
+              subtitle="Participate in authentic pujas performed at India's most powerful temples. Receive a video within 24–48 hours."
             />
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">

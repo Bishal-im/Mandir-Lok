@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, Save, IndianRupee, Info, Image as ImageIcon, MapPin } from "lucide-react";
+import { ChevronLeft, Save, IndianRupee, Info, Image as ImageIcon, Upload } from "lucide-react";
 import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
 import { getChadhavaById, updateChadhava, getTemplesAdmin } from "@/lib/actions/admin";
@@ -15,31 +15,15 @@ export default function EditChadhavaPage() {
     const [error, setError] = useState("");
     const [temples, setTemples] = useState([]);
 
-    const languages = [
-        { code: "en", name: "English" },
-        { code: "hi", name: "Hindi" },
-        { code: "ne", name: "Nepali" },
-        { code: "mr", name: "Marathi" },
-        { code: "ta", name: "Tamil" },
-    ];
-    const [activeLang, setActiveLang] = useState("en");
-
     const [formData, setFormData] = useState({
-        name: { en: "", hi: "", ne: "", mr: "", ta: "" },
+        name: "",
         templeId: "",
         emoji: "🌸",
         image: "",
         price: 0,
-        description: { en: "", hi: "", ne: "", mr: "", ta: "" },
+        description: "",
         isActive: true,
     });
-
-    const ensureLocalized = (val: any) => {
-        if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-            return { en: "", hi: "", ne: "", mr: "", ta: "", ...val };
-        }
-        return { en: typeof val === "string" ? val : "", hi: "", ne: "", mr: "", ta: "" };
-    };
 
     useEffect(() => {
         async function fetchData() {
@@ -49,12 +33,7 @@ export default function EditChadhavaPage() {
                 setTemples(t);
                 if (item) {
                     const { _id, createdAt, updatedAt, __v, ...cleanData } = item;
-                    setFormData({ 
-                        ...formData, 
-                        ...cleanData,
-                        name: ensureLocalized(cleanData.name),
-                        description: ensureLocalized(cleanData.description)
-                    });
+                    setFormData({ ...formData, ...cleanData });
                 } else {
                     setError("Chadhava item not found");
                 }
@@ -66,13 +45,6 @@ export default function EditChadhavaPage() {
         }
         fetchData();
     }, [id]);
-
-    const handleLocalizedChange = (field: string, val: string, lang: string) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: { ...(prev as any)[field], [lang]: val }
-        }));
-    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -119,41 +91,22 @@ export default function EditChadhavaPage() {
                 </div>
             )}
 
-            {/* Language Toggler */}
-            <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-2xl w-fit">
-                {languages.map(l => (
-                    <button
-                        key={l.code}
-                        type="button"
-                        onClick={() => setActiveLang(l.code)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeLang === l.code ? "bg-white text-[#ff7f0a] shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-                    >
-                        {l.name}
-                    </button>
-                ))}
-            </div>
-
             <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm space-y-6">
                 <div className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Item Name ({activeLang})</label>
-                        <input 
-                            required 
-                            value={(formData.name as any)[activeLang]} 
-                            onChange={e => handleLocalizedChange("name", e.target.value, activeLang)} 
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20" 
-                        />
+                        <label className="text-xs font-bold text-gray-500 uppercase">Item Name</label>
+                        <input required name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none" />
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1 tracking-wider"><ImageIcon size={12} /> Image URL</label>
+                        <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><ImageIcon size={12} /> Image URL</label>
                         <div className="flex gap-2">
                             <input 
                                 name="image" 
                                 value={formData.image} 
                                 onChange={handleChange} 
                                 placeholder="https://..." 
-                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20" 
+                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200" 
                             />
                             <CloudinaryUploader 
                                 onUploadSuccess={(url) => setFormData({ ...formData, image: url })}
@@ -166,30 +119,25 @@ export default function EditChadhavaPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Emoji</label>
-                            <input name="emoji" value={formData.emoji} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20" />
+                            <label className="text-xs font-bold text-gray-500 uppercase">Emoji</label>
+                            <input name="emoji" value={formData.emoji} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200" />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1 tracking-wider"><IndianRupee size={12} /> Price (₹)</label>
-                            <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20" />
+                            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><IndianRupee size={12} /> Price (₹)</label>
+                            <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200" />
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1"><MapPin size={12} /> Temple Assignment</label>
-                        <select name="templeId" value={formData.templeId} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#ff7f0a]/20">
+                        <label className="text-xs font-bold text-gray-500 uppercase">Temple Assignment</label>
+                        <select name="templeId" value={formData.templeId} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white">
                             {temples.map((t: any) => <option key={t._id} value={t._id}>{t.name}</option>)}
                         </select>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Description ({activeLang})</label>
-                        <textarea 
-                            value={(formData.description as any)[activeLang]} 
-                            onChange={e => handleLocalizedChange("description", e.target.value, activeLang)} 
-                            rows={3} 
-                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20 resize-none" 
-                        />
+                        <label className="text-xs font-bold text-gray-500 uppercase">Description</label>
+                        <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none" />
                     </div>
 
                     <label className="flex items-center gap-3 cursor-pointer group pt-2">
@@ -205,8 +153,8 @@ export default function EditChadhavaPage() {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                    <Link href="/admin/chadhava" className="px-8 py-3 rounded-xl border border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-colors">Cancel</Link>
-                    <button type="submit" disabled={saving} className="px-10 py-3 rounded-xl bg-[#ff7f0a] text-white font-bold shadow-lg shadow-[#ff7f0a]/30 hover:-translate-y-0.5 transition-all">
+                    <Link href="/admin/chadhava" className="px-8 py-3 rounded-xl border border-gray-200 text-gray-500 font-semibold">Cancel</Link>
+                    <button type="submit" disabled={saving} className="px-10 py-3 rounded-xl bg-[#ff7f0a] text-white font-bold shadow-lg shadow-[#ff7f0a]/30 transition-all">
                         {saving ? "Saving..." : "Update Item"}
                     </button>
                 </div>

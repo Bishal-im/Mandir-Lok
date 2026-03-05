@@ -1,23 +1,15 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export interface ILocalizedString {
-  en: string;
-  hi?: string;
-  ne?: string;
-  mr?: string;
-  ta?: string;
-}
-
 export interface ITemple extends Document {
-  name: string | ILocalizedString; // Support both for migration fallback
+  name: string;
   slug: string;
   location: string;
   city: string;
   state: string;
   category: "Jyotirlinga" | "Shaktipeeth" | "Vaishnavite" | "Char Dham" | "Famous Temples";
   deity: string;
-  description: string | ILocalizedString;
-  about: string | ILocalizedString;
+  description: string;
+  about: string;
   images: string[];
   rating: number;
   totalReviews: number;
@@ -33,17 +25,9 @@ export interface ITemple extends Document {
   updatedAt: Date;
 }
 
-const LocalizedStringSchema = new Schema({
-  en: { type: String, required: true },
-  hi: { type: String, default: "" },
-  ne: { type: String, default: "" },
-  mr: { type: String, default: "" },
-  ta: { type: String, default: "" },
-}, { _id: false });
-
 const TempleSchema = new Schema<ITemple>(
   {
-    name: { type: Schema.Types.Mixed, required: true },
+    name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
     location: { type: String, required: true },
     city: { type: String, required: true },
@@ -54,8 +38,8 @@ const TempleSchema = new Schema<ITemple>(
       required: true,
     },
     deity: { type: String, required: true },
-    description: { type: Schema.Types.Mixed, required: true },
-    about: { type: Schema.Types.Mixed, default: "" },
+    description: { type: String, required: true },
+    about: { type: String, default: "" },
     images: [{ type: String }],
     rating: { type: Number, default: 4.5, min: 0, max: 5 },
     totalReviews: { type: Number, default: 0 },

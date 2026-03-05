@@ -21,7 +21,7 @@ export default function VideoUploadModal({ orderId, devoteeName, poojaName, onSu
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    
     // Simple URL validation
     try {
       new URL(videoUrl)
@@ -40,7 +40,7 @@ export default function VideoUploadModal({ orderId, devoteeName, poojaName, onSu
         body: JSON.stringify({ videoUrl }),
       })
       const data = await res.json()
-
+      
       if (data.success) {
         setStep('success')
         onSuccess()
@@ -58,10 +58,10 @@ export default function VideoUploadModal({ orderId, devoteeName, poojaName, onSu
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-
+      
       {/* Content */}
       <div className="bg-white rounded-2xl w-full max-w-md relative z-10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <button
+        <button 
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
         >
@@ -73,21 +73,21 @@ export default function VideoUploadModal({ orderId, devoteeName, poojaName, onSu
             <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6 mx-auto">
               <Video size={32} />
             </div>
-
+            
             <div className="text-center mb-8">
               <h3 className="font-display text-xl font-bold text-gray-900">Upload Video for {poojaName}</h3>
               <p className="text-sm text-gray-500 mt-2">
                 Recording for devotee: <span className="font-bold text-[#ff7f0a]">{devoteeName}</span>
               </p>
               <p className="text-[11px] text-[#6b5b45] mt-1">
-                Link will be sent to their WhatsApp automatically.
+                 Link will be sent to their WhatsApp automatically.
               </p>
             </div>
 
             {/* Direct Cloudinary Upload */}
             <div className="mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Option 1: Direct Upload</p>
-              <CloudinaryUploader
+              <CloudinaryUploader 
                 folder="pooja_recordings"
                 onUploadSuccess={(url) => {
                   setVideoUrl(url);
@@ -148,7 +148,7 @@ export default function VideoUploadModal({ orderId, devoteeName, poojaName, onSu
             <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-green-600 mb-6 mx-auto">
               <CheckCircle size={48} />
             </div>
-
+            
             <h3 className="font-display text-2xl font-bold text-gray-900 mb-3">Pooja Completed!</h3>
             <p className="text-gray-600 mb-8">
               The video link has been shared with the devotee on WhatsApp. Your earnings have been updated.

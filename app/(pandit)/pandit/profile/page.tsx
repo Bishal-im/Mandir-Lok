@@ -13,32 +13,15 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [pandit, setPandit] = useState<any>(null)
-
-  const languages = [
-    { code: "en", name: "English" },
-    { code: "hi", name: "Hindi" },
-    { code: "ne", name: "Nepali" },
-    { code: "mr", name: "Marathi" },
-    { code: "ta", name: "Tamil" },
-  ];
-  const [activeLang, setActiveLang] = useState("en");
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    bio: { en: "", hi: "", ne: "", mr: "", ta: "" },
+    bio: '',
     languages: '',
     photo: '',
     whatsapp: ''
   })
   const [message, setMessage] = useState({ type: '', text: '' })
-
-  const ensureLocalized = (val: any) => {
-    if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-      return { en: "", hi: "", ne: "", mr: "", ta: "", ...val };
-    }
-    return { en: typeof val === "string" ? val : "", hi: "", ne: "", mr: "", ta: "" };
-  };
 
   useEffect(() => {
     fetch('/api/pandit/me')
@@ -49,7 +32,7 @@ export default function ProfilePage() {
           setFormData({
             name: data.data.name || '',
             email: data.data.email || '',
-            bio: ensureLocalized(data.data.bio),
+            bio: data.data.bio || '',
             languages: (data.data.languages || []).join(', '),
             photo: data.data.photo || '',
             whatsapp: data.data.whatsapp || ''
@@ -58,13 +41,6 @@ export default function ProfilePage() {
       })
       .finally(() => setLoading(false))
   }, [])
-
-  const handleLocalizedBioChange = (val: string, lang: string) => {
-    setFormData(prev => ({
-      ...prev,
-      bio: { ...prev.bio, [lang]: val }
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -115,8 +91,8 @@ export default function ProfilePage() {
         </header>
 
         <main className="p-6 max-w-4xl mx-auto space-y-8">
-          <form onSubmit={handleSubmit} className="grid md:grid-cols-3 gap-8 pb-20">
-            {/* Left Col - Avatar & Bio Placeholder */}
+          <form onSubmit={handleSubmit} className="grid md:grid-cols-3 gap-8">
+            {/* Left Col - Avatar & Bio */}
             <div className="md:col-span-1 space-y-6">
               <div className="bg-white border border-[#f0dcc8] rounded-3xl p-8 shadow-card text-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-20 h-20 bg-[#fff8f0] rounded-bl-full -mr-10 -mt-10 opacity-50" />
@@ -200,7 +176,7 @@ export default function ProfilePage() {
                           className="flex-1 input-divine"
                           placeholder="https://..."
                         />
-                        <CloudinaryUploader
+                        <CloudinaryUploader 
                           onUploadSuccess={(url) => setFormData({ ...formData, photo: url })}
                           folder="pandits"
                           resourceType="image"
@@ -227,7 +203,7 @@ export default function ProfilePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><Languages size={14} /> Spoken Languages (Comma Separated)</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><Languages size={14} /> Languages (Comma Separated)</label>
                       <input
                         type="text"
                         value={formData.languages}
@@ -239,29 +215,14 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2"><FileText size={14} /> Professional Bio ({activeLang})</label>
-                    <div className="flex gap-1 p-0.5 bg-gray-50 border border-gray-100 rounded-lg">
-                      {languages.map(l => (
-                        <button
-                          key={l.code}
-                          type="button"
-                          onClick={() => setActiveLang(l.code)}
-                          className={`px-2 py-1 rounded text-[10px] font-bold transition-all ${activeLang === l.code ? "bg-[#ff7f0a] text-white shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
-                        >
-                          {l.code.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div className="mt-8">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><FileText size={14} /> Professional Bio</label>
                   <textarea
-                    value={(formData.bio as any)[activeLang]}
-                    onChange={(e) => handleLocalizedBioChange(e.target.value, activeLang)}
-                    className="input-divine w-full min-h-[160px] py-4 resize-none"
-                    placeholder={`Tell devotees about your expertise in ${languages.find(l => l.code === activeLang)?.name}...`}
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    className="input-divine w-full min-h-[120px] py-4"
+                    placeholder="Tell devotees about your lineage, expertise and years of spiritual practice..."
                   />
-                  <p className="text-[10px] text-gray-400 italic">Devotees will see the bio in their selected language.</p>
                 </div>
 
                 {message.text && (
@@ -273,36 +234,35 @@ export default function ProfilePage() {
                 <div className="mt-8 pt-8 border-t border-[#fdf6ee] flex justify-end">
                   <button
                     disabled={submitting}
-                    className="btn-saffron px-10 py-3.5 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition-all"
+                    className="btn-saffron px-10 py-3.5 flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20"
                   >
                     {submitting ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={18} />}
                     {submitting ? 'Saving...' : 'Save Profile Changes'}
                   </button>
                 </div>
               </div>
-
-              {/* Aadhaar Card Section - Read Only */}
-              <div className="bg-white border border-[#f0dcc8] rounded-3xl shadow-card p-8 space-y-4">
-                <div className="flex items-center gap-2 border-b border-[#fdf6ee] pb-4">
-                  <FileText size={18} className="text-[#ff7f0a]" />
-                  <p className="text-sm font-bold text-gray-900">Aadhaar Card Verification</p>
-                  {pandit?.aadhaarStatus && pandit.aadhaarStatus !== 'none' && (
-                    <span className={`ml-auto px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${pandit.aadhaarStatus === 'verified' ? 'bg-green-100 text-green-700 border border-green-200' :
-                      pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600 border border-red-200' :
-                        'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                      }`}>
-                      {pandit.aadhaarStatus}
-                    </span>
-                  )}
-                </div>
-                {pandit?.aadhaarCardUrl ? (
-                  <div className="relative rounded-2xl overflow-hidden border border-[#f0dcc8] shadow-inner max-w-sm">
-                    <img src={pandit.aadhaarCardUrl} alt="Aadhaar Card" className="w-full object-cover" />
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-400 italic">No Aadhaar card uploaded yet. Complete the onboarding to upload it.</p>
+            </div>
+            {/* Aadhaar Card Section - Read Only */}
+            <div className="bg-white border border-[#f0dcc8] rounded-3xl shadow-card p-8 space-y-4">
+              <div className="flex items-center gap-2 border-b border-[#fdf6ee] pb-4">
+                <FileText size={18} className="text-[#ff7f0a]" />
+                <p className="text-sm font-bold text-gray-900">Aadhaar Card</p>
+                {pandit?.aadhaarStatus && pandit.aadhaarStatus !== 'none' && (
+                  <span className={`ml-auto px-2 py-0.5 rounded text-[9px] font-bold uppercase ${pandit.aadhaarStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                      pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600' :
+                        'bg-yellow-100 text-yellow-700'
+                    }`}>
+                    {pandit.aadhaarStatus}
+                  </span>
                 )}
               </div>
+              {pandit?.aadhaarCardUrl ? (
+                <div className="relative rounded-2xl overflow-hidden border border-[#f0dcc8] shadow-inner max-w-sm">
+                  <img src={pandit.aadhaarCardUrl} alt="Aadhaar Card" className="w-full object-cover" />
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic">No Aadhaar card uploaded yet. Complete the onboarding to upload it.</p>
+              )}
             </div>
           </form>
         </main>

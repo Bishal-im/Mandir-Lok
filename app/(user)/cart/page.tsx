@@ -6,7 +6,6 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, Shield, Loader2, Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
-import { getLocalizedValue } from "@/lib/utils/localization";
 
 // ── Razorpay types ─────────────────────────────────────────────────────────────
 declare global {
@@ -173,7 +172,7 @@ function CartContent() {
 
   let totalObj = { base: 0, offerings: 0, sum: 0 };
   const selectedPackage = (pooja && packageIndex !== null) ? pooja.packages[parseInt(packageIndex)] : null;
-
+  
   if (pooja) {
     totalObj.base = selectedPackage ? selectedPackage.price : (pooja.price * qty);
     totalObj.offerings = selectedOfferings.reduce((sum, o) => sum + (o.price * (o.quantity || 1)), 0);
@@ -223,7 +222,7 @@ function CartContent() {
           amount: amount * 100,
           currency: "INR",
           name: "MandirLok",
-          description: `Booking: ${pooja ? (getLocalizedValue(pooja.name) === 'Sacred Offering' ? selectedOfferings.map(o => getLocalizedValue(o.name)).join(', ') : getLocalizedValue(pooja.name)) : 'Direct Temple Donation'}`,
+          description: `Booking: ${pooja ? (pooja.name === 'Sacred Offering' ? selectedOfferings.map(o => o.name).join(', ') : pooja.name) : 'Direct Temple Donation'}`,
           order_id: razorpayOrderId,
           prefill: {
             name: form.name,
@@ -496,7 +495,7 @@ function CartContent() {
               <div className="flex items-center gap-3 pb-4 border-b border-[#f0dcc8] mb-4">
                 <div className="w-12 h-12 bg-[#fff8f0] rounded-xl flex items-center justify-center text-2xl overflow-hidden">
                   {pooja?.images && pooja.images.length > 0 ? (
-                    <img src={pooja.images[0]} alt={getLocalizedValue(pooja.name)} className="w-full h-full object-cover" />
+                    <img src={pooja.images[0]} alt={pooja.name} className="w-full h-full object-cover" />
                   ) : pooja ? (
                     <svg className="w-6 h-6 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -509,9 +508,9 @@ function CartContent() {
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-[#1a1209] text-sm">
-                    {pooja ? (getLocalizedValue(pooja.name) === 'Sacred Offering' ? 'Chadhava Offering' : getLocalizedValue(pooja.name)) : 'Sacred Contribution'}
+                    {pooja ? (pooja.name === 'Sacred Offering' ? 'Chadhava Offering' : pooja.name) : 'Sacred Contribution'}
                   </p>
-                  <p className="text-xs text-[#ff7f0a]">Temple: {getLocalizedValue(pooja?.templeId?.name)}</p>
+                  <p className="text-xs text-[#ff7f0a]">Temple: {pooja?.templeId?.name}</p>
                   {isDonationParam && (
                     <p className="text-[10px] inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-bold mt-1">
                       {pooja ? 'Direct Donation' : 'Temple Support'}
@@ -521,8 +520,8 @@ function CartContent() {
                     <p className="text-xs text-[#6b5b45]">Date: {new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
                   )}
                   {selectedPackage ? (
-                    <p className="text-xs font-bold text-amber-600 mt-1">Package: {getLocalizedValue(selectedPackage.name)}</p>
-                  ) : pooja && getLocalizedValue(pooja.name) !== 'Sacred Offering' && (
+                    <p className="text-xs font-bold text-amber-600 mt-1">Package: {selectedPackage.name}</p>
+                  ) : pooja && pooja.name !== 'Sacred Offering' && (
                     <p className="text-xs text-[#6b5b45]">Devotees: {qty} Devotee{qty > 1 ? "s" : ""}</p>
                   )}
                 </div>
@@ -534,13 +533,13 @@ function CartContent() {
                 <div key={o._id} className="flex justify-between items-center text-xs text-[#6b5b45] mb-2">
                   <div className="flex items-center gap-2">
                     {o.image ? (
-                      <img src={o.image} alt={getLocalizedValue(o.name)} className="w-4 h-4 rounded-sm object-cover" />
+                      <img src={o.image} alt={o.name} className="w-4 h-4 rounded-sm object-cover" />
                     ) : (
                       <svg className="w-3 h-3 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     )}
-                    {getLocalizedValue(o.name)}
+                    {o.name}
                     {o.quantity > 1 && <span className="ml-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">x{o.quantity}</span>}
                   </div>
                   <span>₹{(o.price * o.quantity).toLocaleString()}</span>

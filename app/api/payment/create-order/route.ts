@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         );
       }
       poojaAmount = pooja.price * qty;
-      poojaName = typeof pooja.name === "object" ? (pooja.name.en || pooja.name.hi || "") : pooja.name;
+      poojaName = pooja.name;
     }
 
     // Calculate chadhava total
