@@ -8,6 +8,7 @@ export async function POST() {
     sameSite: "lax",
     maxAge: 0,
     path: "/",
+    ...(process.env.NODE_ENV === "production" && { domain: ".mandirlok.com" }),
   });
   return response;
 }
