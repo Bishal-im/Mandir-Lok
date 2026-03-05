@@ -172,7 +172,7 @@ function CartContent() {
 
   let totalObj = { base: 0, offerings: 0, sum: 0 };
   const selectedPackage = (pooja && packageIndex !== null) ? pooja.packages[parseInt(packageIndex)] : null;
-  
+
   if (pooja) {
     totalObj.base = selectedPackage ? selectedPackage.price : (pooja.price * qty);
     totalObj.offerings = selectedOfferings.reduce((sum, o) => sum + (o.price * (o.quantity || 1)), 0);
@@ -207,8 +207,9 @@ function CartContent() {
         body: JSON.stringify({
           poojaId,
           qty,
-          chadhavaIds: selectedOfferingIds,
+          chadhavaIds: selectedOfferings.length > 0 ? selectedOfferings.map(o => ({ id: o._id, quantity: o.quantity || 1 })) : selectedOfferingIds,
           extraDonation: customAmountParam,
+          packageIndex: packageIndex !== null ? parseInt(packageIndex) : undefined,
         }),
       });
       const orderData = await orderRes.json();
