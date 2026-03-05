@@ -150,7 +150,7 @@ export default function AartiPage() {
                                 className="flex justify-center"
                             >
                                 <motion.img
-                                    src="/images/aarti/aarti.png"
+                                    src="/images/aarti/aarti-thali.png"
                                     alt="Aarti"
                                     className="w-32 sm:w-44 h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
                                     animate={isAartiPerforming ? { rotate: -360, scale: [1, 1.05, 1] } : { rotate: 0, scale: 1 }}
