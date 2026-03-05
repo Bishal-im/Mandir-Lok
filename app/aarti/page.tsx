@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
-import MusicPlayer from "@/components/MusicPlayer";
+import { useMusicPlayer } from "@/context/MusicContext";
+import { Play, Pause } from "lucide-react";
 
 const DEFAULT_DEITIES = [
     { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png", color: "from-blue-500 to-indigo-800" },
@@ -13,6 +14,13 @@ const DEFAULT_DEITIES = [
     { id: "ganesha", name: "Ganesh ji", image: "/images/aarti/ganesha.png", color: "from-red-500 to-orange-500" },
     { id: "durga", name: "Durga Maa", image: "/images/aarti/durga.png", color: "from-rose-500 to-red-700" },
 ];
+
+function formatTime(time: number) {
+    if (!time || isNaN(time)) return "0:00";
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
 
 export default function AartiPage() {
     const [deities, setDeities] = useState(DEFAULT_DEITIES);
@@ -22,7 +30,9 @@ export default function AartiPage() {
     const [isLampGlowing, setIsLampGlowing] = useState(false);
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
-    const [isMusicPlayerOpen, setIsMusicPlayerOpen] = useState(false);
+
+    // Music context
+    const { setIsOpen, loadDeity, currentTime, isPlaying, currentSong } = useMusicPlayer();
 
     useEffect(() => {
         async function fetchSettings() {
@@ -35,45 +45,38 @@ export default function AartiPage() {
         fetchSettings();
     }, []);
 
-    // Deity specific settings (placeholder for dynamic platter if removed)
+    // Load songs for the selected deity whenever it changes
+    useEffect(() => {
+        loadDeity(selectedDeity.id, selectedDeity.name);
+    }, [selectedDeity.id]);
 
     const handleDeepClick = () => {
         setIsAartiPerforming(true);
-        handlePushpaClick(15000); // Trigger flowers for the full 15s Aarti duration
-        // Duration of 5s * 3 rounds = 15s
-        setTimeout(() => {
-            setIsAartiPerforming(false);
-        }, 15000);
+        handlePushpaClick(15000);
+        setTimeout(() => setIsAartiPerforming(false), 15000);
         setCounts(prev => ({ ...prev, deep: prev.deep + 1 }));
         setIsLampGlowing(true);
-        setTimeout(() => {
-            setIsLampGlowing(false);
-        }, 15000);
+        setTimeout(() => setIsLampGlowing(false), 15000);
     };
 
     const handlePushpaClick = (customDuration?: number) => {
         const duration = customDuration || 5000;
         setCounts((prev) => ({ ...prev, pushpa: prev.pushpa + 1 }));
 
-        // Spawn flowers periodically for the specified duration
         const startTime = Date.now();
         const interval = setInterval(() => {
             if (Date.now() - startTime > duration) {
                 clearInterval(interval);
                 return;
             }
-
             const batch = Array.from({ length: 5 }).map((_, i) => ({
                 id: Math.random() + Date.now(),
-                x: 10 + Math.random() * 80, // Keep within frame bounds
+                x: 10 + Math.random() * 80,
                 delay: Math.random() * 0.5,
                 rotate: Math.random() * 360,
                 duration: 2 + Math.random() * 2
             }));
-
             setFlowers((prev) => [...prev, ...batch]);
-
-            // Remove this batch after they've fallen
             setTimeout(() => {
                 setFlowers((prev) => prev.filter((f) => !batch.find(b => b.id === f.id)));
             }, 4000);
@@ -83,12 +86,9 @@ export default function AartiPage() {
     const handleShankhClick = () => {
         setCounts((prev) => ({ ...prev, shankh: prev.shankh + 1 }));
         setConchPlaying(true);
-
-        // Play Shankh Sound
         const audio = new Audio("/sounds/shankh.mp3");
         audio.play().catch(err => console.log("Audio play failed:", err));
-
-        setTimeout(() => setConchPlaying(false), 5000); // Sync with sound duration roughly
+        setTimeout(() => setConchPlaying(false), 5000);
     };
 
     return (
@@ -119,7 +119,7 @@ export default function AartiPage() {
                 {/* Main Aarti Frame Container */}
                 <div className="relative w-[95%] sm:w-[500px] aspect-[3/4] sm:aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30">
 
-                    {/* Frame Image (First Picture) */}
+                    {/* Frame Image */}
                     <img
                         src="/images/aarti/frame.png"
                         alt="Sacred Frame"
@@ -141,7 +141,7 @@ export default function AartiPage() {
                             />
                         </AnimatePresence>
 
-                        {/* Static/Animating Aarti Image at Bottom Center */}
+                        {/* Aarti Image */}
                         <div className="absolute inset-x-0 bottom-2 sm:bottom-4 flex justify-center z-50 pointer-events-none">
                             <motion.div
                                 animate={isAartiPerforming ? { rotate: 360 } : { rotate: 0 }}
@@ -153,10 +153,7 @@ export default function AartiPage() {
                                     src="/images/aarti/aarti.png"
                                     alt="Aarti"
                                     className="w-32 sm:w-44 h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
-                                    animate={isAartiPerforming ? { 
-                                        rotate: -360,
-                                        scale: [1, 1.05, 1],
-                                    } : { rotate: 0, scale: 1 }}
+                                    animate={isAartiPerforming ? { rotate: -360, scale: [1, 1.05, 1] } : { rotate: 0, scale: 1 }}
                                     transition={isAartiPerforming ? { duration: 5, repeat: 2, ease: "linear" } : { duration: 0 }}
                                 />
                             </motion.div>
@@ -184,7 +181,7 @@ export default function AartiPage() {
                             </AnimatePresence>
                         </div>
 
-                        {/* Glowing Aura Effect when Lamp is clicked */}
+                        {/* Glowing Aura Effect */}
                         {isLampGlowing && (
                             <motion.div
                                 className="absolute inset-0 bg-orange-500/10 mix-blend-color-dodge pointer-events-none"
@@ -195,7 +192,7 @@ export default function AartiPage() {
                         )}
                     </div>
 
-                    {/* Interaction Overlay (Floating Buttons) */}
+                    {/* Left Interaction Buttons */}
                     <div className="absolute left-4 sm:left-6 bottom-24 sm:bottom-32 flex flex-col gap-4 sm:gap-6 z-30">
                         <button onClick={handleDeepClick} className="group flex flex-col items-center gap-1">
                             <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-orange-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
@@ -216,32 +213,28 @@ export default function AartiPage() {
                         </button>
                     </div>
 
-
-
-                    {/* Bottom Controls (Front of Frame) */}
+                    {/* Bottom Controls */}
                     <div className="absolute inset-x-0 bottom-0 p-6 z-40">
-                        {/* Footer Icon Bar */}
                         <div className="w-full flex justify-end items-center">
-
                             <div className="flex flex-col items-center">
                                 <button
-                                    onClick={() => setIsMusicPlayerOpen(true)}
-                                    className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center text-xl shadow-lg hover:bg-rose-700 transition-colors"
+                                    onClick={() => setIsOpen(true)}
+                                    className={`w-14 h-14 rounded-full flex flex-col items-center justify-center text-white shadow-lg transition-all hover:scale-105 active:scale-95 ${isPlaying ? "bg-orange-500 shadow-orange-500/40" : "bg-rose-600"}`}
                                 >
-                                    🎵
+                                    <span className="text-xl leading-none">🎵</span>
+                                    {currentTime > 0 && (
+                                        <span className="text-[9px] font-bold mt-0.5 leading-none">
+                                            {formatTime(currentTime)}
+                                        </span>
+                                    )}
                                 </button>
-                                <span className="text-[10px] font-bold mt-1 text-white">Music</span>
+                                <span className="text-[10px] font-bold mt-1 text-white">
+                                    {isPlaying ? "Playing" : "Music"}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <MusicPlayer
-                    isOpen={isMusicPlayerOpen}
-                    onClose={() => setIsMusicPlayerOpen(false)}
-                    deityId={selectedDeity.id}
-                    deityName={selectedDeity.name}
-                />
 
                 {/* Informational Text */}
                 <div className="mt-12 text-center px-6 max-w-2xl">
@@ -256,14 +249,9 @@ export default function AartiPage() {
             <Footer />
 
             <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
         </div>
     );
 }
