@@ -374,8 +374,8 @@ function HeroSection() {
     };
   }, [current, animating, heroSlides]);
 
-  const slide = heroSlides[current];
-  const nextSlide = heroSlides[nextIndex];
+  const slide = heroSlides[current] || heroSlides[0];
+  const nextSlide = heroSlides[nextIndex] || heroSlides[0];
 
   return (
     <section className="relative w-full h-[560px] md:h-[640px] overflow-hidden bg-[#1a0500]">
@@ -850,11 +850,11 @@ export default function HomePage() {
           getFeaturedPoojas(),
           getSettings("homepage_marquee_items"),
         ]);
-        
+
         if (poojasRes.success) {
           setPoojas(poojasRes.data);
         }
-        
+
         if (marqueeRes && marqueeRes.value && marqueeRes.value.length > 0) {
           setDynamicMarqueeItems(marqueeRes.value);
         }
