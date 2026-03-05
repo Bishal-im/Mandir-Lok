@@ -43,7 +43,12 @@ export async function GET(req: NextRequest) {
               $match: {
                 $expr: {
                   $and: [
-                    { $eq: ["$templeId", "$$templeId"] },
+                    {
+                      $or: [
+                        { $eq: ["$templeId", "$$templeId"] },
+                        { $in: ["$$templeId", { $ifNull: ["$templeIds", []] }] }
+                      ]
+                    },
                     { $eq: ["$isActive", true] }
                   ]
                 }

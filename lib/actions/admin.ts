@@ -177,13 +177,13 @@ export async function updatePooja(id: string, data: any) {
         try {
             revalidatePath("/admin/poojas");
             revalidatePath("/poojas");
-            if (pooja.slug) revalidatePath(`/poojas/${pooja.slug}`);
+            if (PoojaDoc.slug) revalidatePath(`/poojas/${PoojaDoc.slug}`);
             revalidatePath(`/poojas/${id}`);
         } catch (revalError) {
             console.error("Revalidation error (non-fatal):", revalError);
         }
 
-        return { success: true, pooja: JSON.parse(JSON.stringify(pooja)) };
+        return { success: true, pooja: JSON.parse(JSON.stringify(PoojaDoc)) };
     } catch (error: any) {
         console.error("updatePooja error:", error);
         return { success: false, error: error.message || "Failed to update pooja" };
