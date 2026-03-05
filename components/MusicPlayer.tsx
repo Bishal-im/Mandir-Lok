@@ -37,7 +37,7 @@ export default function MusicPlayer() {
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="fixed inset-0 z-[100] bg-[#0a0501] flex flex-col md:flex-row overflow-hidden font-sans"
+                    className="fixed inset-0 z-[100] bg-[#0a0501] flex flex-col md:flex-row overflow-y-auto overflow-x-hidden md:overflow-hidden font-sans"
                 >
                     {/* ── Dynamic Blurred Background ── */}
                     <AnimatePresence mode="wait">
@@ -47,9 +47,9 @@ export default function MusicPlayer() {
                             animate={{ opacity: 0.4 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1 }}
-                            className="absolute inset-0 z-0"
+                            className="fixed inset-0 z-0 pointer-events-none"
                         >
-                            <img src={currentSong?.imageUrl} alt="" className="w-full h-full object-cover blur-3xl scale-110" />
+                            <img src={currentSong?.imageUrl} alt="" className="w-full h-full object-cover blur-3xl scale-125 md:scale-110 opacity-50 md:opacity-100" />
                             <div className="absolute inset-0 bg-gradient-to-b from-[#0a0501]/80 via-transparent to-[#0a0501]" />
                         </motion.div>
                     </AnimatePresence>
@@ -66,19 +66,18 @@ export default function MusicPlayer() {
                             <h1 className="text-[10px] md:text-xs font-bold text-white/40 tracking-[0.3em] uppercase">Now Playing</h1>
                             <p className="text-xs md:text-sm font-medium text-orange-400 mt-1">{deityName} Divine Player</p>
                         </div>
-                        <button className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-2xl text-white transition-all hover:scale-105 active:scale-95">
-                            <Share2 size={24} />
-                        </button>
+                        {/* Placeholder to keep "Now Playing" centered between sides */}
+                        <div className="w-[52px]"></div>
                     </div>
 
                     {/* ── Left Column: Now Playing ── */}
-                    <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 text-center space-y-8 md:space-y-12">
+                    <div className="relative z-10 w-full min-h-[100dvh] md:min-h-0 md:flex-1 flex flex-col items-center justify-center px-6 md:px-8 pt-24 pb-12 md:py-0 text-center space-y-8 md:space-y-12 shrink-0">
                         <motion.div
                             key={currentSong?._id}
                             initial={{ scale: 0.9, opacity: 0, rotateY: 45 }}
                             animate={{ scale: 1, opacity: 1, rotateY: 0 }}
                             transition={{ type: "spring", damping: 20 }}
-                            className="relative w-72 h-72 md:w-[450px] md:h-[450px] rounded-[60px] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 group"
+                            className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-[450px] md:h-[450px] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 group mt-8 md:mt-0"
                         >
                             {currentSong ? (
                                 <img src={currentSong.imageUrl} alt={currentSong.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
@@ -130,14 +129,14 @@ export default function MusicPlayer() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-center gap-8 md:gap-14">
-                                <button onClick={prevSong} className="p-4 text-white/40 hover:text-white transition-all hover:scale-110 active:scale-95">
-                                    <SkipBack size={40} fill="currentColor" />
+                            <div className="flex items-center justify-center gap-6 md:gap-14">
+                                <button onClick={prevSong} className="p-3 md:p-4 text-white/40 hover:text-white transition-all hover:scale-110 active:scale-95">
+                                    <SkipBack size={32} className="w-8 h-8 md:w-10 md:h-10" fill="currentColor" />
                                 </button>
-                                <button onClick={togglePlay} className="relative group w-24 h-24 md:w-32 md:h-32 flex items-center justify-center">
+                                <button onClick={togglePlay} className="relative group w-20 h-20 md:w-32 md:h-32 flex items-center justify-center">
                                     <div className="absolute inset-0 bg-white rounded-full transition-transform duration-500 group-hover:scale-110 shadow-[0_0_50px_rgba(255,255,255,0.2)]" />
                                     <div className="relative z-10 text-[#0a0501]">
-                                        {isPlaying ? <Pause size={48} fill="currentColor" /> : <Play size={48} fill="currentColor" className="ml-2" />}
+                                        {isPlaying ? <Pause size={40} className="w-8 h-8 md:w-12 md:h-12" fill="currentColor" /> : <Play size={40} className="w-8 h-8 md:w-12 md:h-12 ml-1" fill="currentColor" />}
                                     </div>
                                     {isPlaying && (
                                         <motion.div
@@ -148,17 +147,17 @@ export default function MusicPlayer() {
                                         />
                                     )}
                                 </button>
-                                <button onClick={nextSong} className="p-4 text-white/40 hover:text-white transition-all hover:scale-110 active:scale-95">
-                                    <SkipForward size={40} fill="currentColor" />
+                                <button onClick={nextSong} className="p-3 md:p-4 text-white/40 hover:text-white transition-all hover:scale-110 active:scale-95">
+                                    <SkipForward size={32} className="w-8 h-8 md:w-10 md:h-10" fill="currentColor" />
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     {/* ── Right Column / Playlist ── */}
-                    <div className="absolute inset-x-0 bottom-0 top-1/2 md:static md:w-[500px] lg:w-[600px] z-50 bg-[#fffdfa] md:bg-white/95 md:backdrop-blur-2xl md:rounded-l-[80px] flex flex-col shadow-[-50px_0_100px_rgba(0,0,0,0.5)] overflow-hidden">
-                        <div className="px-8 md:px-16 pt-8 md:pt-16 pb-8 space-y-8 flex flex-col h-full">
-                            <div className="space-y-2">
+                    <div className="relative z-50 w-full md:w-[500px] lg:w-[600px] bg-[#fffdfa] md:bg-white/95 md:backdrop-blur-2xl rounded-t-[40px] md:rounded-t-none md:rounded-l-[80px] flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)] md:shadow-[-50px_0_100px_rgba(0,0,0,0.5)] md:overflow-hidden min-h-[70vh] md:min-h-0 md:flex-none">
+                        <div className="px-6 sm:px-8 md:px-16 pt-10 md:pt-16 pb-12 md:pb-8 space-y-6 md:space-y-8 flex flex-col h-full">
+                            <div className="space-y-2 text-center md:text-left">
                                 <h3 className="text-3xl md:text-5xl font-display font-bold text-gray-900 tracking-tight leading-none">
                                     Spiritual <span className="text-orange-500">PlayList</span>
                                 </h3>
@@ -180,7 +179,7 @@ export default function MusicPlayer() {
                                 ))}
                             </div>
 
-                            <div className="flex-1 overflow-y-auto no-scrollbar space-y-3 pb-12">
+                            <div className="flex-1 md:overflow-y-auto no-scrollbar space-y-3 pb-8">
                                 {filteredSongs.length > 0 ? filteredSongs.map((song) => (
                                     <button
                                         key={song._id}
