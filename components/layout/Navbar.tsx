@@ -436,7 +436,7 @@ export default function Navbar() {
 
               <div className="px-4 py-2 border-y border-orange-50 my-1 bg-orange-50/30 rounded-xl">
                  <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">Switch Language</p>
-                 <GoogleTranslate />
+                 <GoogleTranslate align="left" />
               </div>
 
               {IS_LOGGED_IN ? (

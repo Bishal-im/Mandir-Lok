@@ -12,6 +12,7 @@ const nextConfig = {
       "i.imgur.com",
     ],
   },
+
   async redirects() {
     return [
       {
@@ -26,6 +27,10 @@ const nextConfig = {
       },
     ];
   },
+
+  // Allow cookies to be shared across subdomains in production.
+  // This is handled at the cookie Set-Cookie level in your API routes,
+  // no extra Next.js config needed here.
 };
 
 module.exports = nextConfig;

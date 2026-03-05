@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       sameSite: "lax",
       maxAge: 60 * 60 * 24,
       path: "/",
+      ...(process.env.NODE_ENV === "production" && { domain: ".mandirlok.com" }),
     });
     return res;
   } catch (err: any) {
