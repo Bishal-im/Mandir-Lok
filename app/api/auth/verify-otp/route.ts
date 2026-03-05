@@ -77,6 +77,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: "/",
+      ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
     });
 
     // 8️⃣ Check if user has name

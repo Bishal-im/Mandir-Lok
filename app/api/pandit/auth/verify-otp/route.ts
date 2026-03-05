@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
-      ...(process.env.NODE_ENV === "production" && { domain: ".mandirlok.com" }),
+      ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
     });
 
     return response;

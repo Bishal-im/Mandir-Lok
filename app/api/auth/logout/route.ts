@@ -7,7 +7,7 @@ export async function POST() {
     httpOnly: true,
     expires: new Date(0),
     path: "/",
-    ...(process.env.NODE_ENV === "production" && { domain: ".mandirlok.com" }),
+    ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
   });
   return response;
 }
