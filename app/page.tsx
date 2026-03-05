@@ -573,7 +573,9 @@ const MARQUEE_ITEMS = [
   { icon: "", label: "100% Money-Back Guarantee" },
 ];
 
-function TrustBar() {
+function TrustBar({ items }: { items: any[] }) {
+  const displayItems = items.length > 0 ? items : MARQUEE_ITEMS;
+
   return (
     <div className="bg-gradient-to-r from-[#ffbf00] via-[#ff7f0a] to-[#ffbf00] border-b border-orange-200/30 shadow-sm overflow-hidden py-3 relative">
       <div
@@ -601,7 +603,7 @@ function TrustBar() {
         .marquee-track:hover { animation-play-state: paused; }
       `}</style>
       <div className="marquee-track">
-        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+        {[...displayItems, ...displayItems].map((item, i) => (
           <div
             key={i}
             className="flex items-center gap-2.5 px-7 whitespace-nowrap"
@@ -825,6 +827,7 @@ export default function HomePage() {
   const [poojas, setPoojas] = useState<Pooja[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(STATS);
+  const [dynamicMarqueeItems, setDynamicMarqueeItems] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchStats() {
@@ -840,20 +843,28 @@ export default function HomePage() {
     }
     fetchStats();
 
-    async function fetchPoojas() {
+    async function fetchData() {
       try {
         setLoading(true);
-        const res = await getFeaturedPoojas();
-        if (res.success) {
-          setPoojas(res.data);
+        const [poojasRes, marqueeRes] = await Promise.all([
+          getFeaturedPoojas(),
+          getSettings("homepage_marquee_items"),
+        ]);
+        
+        if (poojasRes.success) {
+          setPoojas(poojasRes.data);
+        }
+        
+        if (marqueeRes && marqueeRes.value && marqueeRes.value.length > 0) {
+          setDynamicMarqueeItems(marqueeRes.value);
         }
       } catch (err) {
-        console.error("fetchPoojas error:", err);
+        console.error("fetchData error:", err);
       } finally {
         setLoading(false);
       }
     }
-    fetchPoojas();
+    fetchData();
   }, []);
 
   return (
@@ -861,7 +872,7 @@ export default function HomePage() {
       <Navbar />
       <main className="min-h-screen font-sans bg-white">
         <HeroSection />
-        <TrustBar />
+        <TrustBar items={dynamicMarqueeItems} />
 
         {/* Featured Poojas Section */}
         <section className="py-16 bg-white">

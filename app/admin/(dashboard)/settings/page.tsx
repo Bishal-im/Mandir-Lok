@@ -16,6 +16,7 @@ import { getSettings, updateSettings } from "@/lib/actions/admin";
 import CloudinaryImageUploader from "@/components/admin/CloudinaryImageUploader";
 
 export default function SettingsPage() {
+    const [marqueeItems, setMarqueeItems] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState("general");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -60,6 +61,7 @@ export default function SettingsPage() {
     const tabs = [
         { id: "general", label: "General", icon: <Globe size={18} /> },
         { id: "landing", label: "Landing Page", icon: <Layout size={18} /> },
+        { id: "marquee", label: "Marquee", icon: <Layout size={18} /> }, // New Tab
         { id: "page_banners", label: "Page Banners", icon: <ImageIcon size={18} /> },
         { id: "user_dashboard", label: "User Dashboard", icon: <Layout size={18} /> },
         { id: "aarti", label: "Aarti Settings", icon: <Layout size={18} /> },
@@ -71,17 +73,19 @@ export default function SettingsPage() {
     useEffect(() => {
         async function fetchSettings() {
             setLoading(true);
-            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes] = await Promise.all([
+            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes, marqueeRes] = await Promise.all([
                 getSettings("landing_page_slides"),
                 getSettings("dashboard_settings"),
                 getSettings("page_banners"),
                 getSettings("website_logo"),
                 getSettings("aarti_settings"),
                 getSettings("contact_settings"),
-                getSettings("about_settings")
+                getSettings("about_settings"),
+                getSettings("homepage_marquee_items")
             ]);
 
             if (slideRes && slideRes.value) setSlides(slideRes.value);
+            if (marqueeRes && marqueeRes.value) setMarqueeItems(marqueeRes.value);
             if (dashRes && dashRes.value) setDashboardSettings(dashRes.value);
             if (bannerRes && bannerRes.value) setPageBanners(bannerRes.value);
             if (logoRes && logoRes.value) setLogoUrl(logoRes.value);
@@ -120,6 +124,20 @@ export default function SettingsPage() {
         setSlides(newSlides);
     };
 
+    const handleAddMarqueeItem = () => {
+        setMarqueeItems([...marqueeItems, { icon: "Zap", label: "New Item" }]);
+    };
+
+    const handleRemoveMarqueeItem = (index: number) => {
+        setMarqueeItems(marqueeItems.filter((_, i) => i !== index));
+    };
+
+    const handleUpdateMarqueeItem = (index: number, field: string, value: string) => {
+        const newItems = [...marqueeItems];
+        newItems[index][field] = value;
+        setMarqueeItems(newItems);
+    };
+
     const handleAddDeity = () => {
         const newDeity = {
             id: `deity_${Date.now()}`,
@@ -146,6 +164,8 @@ export default function SettingsPage() {
         try {
             if (activeTab === "landing") {
                 await updateSettings("landing_page_slides", slides, "Banner slides for the landing page");
+            } else if (activeTab === "marquee") {
+                await updateSettings("homepage_marquee_items", marqueeItems, "Scrolling marquee items on homepage");
             } else if (activeTab === "user_dashboard") {
                 await updateSettings("dashboard_settings", dashboardSettings, "Banner and welcome info for user dashboard");
             } else if (activeTab === "page_banners") {
@@ -231,6 +251,61 @@ export default function SettingsPage() {
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Default Commission (%)</label>
                                         <input type="number" defaultValue="20" className="w-full px-4 py-3 rounded-xl border border-gray-200" />
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "marquee" && (
+                                <div className="space-y-8">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-bold text-gray-900">Homepage Marquee Items</h3>
+                                            <p className="text-xs text-gray-500">Manage moving text items on the landing page.</p>
+                                        </div>
+                                        <button
+                                            onClick={handleAddMarqueeItem}
+                                            className="p-2 bg-orange-50 text-[#ff7f0a] rounded-lg hover:bg-orange-100 transition-colors"
+                                        >
+                                            <Plus size={20} />
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {marqueeItems.map((item, index) => (
+                                            <div key={index} className="p-4 rounded-2xl border border-gray-100 bg-gray-50/50 flex items-center gap-4 relative group">
+                                                <div className="grid grid-cols-2 gap-4 flex-1">
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Lucide Icon Name</label>
+                                                        <input
+                                                            value={item.icon}
+                                                            onChange={(e) => handleUpdateMarqueeItem(index, "icon", e.target.value)}
+                                                            placeholder="Zap, Heart, Shield, etc."
+                                                            className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Label Text</label>
+                                                        <input
+                                                            value={item.label}
+                                                            onChange={(e) => handleUpdateMarqueeItem(index, "label", e.target.value)}
+                                                            className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleRemoveMarqueeItem(index)}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
+
+                                        {marqueeItems.length === 0 && (
+                                            <div className="py-10 text-center border-2 border-dashed border-gray-100 rounded-3xl text-gray-400">
+                                                <p className="text-sm">No items added. Homepage will use default marquee.</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
