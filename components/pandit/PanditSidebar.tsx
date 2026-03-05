@@ -18,6 +18,7 @@ import {
   Bell
 } from 'lucide-react'
 import { getUnreadNotificationCount } from '@/lib/actions/notifications'
+import GoogleTranslate from '../GoogleTranslate'
 
 export default function PanditSidebar() {
   const pathname = usePathname()
@@ -84,9 +85,10 @@ export default function PanditSidebar() {
             )}
           </div>
         </div>
-        <div className="text-[10px] text-[#ff9b30] tracking-widest uppercase font-bold opacity-70">
+        <div className="text-[10px] text-[#ff9b30] tracking-widest uppercase font-bold opacity-70 mb-3">
           Pandit Portal
         </div>
+        <GoogleTranslate align="left" />
       </div>
 
       {/* Nav */}

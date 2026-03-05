@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/jwt";
 import AdminSidebar from "./AdminSidebar";
 import AdminNotificationBell from "@/components/admin/AdminNotificationBell";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 export default async function AdminLayout({
     children,
@@ -34,6 +35,7 @@ export default async function AdminLayout({
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
+                        <GoogleTranslate />
                         <AdminNotificationBell />
                         <div className="h-8 w-[1px] bg-gray-200 mx-1" />
                         <div className="flex items-center gap-3">

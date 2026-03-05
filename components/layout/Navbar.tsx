@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { getSettings } from "@/lib/actions/admin";
+import GoogleTranslate from "../GoogleTranslate";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -236,6 +237,7 @@ export default function Navbar() {
 
             {/* DESKTOP CTA */}
             <div className="hidden md:flex items-center gap-3">
+              <GoogleTranslate />
               {authLoading ? (
                 // Loading skeleton
                 <div className="w-24 h-9 bg-gray-100 rounded-xl animate-pulse" />
@@ -431,6 +433,11 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+
+              <div className="px-4 py-2 border-y border-orange-50 my-1 bg-orange-50/30 rounded-xl">
+                 <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">Switch Language</p>
+                 <GoogleTranslate />
+              </div>
 
               {IS_LOGGED_IN ? (
                 <>
