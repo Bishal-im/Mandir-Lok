@@ -57,6 +57,13 @@ export async function POST(req: Request) {
     // Generate JWT
     const token = generateToken({ panditId: pandit._id.toString() });
 
+<<<<<<< HEAD
+    const response = NextResponse.json({
+      success: true,
+      message: "Login successful",
+      needsPhoneUpdate,
+      panditId: pandit._id.toString()
+=======
     // Check if onboarding is required
     const onboardingRequired = !pandit.whatsapp?.trim() || !pandit.aadhaarCardUrl?.trim();
 
@@ -65,9 +72,8 @@ export async function POST(req: Request) {
     const response = NextResponse.json({
       success: true,
       message: "Login successful",
-      needsPhoneUpdate,
-      onboardingRequired,
-      panditId: pandit._id.toString()
+      onboardingRequired
+>>>>>>> 35ce63ffac00d01bc70fb3b01f1c019ad39e5ec5
     });
     response.cookies.set("mandirlok_pandit_token", token, {
       httpOnly: true,

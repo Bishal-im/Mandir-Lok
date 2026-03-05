@@ -31,7 +31,7 @@ export async function GET(
 
     // Fetch poojas and chadhava for this temple
     const [poojas, chadhavaItems, reviewsData] = await Promise.all([
-      Pooja.find({ templeId: temple._id, isActive: true }).sort({ isFeatured: -1, rating: -1 }),
+      Pooja.find({ $or: [{ templeId: temple._id }, { templeIds: temple._id }], isActive: true }).sort({ isFeatured: -1, rating: -1 }),
       Chadhava.find({ templeId: temple._id, isActive: true }),
       Review.aggregate([
         { $match: { templeId: temple._id, isApproved: true } },
