@@ -52,23 +52,84 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
 
     // 3. Hide Google Bar with CSS & Global Polishing
     const style = document.createElement("style");
+    style.id = "goog-translate-hide-style";
     style.innerHTML = `
-      .goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-span { display: none !important; }
-      body { top: 0px !important; }
+      /* Hide the Google Translate banner iframe completely */
+      .goog-te-banner-frame,
+      .goog-te-banner-frame.skiptranslate,
+      iframe.goog-te-banner-frame,
+      iframe[name="google_translate_o"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        max-height: 0 !important;
+      }
+
+      /* Prevent body from being pushed down by Google Translate */
+      body {
+        top: 0 !important;
+        margin-top: 0 !important;
+      }
+
+      /* Hide the translate gadget widget itself */
+      #google_translate_element,
+      .goog-te-gadget,
+      .skiptranslate.goog-te-gadget,
+      .goog-te-gadget-icon,
+      .goog-te-gadget-span { display: none !important; }
+
+      /* Hide attribution and extra spans in the dropdown */
       .goog-te-menu-value span:nth-child(5) { display:none !important; }
       .goog-te-menu-value img { display:none !important; }
       .goog-te-menu-frame { box-shadow: none !important; }
-      #google_translate_element { display: none; }
-      .skiptranslate.goog-te-gadget { display: none !important; }
-      
+
       /* Smooth transitions for all elements when translated */
       font, [style*="font-family"] {
         transition: all 0.2s ease-in-out !important;
       }
     `;
-    document.head.appendChild(style);
+    if (!document.getElementById("goog-translate-hide-style")) {
+      document.head.appendChild(style);
+    }
 
-    // 4. Persistence: Check cookie to set initial language
+    // 4. Helper: forcefully reset body offset and hide any banner iframes
+    const suppressBanner = () => {
+      // Reset inline body.top set by Google Translate JS
+      if (document.body.style.top && document.body.style.top !== "0px") {
+        document.body.style.setProperty("top", "0px", "important");
+        document.body.style.setProperty("margin-top", "0px", "important");
+      }
+      // Hide the banner iframe if it exists in the DOM
+      const bannerFrame = document.querySelector<HTMLElement>(
+        ".goog-te-banner-frame, iframe.goog-te-banner-frame, iframe[name='google_translate_o']"
+      );
+      if (bannerFrame) {
+        bannerFrame.style.setProperty("display", "none", "important");
+        bannerFrame.style.setProperty("height", "0", "important");
+        bannerFrame.style.setProperty("visibility", "hidden", "important");
+      }
+    };
+
+    // 5. MutationObserver: watch body style attribute changes AND new child nodes
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "attributes" || mutation.type === "childList") {
+          suppressBanner();
+        }
+      }
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["style"],
+      childList: true,
+      subtree: false,
+    });
+
+    // 6. Poll as a safety-net (handles cases where GT loads after the observer)
+    const interval = setInterval(suppressBanner, 500);
+
+    // 7. Persistence: Check cookie to set initial language
     const getCookie = (name: string) => {
       const decodeValue = decodeURIComponent(document.cookie);
       const parts = decodeValue.split(`; ${name}=`);
@@ -83,6 +144,11 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
       const lang = LANGUAGES.find((l) => l.code === code);
       if (lang) setCurrentLang(lang);
     }
+
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+    };
   }, []);
 
   const changeLanguage = (lang: typeof LANGUAGES[0]) => {
