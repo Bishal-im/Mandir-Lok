@@ -47,6 +47,7 @@ export default function PoojaDetailPage() {
   const [selectedTempleId, setSelectedTempleId] = useState<string | null>(null);
   const [selectedPackageIndex, setSelectedPackageIndex] = useState<number | null>(null);
   const [addedOfferings, setAddedOfferings] = useState<string[]>([]);
+  const [showValidation, setShowValidation] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -127,6 +128,22 @@ export default function PoojaDetailPage() {
     cartQuery.set("offerings", addedOfferings.join(","));
   }
   const cartLink = `/cart?${cartQuery.toString()}`;
+
+  const handleProceedClick = (e: React.MouseEvent) => {
+    if (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) {
+      e.preventDefault();
+      setShowValidation(true);
+
+      // Scroll to the first missing section for better UX
+      if (selectedTempleId === null) {
+        document.getElementById('temple-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (selectedDate === null) {
+        document.getElementById('date-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (selectedPackageIndex === null) {
+        document.getElementById('package-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
 
   return (
     <>
@@ -226,10 +243,10 @@ export default function PoojaDetailPage() {
 
               {/* Temple Selection */}
               {pooja.templeIds && pooja.templeIds.length > 1 && (
-                <div className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card">
+                <div id="temple-selection" className={`bg-white border rounded-2xl p-5 shadow-card transition-all ${showValidation && selectedTempleId === null ? "border-red-400 ring-1 ring-red-100" : "border-[#f0dcc8]"}`}>
                   <h3 className="font-display font-semibold text-[#1a1209] mb-4 flex items-center gap-2">
-                    <svg className="w-[18px] h-[18px] text-[#ff7f0a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg> 
-                    Choose Temple
+                    <svg className="w-[18px] h-[18px] text-[#ff7f0a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    Choose Temple {showValidation && selectedTempleId === null && <span className="text-red-500 text-xs font-normal ml-auto">* Please select</span>}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {pooja.templeIds.map((t: any) => (
@@ -250,10 +267,10 @@ export default function PoojaDetailPage() {
               )}
 
               {/* Date Selection */}
-              <div className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card">
+              <div id="date-selection" className={`bg-white border rounded-2xl p-5 shadow-card transition-all ${showValidation && selectedDate === null ? "border-red-400 ring-1 ring-red-100" : "border-[#f0dcc8]"}`}>
                 <h3 className="font-display font-semibold text-[#1a1209] mb-4 flex items-center gap-2">
                   <Calendar size={18} className="text-[#ff7f0a]" /> Choose Pooja
-                  Date
+                  Date {showValidation && selectedDate === null && <span className="text-red-500 text-xs font-normal ml-auto">* Selection required</span>}
                 </h3>
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                   {dates.map((d, i) => (
@@ -279,9 +296,9 @@ export default function PoojaDetailPage() {
 
               {/* Package Selection */}
               {pooja.packages && pooja.packages.length > 0 && (
-                <div className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card">
+                <div id="package-selection" className={`bg-white border rounded-2xl p-5 shadow-card transition-all ${showValidation && selectedPackageIndex === null ? "border-red-400 ring-1 ring-red-100" : "border-[#f0dcc8]"}`}>
                   <h3 className="font-display font-semibold text-[#1a1209] mb-4 flex items-center gap-2">
-                    <Sparkles size={18} className="text-[#ff7f0a]" /> Select Your Puja Package
+                    <Sparkles size={18} className="text-[#ff7f0a]" /> Select Your Puja Package {showValidation && selectedPackageIndex === null && <span className="text-red-500 text-xs font-normal ml-auto">* Please choose</span>}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {pooja.packages.map((pkg: any, i: number) => (
@@ -474,8 +491,9 @@ export default function PoojaDetailPage() {
                 </div>
 
                 <Link
-                  href={(selectedDate !== null && selectedPackageIndex !== null && selectedTempleId !== null) ? cartLink : "#"}
-                  className={`btn-saffron w-full text-center text-sm block mb-3 ${(selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) ? "opacity-60 pointer-events-none" : ""}`}
+                  href={cartLink}
+                  onClick={handleProceedClick}
+                  className={`btn-saffron w-full text-center text-sm block mb-3 transition-all ${showValidation && (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) ? "bg-red-500 border-red-500 shadow-none scale-[0.98]" : ""}`}
                 >
                   Proceed to Book →
                 </Link>
