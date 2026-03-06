@@ -16,7 +16,9 @@ import {
   Phone,
   Loader2,
   Sparkles,
+  ShoppingBag
 } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const dates = Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
@@ -37,6 +39,7 @@ const dates = Array.from({ length: 7 }, (_, i) => {
 export default function PoojaDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const { addToCart } = useCart();
 
   const [pooja, setPooja] = useState<any>(null);
   const [offerings, setOfferings] = useState<any[]>([]);
@@ -143,6 +146,49 @@ export default function PoojaDetailPage() {
         document.getElementById('package-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
+  };
+
+  const handleAddToCart = () => {
+    if (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) {
+      setShowValidation(true);
+      if (selectedTempleId === null) {
+        document.getElementById('temple-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (selectedDate === null) {
+        document.getElementById('date-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (selectedPackageIndex === null) {
+        document.getElementById('package-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    const pkg = pooja.packages[selectedPackageIndex];
+    const selectedOfferingItems = offerings
+      .filter(o => addedOfferings.includes(o._id))
+      .map(o => ({
+        id: o._id,
+        name: o.name,
+        price: o.price,
+        emoji: o.emoji || "🙏",
+        quantity: 1
+      }));
+
+    addToCart({
+      poojaId: pooja._id,
+      poojaName: pooja.name,
+      poojaEmoji: pooja.emoji || "🪔",
+      poojaImage: pooja.images?.[0] || "",
+      templeId: selectedTempleId,
+      templeName: pooja.templeIds.find((t: any) => t._id === selectedTempleId)?.name || "",
+      date: dates[selectedDate].value,
+      packageIndex: selectedPackageIndex,
+      packageName: pkg.name,
+      packagePrice: pkg.price,
+      offeringIds: addedOfferings,
+      offerings: selectedOfferingItems,
+      totalPrice: pkg.price + selectedOfferingItems.reduce((sum, o) => sum + o.price, 0)
+    });
+
+    alert("Pooja added to cart! 🙏");
   };
 
   return (
@@ -497,6 +543,14 @@ export default function PoojaDetailPage() {
                 >
                   Proceed to Book →
                 </Link>
+
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full flex items-center justify-center gap-2 text-sm font-bold text-[#ff7f0a] border-2 border-[#ff7f0a] py-3 rounded-xl hover:bg-[#fff8f0] transition-colors mb-3"
+                >
+                  <ShoppingBag size={18} />
+                  Add to Cart
+                </button>
 
                 <p className="text-center text-xs text-[#6b5b45] flex items-center justify-center gap-1">
                   <Shield size={12} className="text-green-500" />

@@ -13,7 +13,7 @@ import { getReviewByOrder } from '@/lib/actions/reviews'
 interface OrderData {
     _id: string
     bookingId: string
-    poojaId: { _id: string; name: string; emoji: string; duration: string }
+    poojaId: { _id: string; name: string; emoji: string; duration: string; images?: string[] }
     templeId: { _id: string; name: string; location: string }
     panditId?: { _id: string; name: string; phone: string }
     bookingDate: string
@@ -32,6 +32,7 @@ interface OrderData {
     orderStatus: 'pending' | 'assigned' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled'
     paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
     videoUrl?: string
+    poojaImage?: string
     createdAt: string
 }
 
@@ -178,8 +179,14 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="w-16 h-16 bg-[#fff8f0] rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 shadow-inner">
-                                        {order.poojaId?.emoji || "🪔"}
+                                    <div className="w-16 h-16 bg-[#fff8f0] rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 shadow-inner overflow-hidden">
+                                        {order.poojaImage ? (
+                                            <img src={order.poojaImage} alt={order.poojaId?.name} className="w-full h-full object-cover" />
+                                        ) : order.poojaId?.images?.[0] ? (
+                                            <img src={order.poojaId.images[0]} alt={order.poojaId.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            order.poojaId?.emoji || "🪔"
+                                        )}
                                     </div>
                                     <div className="flex-1">
                                         <h2 className="font-display font-bold text-lg text-[#1a1209] mb-1">
@@ -249,11 +256,11 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
                                             <div className="space-y-2 text-sm">
                                                 <div className="flex items-center justify-between">
                                                     <span className="flex items-center gap-1.5 text-[#6b5b45]"><Phone size={14} /> Mobile</span>
-                                                    <span className="font-medium text-[#1a1209]">{order.phone.startsWith('91') || order.phone.startsWith('977') ? '+' : '+91 '}{order.phone}</span>
+                                                    <span className="font-medium text-[#1a1209]">{order.phone.startsWith('+') ? order.phone : (order.phone.startsWith('91') || order.phone.startsWith('977') ? '+' + order.phone : '+91 ' + order.phone)}</span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
                                                     <span className="flex items-center gap-1.5 text-[#6b5b45]"><MessageCircle size={14} className="text-[#25D366]" /> WhatsApp</span>
-                                                    <span className="font-medium text-[#1a1209]">{order.whatsapp.startsWith('91') || order.whatsapp.startsWith('977') ? '+' : '+91 '}{order.whatsapp}</span>
+                                                    <span className="font-medium text-[#1a1209]">{order.whatsapp.startsWith('+') ? order.whatsapp : (order.whatsapp.startsWith('91') || order.whatsapp.startsWith('977') ? '+' + order.whatsapp : '+91 ' + order.whatsapp)}</span>
                                                 </div>
                                             </div>
                                         </div>

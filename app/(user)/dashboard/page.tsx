@@ -15,6 +15,7 @@ interface Order {
     name: string;
     emoji: string;
     duration: string;
+    images?: string[];
   };
   templeId: {
     _id: string;
@@ -32,6 +33,7 @@ interface Order {
   orderStatus: "pending" | "assigned" | "confirmed" | "in-progress" | "completed" | "cancelled";
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
   videoUrl?: string;
+  poojaImage?: string;
   createdAt: string;
 }
 
@@ -295,8 +297,14 @@ export default function DashboardPage() {
                       <div key={order._id} className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card">
                         <div className="flex items-start gap-4">
                           {/* Emoji */}
-                          <div className="w-12 h-12 bg-[#fff8f0] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                            {order.poojaId?.emoji || ""}
+                          <div className="w-12 h-12 bg-[#fff8f0] rounded-xl flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
+                            {order.poojaImage ? (
+                              <img src={order.poojaImage} alt={order.poojaId?.name} className="w-full h-full object-cover" />
+                            ) : order.poojaId?.images?.[0] ? (
+                              <img src={order.poojaId.images[0]} alt={order.poojaId.name} className="w-full h-full object-cover" />
+                            ) : (
+                              order.poojaId?.emoji || "🙏"
+                            )}
                           </div>
 
                           {/* Info */}
@@ -363,7 +371,7 @@ export default function DashboardPage() {
                                 <Star size={12} className="fill-amber-500 text-amber-500" /> Rate Pooja
                               </Link>
                             )}
-                            {(order.orderStatus === "pending" || order.orderStatus === "confirmed") && (
+                            {order.paymentStatus !== "paid" && (order.orderStatus === "pending" || order.orderStatus === "confirmed") && (
                               <button
                                 onClick={async () => {
                                   if (!confirm("Are you sure you want to cancel this pooja booking?")) return;

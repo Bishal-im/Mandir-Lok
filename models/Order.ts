@@ -59,11 +59,13 @@ export interface IOrder extends Document {
   isDonation: boolean;
   videoUrl?: string;         // AWS S3 URL after pandit uploads
   videoSentAt?: Date;
+  reminderSent: boolean;
 
   packageSelected?: {
     name: string;
     price: number;
   };
+  poojaImage?: string;
 
   // Timestamps
   createdAt: Date;
@@ -125,10 +127,12 @@ const OrderSchema = new Schema<IOrder>(
 
     videoUrl: { type: String, default: "" },
     videoSentAt: { type: Date, default: null },
+    reminderSent: { type: Boolean, default: false },
     packageSelected: {
       name: { type: String },
       price: { type: Number },
     },
+    poojaImage: { type: String, default: "" },
   },
   { timestamps: true }
 );

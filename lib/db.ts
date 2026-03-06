@@ -18,6 +18,7 @@ import "../models/Payout";
 import "../models/Pandit";
 import "../models/Notification";
 import "../models/Song";
+import "../models/CartItem";
 
 let cached = (global as any).mongoose;
 
