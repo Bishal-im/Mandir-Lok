@@ -15,6 +15,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
   const [shake, setShake] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -24,9 +25,12 @@ export default function AdminLoginPage() {
         const res = await fetch("/api/auth/me");
         const data = await res.json();
         if (data.success && data.data?.role === "admin") {
-          router.push("/admin");
+          router.replace("/admin");
+        } else {
+          setCheckingAuth(false);
         }
       } catch (err) {
+        setCheckingAuth(false);
         console.error("Auth check failed", err);
       }
     }
@@ -106,7 +110,7 @@ export default function AdminLoginPage() {
         const meData = await meRes.json();
 
         if (meData.success && meData.data?.role === "admin") {
-          router.push("/admin");
+          router.replace("/admin");
         } else {
           const msg = meData.success ? "Access Restricted. User role is not admin." : (meData.message || "Access Restricted. You do not have admin permissions.");
           setError(msg);
@@ -140,69 +144,78 @@ export default function AdminLoginPage() {
       `}</style>
 
       <div className={`w-full max-w-md bg-white border border-gray-200 rounded-3xl p-8 shadow-xl ${shake ? 'shake' : ''}`}>
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg text-white font-bold">म</div>
-          <h1 className="display-font text-2xl font-bold text-gray-900">Admin Portal</h1>
-          <p className="text-sm text-gray-500 mt-1">Please sign in to your administrator account</p>
-        </div>
-
-        {step === "email" ? (
-          <div className="space-y-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Admin Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@mandirlok.com"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 transition-colors"
-                autoFocus
-              />
-            </div>
-            {error && <p className="text-red-500 text-xs text-center">{error}</p>}
-            <button
-              onClick={handleSendOtp}
-              disabled={loading}
-              className="btn-admin w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
-            >
-              {loading ? "Sending..." : "Send OTP"}
-            </button>
-            <Link href="/login" className="block text-center text-xs text-gray-400 hover:text-orange-600 transition-colors">← Back to Devotee Login</Link>
+        {checkingAuth ? (
+          <div className="flex flex-col items-center justify-center py-10">
+            <div className="w-10 h-10 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin mb-4" />
+            <p className="text-gray-500 text-sm">Verifying session...</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            <p className="text-center text-sm text-gray-600">Verification code sent to <strong>{email}</strong></p>
-            <div className="flex gap-2 justify-center">
-              {otp.map((digit, idx) => (
-                <input
-                  key={idx}
-                  ref={(el) => { otpRefs.current[idx] = el; }}
-                  type="text"
-                  maxLength={1}
-                  value={digit}
-                  className="w-10 h-12 text-center text-lg font-bold bg-white border border-gray-200 rounded-xl focus:border-orange-500 outline-none"
-                  onChange={(e) => {
-                    const next = [...otp];
-                    next[idx] = e.target.value.replace(/\D/g, "").slice(-1);
-                    setOtp(next);
-                    if (next[idx] && idx < 5) otpRefs.current[idx + 1]?.focus();
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Backspace" && !otp[idx] && idx > 0) otpRefs.current[idx - 1]?.focus();
-                  }}
-                />
-              ))}
+          <>
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg text-white font-bold">म</div>
+              <h1 className="display-font text-2xl font-bold text-gray-900">Admin Portal</h1>
+              <p className="text-sm text-gray-500 mt-1">Please sign in to your administrator account</p>
             </div>
-            {error && <p className="text-red-500 text-xs text-center">{error}</p>}
-            <button
-              onClick={handleVerify}
-              disabled={loading || otp.join("").length < 6}
-              className="btn-admin w-full py-4 rounded-xl font-bold text-sm"
-            >
-              {loading ? "Verifying..." : "Verify & Login"}
-            </button>
-            <button onClick={() => setStep("email")} className="w-full text-center text-xs text-gray-400 hover:text-orange-600">Change Email</button>
-          </div>
+
+            {step === "email" ? (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Admin Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@mandirlok.com"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 transition-colors"
+                    autoFocus
+                  />
+                </div>
+                {error && <p className="text-red-500 text-xs text-center">{error}</p>}
+                <button
+                  onClick={handleSendOtp}
+                  disabled={loading}
+                  className="btn-admin w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                >
+                  {loading ? "Sending..." : "Send OTP"}
+                </button>
+                <Link href="/login" className="block text-center text-xs text-gray-400 hover:text-orange-600 transition-colors">← Back to Devotee Login</Link>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <p className="text-center text-sm text-gray-600">Verification code sent to <strong>{email}</strong></p>
+                <div className="flex gap-2 justify-center">
+                  {otp.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={(el) => { otpRefs.current[idx] = el; }}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      className="w-10 h-12 text-center text-lg font-bold bg-white border border-gray-200 rounded-xl focus:border-orange-500 outline-none"
+                      onChange={(e) => {
+                        const next = [...otp];
+                        next[idx] = e.target.value.replace(/\D/g, "").slice(-1);
+                        setOtp(next);
+                        if (next[idx] && idx < 5) otpRefs.current[idx + 1]?.focus();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Backspace" && !otp[idx] && idx > 0) otpRefs.current[idx - 1]?.focus();
+                      }}
+                    />
+                  ))}
+                </div>
+                {error && <p className="text-red-500 text-xs text-center">{error}</p>}
+                <button
+                  onClick={handleVerify}
+                  disabled={loading || otp.join("").length < 6}
+                  className="btn-admin w-full py-4 rounded-xl font-bold text-sm"
+                >
+                  {loading ? "Verifying..." : "Verify & Login"}
+                </button>
+                <button onClick={() => setStep("email")} className="w-full text-center text-xs text-gray-400 hover:text-orange-600">Change Email</button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -17,15 +17,21 @@ export function middleware(req: NextRequest) {
     const token = req.cookies.get("mandirlok_token")?.value;
     const decoded = token ? decodeToken(token) : null;
 
-    // Already authenticated as admin → let through
-    if (decoded?.role === "admin") return addPathHeader(req);
+    // Already authenticated as admin
+    if (decoded?.role === "admin") {
+      // If they are on the login page, send them to dashboard
+      if (pathname === "/admin/login") {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
+      return addPathHeader(req);
+    }
 
     // On the login page WITH correct secret key → let through
     if (pathname === "/admin/login" && searchParams.get("key") === ADMIN_SECRET) {
       return addPathHeader(req);
     }
 
-    // Everything else → silently redirect to homepage (no hint admin exists)
+    // Everything else → silently redirect to homepage
     return NextResponse.redirect(new URL("/", req.url));
   }
 
