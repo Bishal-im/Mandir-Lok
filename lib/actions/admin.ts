@@ -13,7 +13,7 @@ import Payout from "../../models/Payout"; // Import Payout model
 import Notification from "../../models/Notification"; // Import Notification model
 import { sendWhatsApp } from "../whatsapp";
 import mongoose from "mongoose";
-import * as RazorpayX from "../razorpayX";
+import { createBeneficiary, createCashfreePayout } from "../cashfree";
 
 // =======================
 // DASHBOARD STATS
@@ -645,7 +645,7 @@ export async function updateSettings(key: string, value: any, description?: stri
     }
 }
 
-export async function processPayoutWithRazorpayX(payoutId: string) {
+export async function processPayoutWithCashfree(payoutId: string) {
     try {
         await connectDB();
         const PayoutModel = mongoose.models.Payout || mongoose.model("Payout");
@@ -659,52 +659,41 @@ export async function processPayoutWithRazorpayX(payoutId: string) {
         const pandit = payout.panditId;
         if (!pandit) return { success: false, error: "Pandit not found" };
 
-        if (!pandit.razorpayContactId) {
-            const contact = await RazorpayX.createContact(
-                pandit.name,
-                pandit.email || "pandit@mandirlok.com",
-                pandit.phone,
-                pandit._id.toString()
-            );
-            pandit.razorpayContactId = contact.id;
+        // Ensure pandit is a Cashfree beneficiary
+        if (!pandit.cashfreeBeneficiaryId) {
+            const beneficiaryId = `beneficiary_${pandit._id}`;
+            await createBeneficiary({
+                beneficiaryId,
+                name: pandit.name,
+                email: pandit.email || "pandit@mandirlok.com",
+                phone: pandit.phone,
+                vpa: payout.upiId,
+                bankDetails: payout.bankAccount ? {
+                    accountNumber: payout.bankAccount,
+                    ifsc: "IFSC0000000" // Should be collected from pandit
+                } : undefined
+            });
+            pandit.cashfreeBeneficiaryId = beneficiaryId;
             await pandit.save();
         }
 
-        if (!pandit.razorpayFundAccountId) {
-            let fundAccount;
-            if (payout.upiId) {
-                fundAccount = await RazorpayX.createFundAccount(pandit.razorpayContactId, "vpa", { vpa: payout.upiId });
-            } else {
-                return { success: false, error: "Only UPI payouts are supported automatically for now." };
-            }
-            pandit.razorpayFundAccountId = fundAccount.id;
-            await pandit.save();
-        }
-
-        const razorpayXAccount = process.env.RAZORPAYX_ACCOUNT_NUMBER?.trim();
-        if (!razorpayXAccount) return { success: false, error: "RazorpayX account number (RAZORPAYX_ACCOUNT_NUMBER) not configured" };
-
-        const rpPayout = await RazorpayX.createRazorpayPayout({
-            accountNumber: razorpayXAccount,
-            fundAccountId: pandit.razorpayFundAccountId,
+        const transferId = `payout_${payout._id}`;
+        const cfPayout = await createCashfreePayout({
+            transferId,
+            beneficiaryId: pandit.cashfreeBeneficiaryId,
             amount: payout.amount,
-            currency: "INR",
-            mode: "UPI",
-            purpose: "payout",
-            queueIfLowBalance: true,
-            referenceId: payout._id.toString(),
-            narrative: "Pandit Payout - Mandirlok"
+            payoutMode: payout.upiId ? "UPI" : "BANK_TRANSFER",
         });
 
         payout.status = "processing";
-        payout.razorpayPayoutId = rpPayout.id;
+        payout.cashfreePayoutId = cfPayout.referenceId || transferId;
         await payout.save();
 
         revalidatePath("/admin/payments/payouts");
         return { success: true, payout: JSON.parse(JSON.stringify(payout)) };
 
     } catch (error: any) {
-        console.error("processPayoutWithRazorpayX error:", error);
+        console.error("processPayoutWithCashfree error:", error);
         return { success: false, error: error.message || "Failed to initiate payout" };
     }
 }

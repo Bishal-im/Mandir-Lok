@@ -50,9 +50,9 @@ export interface IOrder extends Document {
 
   // Payment
   paymentStatus: PaymentStatus;
-  razorpayOrderId?: string;
-  razorpayPaymentId?: string;
-  razorpaySignature?: string;
+  cashfreeOrderId?: string;
+  cashfreePaymentId?: string;
+  cashfreeSignature?: string;
 
   // Order tracking
   orderStatus: OrderStatus;
@@ -112,9 +112,9 @@ const OrderSchema = new Schema<IOrder>(
       enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
-    razorpayOrderId: { type: String, default: "" },
-    razorpayPaymentId: { type: String, default: "" },
-    razorpaySignature: { type: String, default: "" },
+    cashfreeOrderId: { type: String, default: "" },
+    cashfreePaymentId: { type: String, default: "" },
+    cashfreeSignature: { type: String, default: "" },
 
     orderStatus: {
       type: String,

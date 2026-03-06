@@ -13,8 +13,7 @@ export interface IPandit extends Document {
   commissionPercentage: number;
   totalEarnings: number;
   unpaidEarnings: number;
-  razorpayContactId?: string;
-  razorpayFundAccountId?: string;
+  cashfreeBeneficiaryId?: string;
   aadhaarCardUrl?: string;
   aadhaarStatus: "none" | "pending" | "verified" | "rejected";
   isActive: boolean;
@@ -37,8 +36,7 @@ const PanditSchema = new Schema<IPandit>(
     commissionPercentage: { type: Number, default: 80 }, // Default 80% to Pandit, 20% to Platform
     totalEarnings: { type: Number, default: 0 },
     unpaidEarnings: { type: Number, default: 0 },
-    razorpayContactId: { type: String, default: "" },
-    razorpayFundAccountId: { type: String, default: "" },
+    cashfreeBeneficiaryId: { type: String, default: "" },
     aadhaarCardUrl: { type: String, default: "" },
     aadhaarStatus: {
       type: String,

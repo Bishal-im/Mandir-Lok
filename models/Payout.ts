@@ -9,7 +9,7 @@ export interface IPayout extends Document {
   upiId?: string;
   bankAccount?: string;
   note?: string;
-  razorpayPayoutId?: string;
+  cashfreePayoutId?: string;
   failureReason?: string;
   utr?: string;
   processedAt?: Date;
@@ -29,7 +29,7 @@ const PayoutSchema = new Schema<IPayout>(
     upiId: { type: String, default: "" },
     bankAccount: { type: String, default: "" },
     note: { type: String, default: "" },
-    razorpayPayoutId: { type: String, default: "" },
+    cashfreePayoutId: { type: String, default: "" },
     failureReason: { type: String, default: "" },
     utr: { type: String, default: "" },
     processedAt: { type: Date, default: null },

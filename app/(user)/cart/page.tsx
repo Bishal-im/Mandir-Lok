@@ -7,18 +7,18 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, Shield, Loader2, Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
 
-// ── Razorpay types ─────────────────────────────────────────────────────────────
+// ── Cashfree types ─────────────────────────────────────────────────────────────
 declare global {
   interface Window {
-    Razorpay: any; // Simplified for this rewrite
+    Cashfree: any;
   }
 }
 
-function loadRazorpayScript(): Promise<boolean> {
+function loadCashfreeScript(): Promise<boolean> {
   return new Promise((resolve) => {
-    if (typeof window !== "undefined" && window.Razorpay) return resolve(true);
+    if (typeof window !== "undefined" && window.Cashfree) return resolve(true);
     const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
@@ -198,8 +198,8 @@ function CartContent() {
         throw new Error("Missing date information for pooja booking.");
       }
 
-      const loaded = await loadRazorpayScript();
-      if (!loaded) throw new Error("Could not load Razorpay SDK. Check your internet connection.");
+      const loaded = await loadCashfreeScript();
+      if (!loaded) throw new Error("Could not load Cashfree SDK. Check your internet connection.");
 
       const orderRes = await fetch("/api/payment/create-order", {
         method: "POST",
@@ -215,68 +215,17 @@ function CartContent() {
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.message || "Failed to create payment order");
 
-      const { razorpayOrderId, amount, keyId } = orderData.data;
+      const { payment_session_id, order_id } = orderData.data;
 
-      await new Promise<void>((resolve, reject) => {
-        const rzp = new window.Razorpay({
-          key: keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-          amount: amount * 100,
-          currency: "INR",
-          name: "MandirLok",
-          description: `Booking: ${pooja ? (pooja.name === 'Sacred Offering' ? selectedOfferings.map(o => o.name).join(', ') : pooja.name) : 'Direct Temple Donation'}`,
-          order_id: razorpayOrderId,
-          prefill: {
-            name: form.name,
-            contact: form.phone,
-          },
-          theme: { color: "#ff7f0a" },
-          modal: {
-            ondismiss: () => reject(new Error("Payment cancelled")),
-          },
-          handler: async (response: any) => {
-            try {
-              const verifyRes = await fetch("/api/payment/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,
-                  razorpaySignature: response.razorpay_signature,
-                  poojaId: poojaId || undefined,
-                  templeId,
-                  bookingDate: dateStr ? new Date(dateStr as string).toISOString() : new Date().toISOString(),
-                  qty,
-                  chadhavaItems: selectedOfferings.map(o => ({
-                    chadhavaId: o._id,
-                    name: o.name,
-                    price: o.price,
-                    emoji: o.emoji,
-                    quantity: o.quantity || 1
-                  })),
-                  sankalpName: form.name,
-                  gotra: form.gotra,
-                  dob: form.dob,
-                  phone: `${countryCode}${form.phone}`,
-                  whatsapp: `${sameAsPhone ? countryCode : whatsappCountryCode}${form.whatsapp}`,
-                  sankalp: form.sankalp,
-                  address: form.address,
-                  isDonation: isDonationParam,
-                  extraDonation: customAmountParam,
-                  packageSelected: selectedPackage ? { name: selectedPackage.name, price: selectedPackage.price } : undefined,
-                }),
-              });
-              const verifyData = await verifyRes.json();
-              if (!verifyData.success) throw new Error(verifyData.message || "Payment verification failed");
-
-              router.push(`/booking-success?orderId=${verifyData.data.orderId}`);
-              resolve();
-            } catch (err) {
-              reject(err);
-            }
-          },
-        });
-        rzp.open();
+      const cashfree = window.Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === "PRODUCTION" ? "production" : "sandbox",
       });
+
+      await cashfree.checkout({
+        paymentSessionId: payment_session_id,
+        returnUrl: `${window.location.origin}/api/payment/verify?order_id=${order_id}&poojaId=${poojaId || ''}&templeId=${templeId}&bookingDate=${dateStr}&qty=${qty}&sankalpName=${encodeURIComponent(form.name)}&gotra=${encodeURIComponent(form.gotra)}&dob=${form.dob}&phone=${encodeURIComponent(countryCode + form.phone)}&whatsapp=${encodeURIComponent((sameAsPhone ? countryCode : whatsappCountryCode) + form.whatsapp)}&sankalp=${encodeURIComponent(form.sankalp)}&address=${encodeURIComponent(form.address)}&isDonation=${isDonationParam}&extraDonation=${customAmountParam}${selectedPackage ? `&packageName=${encodeURIComponent(selectedPackage.name)}&packagePrice=${selectedPackage.price}` : ''}&chadhavaData=${encodeURIComponent(selectedOfferings.map(o => `${o._id}:${o.quantity || 1}`).join(","))}`,
+      });
+
     } catch (err: any) {
       if (err.message !== "Payment cancelled") setPayError(err.message || "Something went wrong");
     } finally {
@@ -455,7 +404,7 @@ function CartContent() {
             {step === 2 && (
               <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 shadow-card">
                 <h2 className="heading-md text-[#1a1209] mb-2">Payment</h2>
-                <p className="text-xs text-[#6b5b45] mb-6">Complete your booking with secure online payment via Razorpay</p>
+                <p className="text-xs text-[#6b5b45] mb-6">Complete your booking with secure online payment via Cashfree</p>
                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-4 mb-6">
                   <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Your Sankalp Details</h4>
                   <div className="grid grid-cols-2 gap-2 text-xs text-[#6b5b45]">
@@ -471,8 +420,8 @@ function CartContent() {
                   </div>
                 )}
                 <div className="bg-[#f9f9f9] border border-[#f0dcc8] rounded-xl p-4 mb-6">
-                  <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Payment via Razorpay</h4>
-                  <p className="text-xs text-[#6b5b45]">You can pay using UPI, Debit/Credit Card, or Net Banking through the secure Razorpay checkout.</p>
+                  <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Payment via Cashfree</h4>
+                  <p className="text-xs text-[#6b5b45]">You can pay using UPI, Debit/Credit Card, or Net Banking through the secure Cashfree checkout.</p>
                   <div className="flex gap-3 mt-3 text-sm font-medium text-[#6b5b45]">
                     <span>UPI</span><span>Card</span><span>Net Banking</span>
                   </div>
@@ -484,7 +433,7 @@ function CartContent() {
                   </button>
                 </div>
                 <p className="text-center text-xs text-[#6b5b45] mt-4 flex items-center justify-center gap-1">
-                  <Shield size={12} className="text-green-500" /> 100% Secured by Razorpay Encryption
+                  <Shield size={12} className="text-green-500" /> 100% Secured by Cashfree Encryption
                 </p>
               </div>
             )}

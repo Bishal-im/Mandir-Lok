@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import Razorpay from "razorpay";
 import { connectDB } from "@/lib/db";
 import Pooja from "@/models/Pooja";
 import Chadhava from "@/models/Chadhava";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+import { createCashfreeOrder } from "@/lib/cashfree";
 
 export async function POST(req: Request) {
   try {
@@ -70,30 +65,23 @@ export async function POST(req: Request) {
 
     const totalAmount = poojaAmount + chadhavaAmount + (extraDonation || 0);
 
-    // Razorpay amount is in paise (multiply by 100)
-    const razorpayOrder = await razorpay.orders.create({
-      amount: totalAmount * 100,
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-      notes: {
-        poojaId: poojaId || "",
-        poojaName: poojaName,
-        qty: qty.toString(),
-        chadhavaIds: chadhavaIds.join(","),
-        extraDonation: (extraDonation || 0).toString(),
-      },
+    // Cashfree order creation
+    const cashfreeOrder = await createCashfreeOrder({
+      orderId: `order_${Date.now()}`,
+      amount: totalAmount,
+      customerId: "devotee_id", // Optional: use user ID if available
+      customerPhone: body.phone || "9999999999",
+      customerName: body.name || "Devotee",
+      orderNote: `Pooja: ${poojaName}`,
     });
 
     return NextResponse.json({
       success: true,
       data: {
-        razorpayOrderId: razorpayOrder.id,
+        payment_session_id: cashfreeOrder.payment_session_id,
+        order_id: cashfreeOrder.order_id,
         amount: totalAmount,
         currency: "INR",
-        poojaAmount: poojaAmount,
-        chadhavaAmount,
-        extraDonation: (extraDonation || 0),
-        keyId: process.env.RAZORPAY_KEY_ID,
       },
     });
   } catch (error) {

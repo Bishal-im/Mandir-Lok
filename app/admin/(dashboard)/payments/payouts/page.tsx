@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPayoutsAdmin, updatePayoutStatus, processPayoutWithRazorpayX } from "@/lib/actions/admin";
+import { getPayoutsAdmin, updatePayoutStatus, processPayoutWithCashfree } from "@/lib/actions/admin";
 import { CheckCircle2, XCircle, Clock, Banknote, User, Search, Loader2 } from "lucide-react";
 
 export default function PayoutsPage() {
@@ -35,7 +35,7 @@ export default function PayoutsPage() {
     async function handleAutoPayout(id: string) {
         if (!confirm("Are you sure you want to transfer money automatically?")) return;
         setUpdatingId(id);
-        const res = await processPayoutWithRazorpayX(id);
+        const res = await processPayoutWithCashfree(id);
         if (res.success) {
             alert("Payout initiated successfully! It will be marked as 'Paid' once confirmed by the bank.");
             setPayouts(prev => prev.map(p => p._id === id ? { ...p, status: 'processing' } : p));

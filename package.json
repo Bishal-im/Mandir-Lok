@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",
+    "cashfree-pg": "^5.1.0",
     "clsx": "^2.1.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",

@@ -125,7 +125,7 @@ export default function OrderSummaryCard({
       {/* ── Trust ── */}
       <div className="text-center text-[10px] text-[#6b5b45] flex items-center justify-center gap-1 mb-3">
         <Shield size={11} className="text-green-500" />
-        100% Secured via Razorpay Encryption
+        100% Secured via Cashfree Encryption
       </div>
 
       <div className="space-y-1.5 pt-3 border-t border-[#f0dcc8]">
