@@ -37,24 +37,12 @@ export default function AdminNotificationsPage() {
                     <h1 className="text-2xl font-display font-bold text-gray-900">Notifications</h1>
                     <p className="text-gray-500 text-sm">Stay updated with system activities</p>
                 </div>
-                <div className="flex gap-4 items-center">
-                    <button
-                        onClick={async () => {
-                            const { markAllNotificationsRead } = await import("@/lib/actions/notifications");
-                            const res = await markAllNotificationsRead("Admin");
-                            if (res.success) loadNotifications();
-                        }}
-                        className="text-sm text-gray-400 hover:text-gray-600 font-medium"
-                    >
-                        Mark all as read
-                    </button>
-                    <button
-                        onClick={loadNotifications}
-                        className="text-sm text-[#ff7f0a] hover:underline font-medium"
-                    >
-                        Refresh
-                    </button>
-                </div>
+                <button
+                    onClick={loadNotifications}
+                    className="text-sm text-[#ff7f0a] hover:underline font-medium"
+                >
+                    Refresh
+                </button>
             </div>
 
             {loading ? (

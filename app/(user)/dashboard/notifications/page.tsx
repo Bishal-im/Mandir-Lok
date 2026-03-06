@@ -137,23 +137,9 @@ export default function NotificationsPage() {
                         {/* Content */}
                         <div className="lg:col-span-3">
                             <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 md:p-8 shadow-card min-h-[500px]">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h1 className="heading-md text-[#1a1209] flex items-center gap-2 mb-0">
-                                        <Bell className="text-[#ff7f0a]" /> Notifications
-                                    </h1>
-                                    <button
-                                        onClick={async () => {
-                                            const { markAllNotificationsRead } = await import("@/lib/actions/notifications");
-                                            const res = await markAllNotificationsRead("User");
-                                            if (res.success) {
-                                                setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-                                            }
-                                        }}
-                                        className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        Mark all as read
-                                    </button>
-                                </div>
+                                <h1 className="heading-md text-[#1a1209] mb-6 flex items-center gap-2">
+                                    <Bell className="text-[#ff7f0a]" /> Notifications
+                                </h1>
 
                                 {loading ? (
                                     <div className="flex flex-col items-center justify-center py-20">

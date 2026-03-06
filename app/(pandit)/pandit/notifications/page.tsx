@@ -55,23 +55,9 @@ export default function NotificationsPage() {
         <div className="min-h-screen bg-[#fdf6ee] flex font-sans">
             <PanditSidebar />
             <div className="flex-1 overflow-auto text-gray-900">
-                <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
-                    <div>
-                        <h1 className="font-display font-bold text-gray-900 text-lg">Notifications</h1>
-                        <p className="text-xs text-[#6b5b45]">Stay updated with your assigned pujas and payments.</p>
-                    </div>
-                    <button
-                        onClick={async () => {
-                            const { markAllNotificationsRead } = await import("@/lib/actions/notifications");
-                            const res = await markAllNotificationsRead("Pandit");
-                            if (res.success) {
-                                setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-                            }
-                        }}
-                        className="text-xs font-bold text-[#6b5b45] hover:text-[#ff7f0a] transition-colors"
-                    >
-                        Mark all read
-                    </button>
+                <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30">
+                    <h1 className="font-display font-bold text-gray-900 text-lg">Notifications</h1>
+                    <p className="text-xs text-[#6b5b45]">Stay updated with your assigned pujas and payments.</p>
                 </header>
 
                 <main className="p-6 max-w-4xl mx-auto space-y-6">
