@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
-    const { email: rawEmail } = await req.json();
+    const { email: rawEmail, isAdmin } = await req.json();
     const email = rawEmail?.toLowerCase().trim();
 
     if (!email) {
@@ -15,6 +15,18 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    // ─── ADMIN CHECK ────────────────────────────────────────────────────────
+    if (isAdmin) {
+      const adminEmails = process.env.ADMIN_EMAILS?.toLowerCase().split(",").map(e => e.trim()) || [];
+      if (!adminEmails.includes(email)) {
+        return NextResponse.json(
+          { success: false, message: "Wrong email ID. Access denied." },
+          { status: 403 }
+        );
+      }
+    }
+    // ────────────────────────────────────────────────────────────────────────
 
     await connectDB();
 
