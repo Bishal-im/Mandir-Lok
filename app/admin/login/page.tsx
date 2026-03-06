@@ -19,6 +19,19 @@ export default function AdminLoginPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        if (data.success && data.data?.role === "admin") {
+          router.push("/admin");
+        }
+      } catch (err) {
+        console.error("Auth check failed", err);
+      }
+    }
+    checkAuth();
+
     if (resendTimer > 0) {
       timerRef.current = setInterval(() => {
         setResendTimer((t) => {
@@ -33,7 +46,7 @@ export default function AdminLoginPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [resendTimer]);
+  }, [resendTimer, router]);
 
   const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
@@ -86,19 +99,19 @@ export default function AdminLoginPage() {
       });
       const data = await res.json();
       if (data.success) {
-          // IMPORTANT: The verify-otp route doesn't check role.
-          // We have a guard in layout, but for UX, let's verify here if possible.
-          // Since verify-otp already sets cookie, we can try to hit /api/auth/me
-          const meRes = await fetch("/api/auth/me");
-          const meData = await meRes.json();
-          
-          if (meData.success && meData.data?.role === "admin") {
-            router.push("/admin");
-          } else {
-            const msg = meData.success ? "Access Restricted. User role is not admin." : (meData.message || "Access Restricted. You do not have admin permissions.");
-            setError(msg);
-            triggerShake();
-          }
+        // IMPORTANT: The verify-otp route doesn't check role.
+        // We have a guard in layout, but for UX, let's verify here if possible.
+        // Since verify-otp already sets cookie, we can try to hit /api/auth/me
+        const meRes = await fetch("/api/auth/me");
+        const meData = await meRes.json();
+
+        if (meData.success && meData.data?.role === "admin") {
+          router.push("/admin");
+        } else {
+          const msg = meData.success ? "Access Restricted. User role is not admin." : (meData.message || "Access Restricted. You do not have admin permissions.");
+          setError(msg);
+          triggerShake();
+        }
       } else {
         setError(data.message || "Incorrect OTP.");
         triggerShake();
@@ -117,7 +130,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex bg-[#fdf6ee] items-center justify-center p-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-        <style suppressHydrationWarning>{`
+      <style suppressHydrationWarning>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap');
         .display-font { font-family: 'Playfair Display', serif; }
         @keyframes shake { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-8px)} 30%{transform:translateX(8px)} 45%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 75%{transform:translateX(-3px)} 90%{transform:translateX(3px)} }
@@ -125,7 +138,7 @@ export default function AdminLoginPage() {
         .btn-admin { background: #1a0a00; border: 1px solid #3d1a00; color: white; transition: all 0.2s; }
         .btn-admin:hover { background: #2d1200; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
       `}</style>
-      
+
       <div className={`w-full max-w-md bg-white border border-gray-200 rounded-3xl p-8 shadow-xl ${shake ? 'shake' : ''}`}>
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg text-white font-bold">म</div>
@@ -172,10 +185,10 @@ export default function AdminLoginPage() {
                     const next = [...otp];
                     next[idx] = e.target.value.replace(/\D/g, "").slice(-1);
                     setOtp(next);
-                    if (next[idx] && idx < 5) otpRefs.current[idx+1]?.focus();
+                    if (next[idx] && idx < 5) otpRefs.current[idx + 1]?.focus();
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Backspace" && !otp[idx] && idx > 0) otpRefs.current[idx-1]?.focus();
+                    if (e.key === "Backspace" && !otp[idx] && idx > 0) otpRefs.current[idx - 1]?.focus();
                   }}
                 />
               ))}
