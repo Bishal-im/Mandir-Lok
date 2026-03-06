@@ -56,28 +56,30 @@ export default function OrdersAdminPage() {
                 </div>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+            <div className="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
                 <div className="relative flex-1 w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                     <input
                         placeholder="Search by ID, Name or Phone..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20"
+                        className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-[#ff7f0a]/20 text-sm"
                     />
                 </div>
-                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-                    <Filter size={16} className="text-gray-400 shrink-0" />
-                    {statuses.map(s => (
-                        <button
-                            key={s}
-                            onClick={() => setStatusFilter(s)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border whitespace-nowrap ${statusFilter === s ? "bg-gray-900 text-white border-gray-900" : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-200"
-                                }`}
-                        >
-                            {s}
-                        </button>
-                    ))}
+                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 no-scrollbar">
+                    <Filter size={14} className="text-gray-400 shrink-0" />
+                    <div className="flex gap-2 min-w-max">
+                        {statuses.map(s => (
+                            <button
+                                key={s}
+                                onClick={() => setStatusFilter(s)}
+                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border ${statusFilter === s ? "bg-gray-900 text-white border-gray-900" : "bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-200"
+                                    }`}
+                            >
+                                {s}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 

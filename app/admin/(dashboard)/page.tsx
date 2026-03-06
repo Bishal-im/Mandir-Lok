@@ -60,7 +60,7 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* ── Stats Cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div
             key={s.label}
@@ -122,15 +122,14 @@ export default async function AdminDashboard() {
                   "Order ID",
                   "User",
                   "Pooja",
-                  "Temple",
-                  "Pandit",
                   "Amount",
                   "Status",
                   "Action",
                 ].map((h) => (
                   <th
                     key={h}
-                    className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                    className={`text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide ${(h === "Amount" || h === "Status") ? "hidden sm:table-cell" : ""
+                      }`}
                   >
                     {h}
                   </th>
@@ -154,16 +153,10 @@ export default async function AdminDashboard() {
                     <td className="px-4 py-3 text-gray-600 text-xs">
                       {order.poojaId?.name || "Unknown"}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 text-xs">
-                      {order.templeId?.name || "Unknown"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 text-xs">
-                      {order.panditId?.name || "Not assigned"}
-                    </td>
-                    <td className="px-4 py-3 font-semibold text-gray-900 text-xs">
+                    <td className="px-4 py-3 font-semibold text-gray-900 text-xs hidden sm:table-cell">
                       ₹{order.totalAmount?.toLocaleString()}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 hidden sm:table-cell">
                       <span
                         className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sc.bg || 'bg-gray-100'} ${sc.text || 'text-gray-700'}`}
                       >

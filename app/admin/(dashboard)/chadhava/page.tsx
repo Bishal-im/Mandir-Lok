@@ -59,46 +59,48 @@ export default function ChadhavaAdminPage() {
 
             {loading ? <div className="text-center py-10 opacity-50">Loading...</div> : (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase">Item</th>
-                                <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase">Temple</th>
-                                <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase">Price</th>
-                                <th className="text-right px-6 py-4 text-xs font-bold text-gray-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {filteredItems.map(item => (
-                                <tr key={item._id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 flex items-center gap-3 font-semibold text-gray-900">
-                                        <div className="w-10 h-10 rounded-lg bg-gray-50 overflow-hidden flex items-center justify-center">
-                                            {item.image ? (
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <svg className="w-5 h-5 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        {item.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        <div className="flex items-center gap-1"><MapPin size={12} className="text-gray-400" /> {item.templeId?.name || "Global"}</div>
-                                    </td>
-                                    <td className="px-6 py-4 font-bold text-gray-900">
-                                        <span className="flex items-center gap-0.5"><IndianRupee size={12} />{item.price}</span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2 text-gray-400">
-                                            <Link href={`/admin/chadhava/edit/${item._id}`} className="hover:text-[#ff7f0a]"><Edit2 size={16} /></Link>
-                                            <button onClick={() => handleDelete(item._id)} className="hover:text-red-500"><Trash2 size={16} /></button>
-                                        </div>
-                                    </td>
+                    <div className="table-container">
+                        <table className="w-full text-sm">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase">Item</th>
+                                    <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase">Temple</th>
+                                    <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase">Price</th>
+                                    <th className="text-right px-6 py-4 text-xs font-bold text-gray-500 uppercase">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {filteredItems.map(item => (
+                                    <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 flex items-center gap-3 font-semibold text-gray-900 min-w-[180px]">
+                                            <div className="w-10 h-10 rounded-lg bg-gray-50 overflow-hidden flex items-center justify-center shrink-0">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <svg className="w-5 h-5 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <span className="truncate">{item.name}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600 min-w-[150px]">
+                                            <div className="flex items-center gap-1"><MapPin size={12} className="text-gray-400" /> {item.templeId?.name || "Global"}</div>
+                                        </td>
+                                        <td className="px-6 py-4 font-bold text-gray-900">
+                                            <span className="flex items-center gap-0.5"><IndianRupee size={12} />{item.price}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-3 text-gray-400">
+                                                <Link href={`/admin/chadhava/edit/${item._id}`} className="hover:text-[#ff7f0a] p-1"><Edit2 size={18} /></Link>
+                                                <button onClick={() => handleDelete(item._id)} className="hover:text-red-500 p-1"><Trash2 size={18} /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
             {!loading && filteredItems.length === 0 && <div className="text-center py-20 text-gray-400 bg-white rounded-3xl border border-dashed border-gray-200">No items found.</div>}

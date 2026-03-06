@@ -71,7 +71,7 @@ export default function PayoutsPage() {
             </div>
 
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="table-container">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
@@ -128,25 +128,25 @@ export default function PayoutsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             {p.status === "requested" && (
-                                                <div className="flex gap-2">
+                                                <div className="flex flex-wrap gap-2">
                                                     <button
                                                         disabled={updatingId === p._id}
                                                         onClick={() => handleAutoPayout(p._id)}
-                                                        className="text-[10px] bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50 font-semibold shadow-sm"
+                                                        className="text-[10px] bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-bold shadow-sm"
                                                     >
                                                         Pay Now
                                                     </button>
                                                     <button
                                                         disabled={updatingId === p._id}
                                                         onClick={() => handleUpdateStatus(p._id, "processing")}
-                                                        className="text-[10px] bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded hover:bg-gray-200 disabled:opacity-50"
+                                                        className="text-[10px] bg-gray-100 text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-50 font-bold"
                                                     >
                                                         Mark Processing
                                                     </button>
                                                     <button
                                                         disabled={updatingId === p._id}
                                                         onClick={() => handleUpdateStatus(p._id, "rejected")}
-                                                        className="text-[10px] bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded hover:bg-red-100 disabled:opacity-50"
+                                                        className="text-[10px] bg-red-50 text-red-600 border border-red-100 px-3 py-1.5 rounded-lg hover:bg-red-100 disabled:opacity-50 font-bold"
                                                     >
                                                         Reject
                                                     </button>

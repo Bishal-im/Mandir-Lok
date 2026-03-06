@@ -78,21 +78,24 @@ export default function AdminSidebar() {
     return (
         <>
             {/* Mobile Toggle & Top Bar */}
-            <header className="lg:hidden bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-                <div className="flex items-center gap-4">
+            {/* Mobile Toggle & Top Bar */}
+            <header className="lg:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => setSideOpen(!sideOpen)}
-                        className="p-2 rounded-lg hover:bg-gray-100"
+                        className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                        aria-label="Toggle Menu"
                     >
-                        <Menu size={20} />
+                        <Menu size={22} className="text-gray-700" />
                     </button>
                     {logoUrl ? (
-                        <img src={logoUrl} alt="Logo" className="w-9 h-9 object-contain" />
+                        <img src={logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
                     ) : (
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center font-bold text-lg text-white">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ff7f0a] to-[#8b0000] flex items-center justify-center font-bold text-base text-white">
                             म
                         </div>
                     )}
+                    <span className="font-display font-bold text-gray-900">Admin</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <AdminNotificationBell />

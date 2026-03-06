@@ -166,8 +166,8 @@ export default function SongsPage() {
             </div>
 
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex items-center gap-3">
-                    <Search className="text-gray-400" size={20} />
+                <div className="p-3 sm:p-4 border-b border-gray-100 flex items-center gap-3">
+                    <Search className="text-gray-400" size={16} />
                     <input
                         type="text"
                         placeholder="Search by title, artist or deity..."
@@ -177,7 +177,7 @@ export default function SongsPage() {
                     />
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="table-container">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                             <tr>
