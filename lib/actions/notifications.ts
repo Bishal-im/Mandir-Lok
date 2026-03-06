@@ -135,3 +135,62 @@ export async function getUnreadAdminNotificationCount() {
         return { success: false, data: 0 };
     }
 }
+
+// =======================
+// USER NOTIFICATIONS (SHARED)
+// =======================
+
+async function getAuthUser() {
+    const token = cookies().get("mandirlok_token")?.value;
+    if (!token) return null;
+
+    const decoded = verifyToken(token);
+    if (!decoded || !decoded.userId) return null;
+
+    return decoded.userId;
+}
+
+export async function getUnreadUserNotificationCount() {
+    try {
+        const userId = await getAuthUser();
+        if (!userId) return { success: false, data: 0 };
+
+        await connectDB();
+        const count = await Notification.countDocuments({
+            recipientId: userId,
+            recipientModel: "User",
+            read: false
+        });
+
+        return { success: true, data: count };
+    } catch (error: any) {
+        return { success: false, data: 0 };
+    }
+}
+
+export async function markAllNotificationsRead(role: "Admin" | "Pandit" | "User") {
+    try {
+        let recipientId;
+        if (role === "Admin") recipientId = await getAuthAdmin();
+        else if (role === "Pandit") recipientId = await getAuthPandit();
+        else recipientId = await getAuthUser();
+
+        if (!recipientId && role !== "Admin") return { success: false, message: "Please login" };
+
+        await connectDB();
+        const query: any = { recipientModel: role, read: false };
+        if (role !== "Admin") query.recipientId = recipientId;
+
+        await Notification.updateMany(query, { read: true });
+
+        const { revalidatePath } = await import("next/cache");
+        if (role === "Admin") revalidatePath("/admin/notifications");
+        else if (role === "Pandit") revalidatePath("/pandit/notifications");
+        else revalidatePath("/dashboard/notifications");
+
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+

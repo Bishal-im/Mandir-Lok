@@ -38,6 +38,7 @@ export default function Navbar() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // ── Fetch Logo ──
@@ -52,6 +53,27 @@ export default function Navbar() {
     }
     loadLogo();
   }, []);
+
+  const IS_LOGGED_IN = !!user;
+
+  // ── Fetch Unread Count ──
+  useEffect(() => {
+    if (!IS_LOGGED_IN) return;
+
+    const fetchUnread = async () => {
+      try {
+        const { getUnreadUserNotificationCount } = await import("@/lib/actions/notifications");
+        const res = await getUnreadUserNotificationCount();
+        if (res.success) setUnreadCount(res.data);
+      } catch (err) {
+        console.error("Failed to fetch unread count", err);
+      }
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000); // 30s
+    return () => clearInterval(interval);
+  }, [IS_LOGGED_IN]);
 
   // ── Check auth on mount ──
   useEffect(() => {
@@ -119,8 +141,6 @@ export default function Navbar() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
-  const IS_LOGGED_IN = !!user;
 
   return (
     <>
@@ -244,25 +264,40 @@ export default function Navbar() {
               ) : IS_LOGGED_IN ? (
                 /* ── LOGGED IN: Profile Avatar + Dropdown ── */
                 <div className="relative" ref={profileRef}>
-                  <button
-                    onClick={() => setProfileOpen((v) => !v)}
-                    className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border-2 border-orange-100 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
-                  >
-                    {user?.photo ? (
-                      <img src={user.photo} className="w-8 h-8 rounded-full object-cover shadow-sm" alt={user.name} />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                        {user!.initials}
-                      </div>
+                    {IS_LOGGED_IN && (
+                      <Link
+                        href="/dashboard/notifications"
+                        className="relative p-2 rounded-xl border-2 border-orange-100 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group mr-1"
+                      >
+                        <svg className="w-5 h-5 text-gray-500 group-hover:text-orange-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        {unreadCount > 0 && (
+                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white animate-pulse">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        )}
+                      </Link>
                     )}
-                    <div className="text-left hidden sm:block">
-                      <p className="text-xs font-bold text-[#1a0500] leading-none">{user!.name.split(" ")[0]}</p>
-                      <p className="text-[10px] text-gray-400 leading-none mt-0.5">My Account</p>
-                    </div>
-                    <svg className={`w-3.5 h-3.5 text-gray-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+                    <button
+                      onClick={() => setProfileOpen((v) => !v)}
+                      className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border-2 border-orange-100 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
+                    >
+                      {user?.photo ? (
+                        <img src={user.photo} className="w-8 h-8 rounded-full object-cover shadow-sm" alt={user.name} />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                          {user!.initials}
+                        </div>
+                      )}
+                      <div className="text-left hidden sm:block">
+                        <p className="text-xs font-bold text-[#1a0500] leading-none">{user!.name.split(" ")[0]}</p>
+                        <p className="text-[10px] text-gray-400 leading-none mt-0.5">My Account</p>
+                      </div>
+                      <svg className={`w-3.5 h-3.5 text-gray-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
 
                   {/* LOGGED-IN DROPDOWN */}
                   {profileOpen && (

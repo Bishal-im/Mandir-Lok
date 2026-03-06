@@ -47,6 +47,8 @@ export default function PanditSidebar() {
       }
     }
     loadStats();
+    const interval = setInterval(loadStats, 30000); // Poll every 30s
+    return () => clearInterval(interval);
   }, [])
 
   const navItems = [
