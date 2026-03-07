@@ -52,6 +52,24 @@ export async function markPanditNotificationRead(id: string) {
     }
 }
 
+export async function deletePanditNotification(id: string) {
+    try {
+        const panditId = await getAuthPandit();
+        if (!panditId) return { success: false, message: "Please login" };
+
+        await connectDB();
+        await Notification.findOneAndDelete({
+            _id: id,
+            recipientId: panditId,
+            recipientModel: "Pandit"
+        });
+
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
 export async function getUnreadNotificationCount() {
     try {
         const panditId = await getAuthPandit();
@@ -118,6 +136,28 @@ export async function markAdminNotificationRead(id: string) {
 
         await connectDB();
         await Notification.findByIdAndUpdate(id, { read: true });
+
+        const { revalidatePath } = await import("next/cache");
+        revalidatePath("/admin/notifications");
+        revalidatePath("/admin");
+
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function deleteAdminNotification(id: string) {
+    try {
+        const adminId = await getAuthAdmin();
+        if (!adminId) return { success: false, message: "Please login as admin" };
+
+        await connectDB();
+        await Notification.findOneAndDelete({
+            _id: id,
+            recipientId: adminId,
+            recipientModel: "Admin"
+        });
 
         const { revalidatePath } = await import("next/cache");
         revalidatePath("/admin/notifications");

@@ -352,12 +352,12 @@ export default function TempleDetailPage() {
           {/* Overlaid info */}
           <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
             <div className="container-app">
-              <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
                   <Badge variant="gold" className="mb-2">
                     {temple.deity}
                   </Badge>
-                  <h1 className="font-display font-bold text-3xl md:text-4xl text-white mb-1 leading-tight">
+                  <h1 className="font-display font-bold text-2xl md:text-4xl text-white mb-1 leading-tight">
                     {temple.name}
                   </h1>
                   <div className="flex items-center gap-1.5 text-white/80 text-sm">
@@ -366,7 +366,7 @@ export default function TempleDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 sm:mt-0 mt-3">
                   <div className="bg-white/15 backdrop-blur border border-white/30 rounded-xl px-4 py-2 text-center">
                     <p className="text-xl font-bold text-[#ffd9a8]">
                       {temple.rating}
@@ -549,24 +549,24 @@ export default function TempleDetailPage() {
                 <h2 className="font-display font-semibold text-[#1a1209] mb-4">
                   Ratings & Reviews
                 </h2>
-                <div className="flex items-center gap-8 mb-4">
-                  <div className="text-center">
-                    <p className="text-5xl font-display font-bold text-[#ff7f0a]">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-12 mb-4">
+                  <div className="text-center bg-[#fff8f0] p-6 rounded-2xl border border-[#f0dcc8] w-full sm:w-auto">
+                    <p className="text-6xl font-display font-bold text-[#ff7f0a]">
                       {temple.rating}
                     </p>
                     <StarRating
                       rating={temple.rating}
-                      size={14}
-                      className="justify-center my-1"
+                      size={16}
+                      className="justify-center my-2"
                     />
-                    <p className="text-xs text-[#6b5b45]">
+                    <p className="text-xs text-[#6b5b45] font-bold uppercase tracking-wider">
                       {temple.totalReviews >= 1000
                         ? `${(temple.totalReviews / 1000).toFixed(1)}k`
                         : temple.totalReviews}{" "}
                       ratings
                     </p>
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 w-full">
                     {ratingBreakdown.map(({ star, percent }) => (
                       <div
                         key={star}

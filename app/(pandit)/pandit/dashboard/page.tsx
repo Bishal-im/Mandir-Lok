@@ -143,26 +143,25 @@ export default function PanditDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         {order.orderStatus === 'confirmed' ? (
                           <button
                             onClick={() => startPooja(order._id)}
-                            className="flex-1 btn-saffron py-2.5 text-xs flex items-center justify-center gap-2"
+                            className="w-full sm:flex-1 btn-saffron py-2.5 text-xs flex items-center justify-center gap-2"
                           >
                             <Play size={14} /> Start Pooja
                           </button>
                         ) : (
                           <button
                             onClick={() => setSelectedOrder(order)}
-                            className="flex-1 bg-blue-600 text-white font-bold rounded-xl py-2.5 text-xs hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                            className="w-full sm:flex-1 bg-blue-600 text-white font-bold rounded-xl py-2.5 text-xs hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
                           >
                             <ExternalLink size={14} /> Upload Video
                           </button>
-
                         )}
                         <Link
                           href={`/pandit/orders/${order._id}`}
-                          className="px-4 py-2.5 border border-[#f0dcc8] rounded-xl text-xs font-semibold text-[#6b5b45] hover:bg-white hover:text-[#ff7f0a] transition-colors"
+                          className="w-full sm:w-auto px-4 py-2.5 border border-[#f0dcc8] rounded-xl text-xs font-semibold text-[#6b5b45] hover:bg-white hover:text-[#ff7f0a] transition-colors text-center"
                         >
                           Details
                         </Link>

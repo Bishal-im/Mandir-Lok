@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Bell, Check, Loader2, Info, Package, Video, AlertCircle, ChevronRight } from "lucide-react";
-import { getNotifications, markNotificationRead } from "@/lib/actions/user";
+import { Bell, Check, Loader2, Info, Package, Video, AlertCircle, ChevronRight, Trash2 } from "lucide-react";
+import { getNotifications, markNotificationRead, deleteNotification } from "@/lib/actions/user";
 
 interface Notification {
     _id: string;
@@ -55,6 +55,21 @@ export default function NotificationsPage() {
             }
         } catch (err) {
             console.error("Error marking notification as read:", err);
+        }
+    };
+
+    const handleDelete = async (e: React.MouseEvent, id: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!confirm("Are you sure you want to delete this notification?")) return;
+
+        try {
+            const res = await deleteNotification(id);
+            if (res.success) {
+                setNotifications(prev => prev.filter(n => n._id !== id));
+            }
+        } catch (err) {
+            console.error("Error deleting notification:", err);
         }
     };
 
@@ -164,30 +179,38 @@ export default function NotificationsPage() {
                                                     : "bg-[#fff8f0] border-[#ffd9a8] shadow-sm hover:shadow-md"
                                                     }`}
                                             >
-                                                {!notif.read && (
-                                                    <div className="absolute top-5 right-5">
-                                                        <button
-                                                            onClick={() => handleMarkAsRead(notif._id)}
-                                                            className="p-1.5 bg-white rounded-full shadow-sm text-green-600 hover:text-green-700 hover:scale-110 transition-all border border-green-100"
-                                                            title="Mark as read"
-                                                        >
-                                                            <Check size={14} />
-                                                        </button>
-                                                    </div>
-                                                )}
-
                                                 <div className="flex gap-4">
                                                     <div className="mt-1 w-10 h-10 rounded-xl bg-white border border-[#f0dcc8] flex items-center justify-center shrink-0">
                                                         {getIcon(notif.type)}
                                                     </div>
-                                                    <div className="flex-1 pr-6">
-                                                        <div className="flex items-center justify-between mb-1">
+                                                    <div className="flex-1">
+                                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
                                                             <h4 className="font-bold text-[#1a1209] text-sm md:text-base">
                                                                 {notif.title}
                                                             </h4>
-                                                            <span className="text-[10px] md:text-xs text-[#6b5b45]">
-                                                                {formatDate(notif.createdAt)}
-                                                            </span>
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[10px] md:text-xs text-[#6b5b45] whitespace-nowrap">
+                                                                    {formatDate(notif.createdAt)}
+                                                                </span>
+                                                                <div className="flex gap-2">
+                                                                    {!notif.read && (
+                                                                        <button
+                                                                            onClick={() => handleMarkAsRead(notif._id)}
+                                                                            className="p-1.5 bg-white rounded-full shadow-sm text-green-600 hover:text-green-700 hover:scale-110 transition-all border border-green-100"
+                                                                            title="Mark as read"
+                                                                        >
+                                                                            <Check size={14} />
+                                                                        </button>
+                                                                    )}
+                                                                    <button
+                                                                        onClick={(e) => handleDelete(e, notif._id)}
+                                                                        className="p-1.5 bg-white rounded-full shadow-sm text-red-500 hover:text-red-700 hover:scale-110 transition-all border border-red-50"
+                                                                        title="Delete notification"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <p className="text-xs md:text-sm text-[#6b5b45] leading-relaxed mb-3">
                                                             {notif.message}

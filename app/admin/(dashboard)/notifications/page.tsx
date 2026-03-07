@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAdminNotifications, markAdminNotificationRead } from "@/lib/actions/notifications";
-import { Bell, Check, ExternalLink, Inbox } from "lucide-react";
+import { getAdminNotifications, markAdminNotificationRead, deleteAdminNotification } from "@/lib/actions/notifications";
+import { Bell, Check, ExternalLink, Inbox, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatRelativeTime } from "@/lib/utils";
 
@@ -27,6 +27,14 @@ export default function AdminNotificationsPage() {
         const res = await markAdminNotificationRead(id);
         if (res.success) {
             setNotifications(notifications.map(n => n._id === id ? { ...n, read: true } : n));
+        }
+    }
+
+    async function handleDelete(id: string) {
+        if (!confirm("Are you sure you want to delete this notification?")) return;
+        const res = await deleteAdminNotification(id);
+        if (res.success) {
+            setNotifications(notifications.filter(n => n._id !== id));
         }
     }
 
@@ -72,11 +80,11 @@ export default function AdminNotificationsPage() {
                                     <Bell size={20} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-1">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
                                         <h3 className={`font-bold truncate ${notif.read ? "text-gray-700" : "text-gray-900"}`}>
                                             {notif.title}
                                         </h3>
-                                        <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
+                                        <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium whitespace-nowrap">
                                             {formatRelativeTime(new Date(notif.createdAt))}
                                         </span>
                                     </div>
@@ -100,6 +108,12 @@ export default function AdminNotificationsPage() {
                                                 Mark as Read <Check size={12} />
                                             </button>
                                         )}
+                                        <button
+                                            onClick={() => handleDelete(notif._id)}
+                                            className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-red-500 transition-colors"
+                                        >
+                                            Delete <Trash2 size={12} />
+                                        </button>
                                     </div>
                                 </div>
                             </div>

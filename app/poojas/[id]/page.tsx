@@ -219,8 +219,8 @@ export default function PoojaDetailPage() {
             <div className="lg:col-span-2 space-y-5">
               {/* Header Card */}
               <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 shadow-card">
-                <div className="flex items-start gap-5">
-                  <div className="w-20 h-20 rounded-2xl bg-[#fff8f0] flex items-center justify-center text-4xl flex-shrink-0 shadow-sm overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                  <div className="w-32 h-32 sm:w-24 sm:h-24 rounded-2xl bg-[#fff8f0] flex items-center justify-center text-4xl flex-shrink-0 shadow-sm overflow-hidden border border-[#f0dcc8]">
                     {pooja.images && pooja.images.length > 0 ? (
                       <img src={pooja.images[0]} alt={pooja.name} className="w-full h-full object-cover" />
                     ) : (
@@ -231,8 +231,8 @@ export default function PoojaDetailPage() {
                       </div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <div className="mb-2">
+                  <div className="flex-1 text-center sm:text-left">
+                    <div className="mb-3">
                       {pooja.tag && (
                         <span className={`badge-saffron text-xs mb-2 inline-block ${pooja.tagColor}`}>
                           {pooja.tag}

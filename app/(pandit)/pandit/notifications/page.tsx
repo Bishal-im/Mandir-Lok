@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import PanditSidebar from "@/components/pandit/PanditSidebar";
-import { getPanditNotifications, markPanditNotificationRead } from "@/lib/actions/notifications";
+import { getPanditNotifications, markPanditNotificationRead, deletePanditNotification } from "@/lib/actions/notifications";
 import {
     Bell,
     Calendar,
@@ -39,6 +39,17 @@ export default function NotificationsPage() {
             setNotifications(prev =>
                 prev.map(n => n._id === id ? { ...n, read: true } : n)
             );
+        }
+    }
+
+    async function handleDelete(e: React.MouseEvent, id: string) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!confirm("Are you sure you want to delete this notification?")) return;
+
+        const res = await deletePanditNotification(id);
+        if (res.success) {
+            setNotifications(prev => prev.filter(n => n._id !== id));
         }
     }
 
@@ -92,19 +103,28 @@ export default function NotificationsPage() {
                                             {getIcon(notif.type)}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between gap-2 mb-1">
+                                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-1">
                                                 <h3 className={`font-bold transition-colors text-sm md:text-base ${notif.read ? "text-gray-600" : "text-gray-900"
                                                     }`}>
                                                     {notif.title}
                                                 </h3>
-                                                <span className="text-[10px] text-[#6b5b45] whitespace-nowrap bg-[#fff8f0] px-2 py-1 rounded-full uppercase tracking-wider font-bold border border-[#f0dcc8]">
-                                                    {new Date(notif.createdAt).toLocaleString("en-IN", {
-                                                        month: "short",
-                                                        day: "numeric",
-                                                        hour: "2-digit",
-                                                        minute: "2-digit"
-                                                    })}
-                                                </span>
+                                                <div className="flex items-center gap-2 shrink-0 self-end md:self-start">
+                                                    <span className="text-[10px] text-[#6b5b45] whitespace-nowrap bg-[#fff8f0] px-2 py-1 rounded-full uppercase tracking-wider font-bold border border-[#f0dcc8]">
+                                                        {new Date(notif.createdAt).toLocaleString("en-IN", {
+                                                            month: "short",
+                                                            day: "numeric",
+                                                            hour: "2-digit",
+                                                            minute: "2-digit"
+                                                        })}
+                                                    </span>
+                                                    <button
+                                                        onClick={(e) => handleDelete(e, notif._id)}
+                                                        className="p-1.5 text-[#6b5b45] hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </div>
                                             <p className={`text-xs md:text-sm mb-4 leading-relaxed ${notif.read ? "text-gray-500" : "text-[#6b5b45]"
                                                 }`}>

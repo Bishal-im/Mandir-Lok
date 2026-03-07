@@ -233,7 +233,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: "Total Bookings", value: totalBookings, icon: <BookOpen size={18} className="text-[#ff7f0a]" /> },
                   { label: "Completed", value: completedCount, icon: <CheckCircle2 size={18} className="text-green-500" /> },
@@ -360,11 +360,11 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Bottom Actions */}
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#f0dcc8]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4 pt-4 border-t border-[#f0dcc8]">
                           <span className="font-bold text-[#ff7f0a]">
                             {formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount, exchangeRate) : order.totalAmount, currency)}
                           </span>
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
                             {order.videoUrl && (
                               <a
                                 href={order.videoUrl}

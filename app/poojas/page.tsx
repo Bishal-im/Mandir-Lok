@@ -155,18 +155,18 @@ function PujaCard({ puja }: { puja: Pooja }) {
           ))}
         </div>
 
-        {/* Duration + CTA - Price removed */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
-          <div className="flex flex-col">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Starting from</p>
-            <span className="text-amber-700 font-bold">{formatCurrency(currency === "USD" ? convertINRtoUSD(puja.price, exchangeRate) : puja.price, currency)}</span>
-          </div>
-          <div>
+        {/* Duration + CTA */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-auto">
+          <div className="flex items-center justify-between sm:justify-start sm:gap-4 w-full sm:w-auto">
+            <div className="flex flex-col">
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Starting from</p>
+              <span className="text-amber-700 font-bold">{formatCurrency(currency === "USD" ? convertINRtoUSD(puja.price, exchangeRate) : puja.price, currency)}</span>
+            </div>
             <p className="text-xs text-gray-400">{puja.duration}</p>
           </div>
           <Link
             href={`/poojas/${puja.slug || puja._id}`}
-            className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-orange-200 whitespace-nowrap"
           >
             Participate Puja
             <svg

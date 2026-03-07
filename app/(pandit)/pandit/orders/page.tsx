@@ -154,7 +154,7 @@ export default function PanditOrdersPage() {
 
                     {/* Content */}
                     <div className="flex-1 p-5">
-                      <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <Flame size={18} className="text-[#ff7f0a]" />
@@ -162,7 +162,7 @@ export default function PanditOrdersPage() {
                           </div>
                           <p className="text-xs text-[#6b5b45] flex items-center gap-1">Mandir: <Building2 size={11} className="shrink-0" /> {order.templeId?.name || 'Temple'}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="sm:text-right">
                           <p className="text-lg font-bold text-gray-900">{formatINR(order.totalAmount)}</p>
                           <p className="text-[10px] text-gray-400 font-mono">ID: {order.bookingId}</p>
                         </div>
@@ -187,7 +187,7 @@ export default function PanditOrdersPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-5">
                         <Link
                           href={`/pandit/orders/${order._id}`}
                           className="text-xs font-bold text-[#6b5b45] flex items-center gap-1 hover:text-[#ff7f0a]"
@@ -195,7 +195,7 @@ export default function PanditOrdersPage() {
                           Full Details <ChevronRight size={14} />
                         </Link>
 
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                           {order.orderStatus === 'assigned' && (
                             <div className="flex gap-2">
                               <button

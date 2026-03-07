@@ -174,3 +174,17 @@ export async function markNotificationRead(id: string) {
     return { success: false, message: error.message };
   }
 }
+
+export async function deleteNotification(id: string) {
+  try {
+    const userId = await getAuthUser();
+    if (!userId) return { success: false, message: "Please login" };
+
+    await connectDB();
+    await Notification.findOneAndDelete({ _id: id, recipientId: userId, recipientModel: "User" });
+
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+}
