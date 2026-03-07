@@ -6,6 +6,8 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, Shield, Loader2, Sparkles, MapPin, Calendar } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 // ── Cashfree types ─────────────────────────────────────────────────────────────
 declare global {
@@ -57,6 +59,7 @@ const COUNTRIES = [
 function CheckoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { currency, exchangeRate } = useCurrency();
 
     const [form, setForm] = useState({
         name: "",
@@ -492,7 +495,7 @@ function CheckoutContent() {
                                 <div className="flex items-center justify-between">
                                     <button onClick={() => setStep(1)} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
                                     <button onClick={handlePay} disabled={paying} className="btn-saffron text-sm px-8 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                                        {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay ₹{orderItem.totalPrice.toLocaleString()} →</>}
+                                        {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(orderItem.totalPrice) : orderItem.totalPrice, currency)} →</>}
                                     </button>
                                 </div>
                                 <p className="text-center text-xs text-[#6b5b45] mt-4 flex items-center justify-center gap-1">
@@ -531,7 +534,9 @@ function CheckoutContent() {
                                     {orderItem.offerings.map((offering: any) => (
                                         <div key={offering.id} className="flex justify-between text-xs text-[#6b5b45]">
                                             <span className="truncate pr-2">{offering.name} {offering.quantity > 1 ? `x${offering.quantity}` : ''}</span>
-                                            <span className="font-medium">₹{(offering.price * offering.quantity).toLocaleString()}</span>
+                                            <span className="font-medium">
+                                                {formatCurrency(currency === "USD" ? convertINRtoUSD(offering.price * offering.quantity) : offering.price * offering.quantity, currency)}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -541,7 +546,9 @@ function CheckoutContent() {
                                 <div className="py-3 border-b border-[#f0dcc8] space-y-2">
                                     <div className="flex justify-between text-xs text-[#6b5b45]">
                                         <span>Extra Donation / Dakshina</span>
-                                        <span className="font-medium">₹{orderItem.extraDonation.toLocaleString()}</span>
+                                        <span className="font-medium">
+                                            {formatCurrency(currency === "USD" ? convertINRtoUSD(orderItem.extraDonation) : orderItem.extraDonation, currency)}
+                                        </span>
                                     </div>
                                 </div>
                             )}
@@ -549,7 +556,9 @@ function CheckoutContent() {
                             <div className="pt-3">
                                 <div className="flex justify-between font-bold text-base text-[#1a1209]">
                                     <span>Total Amount</span>
-                                    <span className="text-[#ff7f0a]">₹{orderItem.totalPrice.toLocaleString()}</span>
+                                    <span className="text-[#ff7f0a]">
+                                        {formatCurrency(currency === "USD" ? convertINRtoUSD(orderItem.totalPrice, exchangeRate) : orderItem.totalPrice, currency)}
+                                    </span>
                                 </div>
                             </div>
 

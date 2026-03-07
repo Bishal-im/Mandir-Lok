@@ -8,6 +8,8 @@ import Footer from "@/components/layout/Footer";
 import { Search, MapPin, ChevronRight, Filter, Sparkles, Heart } from "lucide-react";
 import { getUserFavorites, toggleChadhavaFavorite } from "@/lib/actions/user";
 import { getSettings } from "@/lib/actions/admin";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -50,6 +52,9 @@ function ChadhavaCard({
   isFavorite: boolean;
   onToggle: (id: string) => void;
 }) {
+  const { currency, exchangeRate } = useCurrency();
+  const displayPrice = currency === "USD" ? convertINRtoUSD(item.price, exchangeRate) : item.price;
+
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col h-full">
       {/* Image Area */}
@@ -115,7 +120,7 @@ function ChadhavaCard({
         <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
           <div>
             <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Contribution</p>
-            <p className="text-lg font-black text-orange-600">₹{item.price}</p>
+            <p className="text-lg font-black text-orange-600">{formatCurrency(displayPrice, currency)}</p>
           </div>
           <Link
             href={`/chadhava/${item._id}`}
@@ -149,6 +154,7 @@ function DonationCard({ temples }: { temples: Temple[] }) {
   const [selectedTemple, setSelectedTemple] = useState("");
   const [amount, setAmount] = useState("");
   const router = useRouter();
+  const { currency } = useCurrency();
 
   const handleDonate = () => {
     if (!selectedTemple) return alert("Please select a temple");
@@ -186,9 +192,9 @@ function DonationCard({ temples }: { temples: Temple[] }) {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">Donation Amount (₹)</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-white/60">Donation Amount ({currency === 'INR' ? '₹' : '$'})</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 font-bold text-xs">₹</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 font-bold text-xs">{currency === 'INR' ? '₹' : '$'}</span>
               <input
                 type="number"
                 placeholder="Enter amount"

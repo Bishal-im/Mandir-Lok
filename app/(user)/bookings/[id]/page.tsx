@@ -8,6 +8,8 @@ import Footer from '@/components/layout/Footer'
 import { ChevronRight, ArrowLeft, Loader2, Calendar, Clock, MapPin, Phone, MessageCircle, FileText, Download, Share2, Video, Star, Flame, Users } from 'lucide-react'
 import ReviewForm from '@/components/booking/ReviewForm'
 import { getReviewByOrder } from '@/lib/actions/reviews'
+import { useCurrency } from '@/context/CurrencyContext'
+import { convertINRtoUSD, formatCurrency } from '@/lib/currency'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface OrderData {
@@ -57,6 +59,7 @@ function formatDate(dateStr: string) {
 
 export default function BookingDetailsPage({ params }: { params: { id: string } }) {
     const router = useRouter()
+    const { currency, exchangeRate } = useCurrency()
     // In Next.js 14 and below, params is directly accessed as an object.
     const orderId = params.id
 
@@ -182,10 +185,10 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
       </div>
       <div class="section">
         <div class="section-title">Payment Summary</div>
-        ${(order.poojaAmount > 0 || (order.isDonation && !order.chadhavaItems?.length)) ? `<div class="price-row"><span style="color:#6b7280">${order.isDonation ? "Direct Donation" : `Base Pooja (${order.qty || 1} Person${(order.qty || 1) > 1 ? 's' : ''})`}</span><span>₹${order.poojaAmount.toLocaleString('en-IN')}</span></div>` : ''}
-        ${order.extraDonation > 0 && order.chadhavaItems && order.chadhavaItems.length > 0 ? `<div class="price-row"><span style="color:#6b7280">Direct Donation</span><span>₹${order.extraDonation.toLocaleString('en-IN')}</span></div>` : ''}
-        ${(order.chadhavaAmount || 0) > 0 ? `<div class="price-row"><span style="color:#6b7280">Chadhava Amount</span><span>₹${order.chadhavaAmount.toLocaleString('en-IN')}</span></div>` : ''}
-        <div class="total-row"><span>Total Paid</span><span>₹${order.totalAmount.toLocaleString('en-IN')}</span></div>
+        ${(order.poojaAmount > 0 || (order.isDonation && !order.chadhavaItems?.length)) ? `<div class="price-row"><span style="color:#6b7280">${order.isDonation ? "Direct Donation" : `Base Pooja (${order.qty || 1} Person${(order.qty || 1) > 1 ? 's' : ''})`}</span><span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.poojaAmount) : order.poojaAmount, currency)}</span></div>` : ''}
+        ${order.extraDonation > 0 && order.chadhavaItems && order.chadhavaItems.length > 0 ? `<div class="price-row"><span style="color:#6b7280">Direct Donation</span><span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.extraDonation) : order.extraDonation, currency)}</span></div>` : ''}
+        ${(order.chadhavaAmount || 0) > 0 ? `<div class="price-row"><span style="color:#6b7280">Chadhava Amount</span><span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.chadhavaAmount) : order.chadhavaAmount, currency)}</span></div>` : ''}
+        <div class="total-row"><span>Total Paid</span><span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount) : order.totalAmount, currency)}</span></div>
         <div style="text-align:right;margin-top:8px"><span class="status-paid">✅ Payment Successful</span></div>
       </div>
     </div>
@@ -398,14 +401,18 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
                                                 <span className="text-[#6b5b45]">
                                                     {order.isDonation ? "Direct Donation" : `Base Pooja (${order.qty} Person${order.qty > 1 ? 's' : ''})`}
                                                 </span>
-                                                <span className="font-medium text-[#1a1209]">₹{order.poojaAmount.toLocaleString()}</span>
+                                                <span className="font-medium text-[#1a1209]">
+                                                    {formatCurrency(currency === "USD" ? convertINRtoUSD(order.poojaAmount) : order.poojaAmount, currency)}
+                                                </span>
                                             </div>
                                         )}
 
                                         {order.extraDonation > 0 && order.chadhavaItems && order.chadhavaItems.length > 0 && (
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-[#6b5b45]">Direct Donation</span>
-                                                <span className="font-medium text-[#1a1209]">₹{order.extraDonation.toLocaleString()}</span>
+                                                <span className="font-medium text-[#1a1209]">
+                                                    {formatCurrency(currency === "USD" ? convertINRtoUSD(order.extraDonation) : order.extraDonation, currency)}
+                                                </span>
                                             </div>
                                         )}
 
@@ -414,14 +421,18 @@ export default function BookingDetailsPage({ params }: { params: { id: string } 
                                                 <span className="text-[#6b5b45] pl-2 border-l-2 border-[#ff7f0a]/30">
                                                     {item.emoji} {item.name}
                                                 </span>
-                                                <span className="font-medium text-[#1a1209]">₹{item.price.toLocaleString()}</span>
+                                                <span className="font-medium text-[#1a1209]">
+                                                    {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price, exchangeRate) : item.price, currency)}
+                                                </span>
                                             </div>
                                         ))}
 
                                         <div className="pt-4 mt-2 border-t border-[#f0dcc8]">
                                             <div className="flex justify-between items-center text-lg font-bold text-[#1a1209]">
                                                 <span>Total Paid</span>
-                                                <span className="text-[#ff7f0a]">₹{order.totalAmount.toLocaleString()}</span>
+                                                <span className="text-[#ff7f0a]">
+                                                    {formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount, exchangeRate) : order.totalAmount, currency)}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

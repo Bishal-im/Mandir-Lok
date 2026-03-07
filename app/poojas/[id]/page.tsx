@@ -19,6 +19,8 @@ import {
   ShoppingBag
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 const dates = Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
@@ -40,6 +42,7 @@ export default function PoojaDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { addToCart } = useCart();
+  const { currency, exchangeRate } = useCurrency();
 
   const [pooja, setPooja] = useState<any>(null);
   const [offerings, setOfferings] = useState<any[]>([]);
@@ -366,7 +369,9 @@ export default function PoojaDetailPage() {
                         </span>
                         <h4 className="font-bold text-[#1a1209] mb-4 h-10 overflow-hidden text-sm line-clamp-2">{pkg.name}</h4>
                         <div className="mt-auto pt-2 border-t border-dashed border-[#f0dcc8]">
-                          <p className="text-xl font-bold text-[#ff7f0a]">₹{pkg.price}</p>
+                          <p className="text-xl font-bold text-[#ff7f0a]">
+                            {formatCurrency(currency === "USD" ? convertINRtoUSD(pkg.price) : pkg.price, currency)}
+                          </p>
                         </div>
                       </button>
                     ))}
@@ -414,7 +419,9 @@ export default function PoojaDetailPage() {
                             </p>
                           </div>
                           <div className="flex flex-col items-end gap-1">
-                            <span className="font-semibold text-xs text-[#1a1209]">₹{item.price}</span>
+                            <span className="font-semibold text-xs text-[#1a1209]">
+                              {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price) : item.price, currency)}
+                            </span>
                             <button
                               onClick={() => toggleOffering(item._id)}
                               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${added
@@ -484,7 +491,9 @@ export default function PoojaDetailPage() {
                               {o.name}
                             </div>
                           </span>
-                          <span className="font-semibold">₹{o.price}</span>
+                          <span className="font-semibold">
+                            {formatCurrency(currency === "USD" ? convertINRtoUSD(o.price, exchangeRate) : o.price, currency)}
+                          </span>
                         </div>
                       ) : null;
                     })}
@@ -495,25 +504,38 @@ export default function PoojaDetailPage() {
                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-3 mb-4">
                   {selectedPackageIndex !== null && (
                     <div className="flex justify-between items-center text-sm font-semibold text-[#1a1209] mb-2">
-                      <span>Package: {pooja.packages[selectedPackageIndex].name}</span>
-                      <span>₹{pooja.packages[selectedPackageIndex].price.toLocaleString()}</span>
-                    </div>
+                       <span>Package: {pooja.packages[selectedPackageIndex].name}</span>
+                       <span>
+                         {formatCurrency(currency === "USD" ? convertINRtoUSD(pooja.packages[selectedPackageIndex].price, exchangeRate) : pooja.packages[selectedPackageIndex].price, currency)}
+                       </span>
+                     </div>
                   )}
                   {addedOfferings.length > 0 && (
                     <div className="flex justify-between items-center text-sm font-semibold text-[#1a1209] mb-2 pt-2 border-t border-[#ffd9a8]">
                       <span>Offerings Total:</span>
-                      <span>₹{addedOfferings.reduce((sum, id) => {
-                        const o = offerings.find((x: any) => x._id === id);
-                        return sum + (o ? o.price : 0);
-                      }, 0).toLocaleString()}</span>
+                      <span>
+                        {(() => {
+                          const sum = addedOfferings.reduce((acc, id) => {
+                            const o = offerings.find((x: any) => x._id === id);
+                            return acc + (o ? o.price : 0);
+                          }, 0);
+                          return formatCurrency(currency === "USD" ? convertINRtoUSD(sum, exchangeRate) : sum, currency);
+                        })()}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-lg font-bold text-[#ff7f0a] mt-2 pt-2 border-t border-[#ffd9a8]">
                     <span>Total Payable:</span>
-                    <span>₹{((selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : 0) + addedOfferings.reduce((sum, id) => {
-                      const o = offerings.find((x: any) => x._id === id);
-                      return sum + (o ? o.price : 0);
-                    }, 0)).toLocaleString()}</span>
+                    <span>
+                      {(() => {
+                        const total = (selectedPackageIndex !== null ? pooja.packages[selectedPackageIndex].price : 0) + 
+                          addedOfferings.reduce((acc, id) => {
+                            const o = offerings.find((x: any) => x._id === id);
+                            return acc + (o ? o.price : 0);
+                          }, 0);
+                        return formatCurrency(currency === "USD" ? convertINRtoUSD(total, exchangeRate) : total, currency);
+                      })()}
+                    </span>
                   </div>
                 </div>
 

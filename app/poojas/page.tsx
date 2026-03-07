@@ -5,6 +5,8 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -52,6 +54,7 @@ const SORT_OPTIONS = [
 
 // ── Pooja Card ────────────────────────────────────────────────────────────────
 function PujaCard({ puja }: { puja: Pooja }) {
+  const { currency, exchangeRate } = useCurrency();
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col">
       {/* Image Area */}
@@ -154,6 +157,10 @@ function PujaCard({ puja }: { puja: Pooja }) {
 
         {/* Duration + CTA - Price removed */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
+          <div className="flex flex-col">
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Starting from</p>
+            <span className="text-amber-700 font-bold">{formatCurrency(currency === "USD" ? convertINRtoUSD(puja.price, exchangeRate) : puja.price, currency)}</span>
+          </div>
           <div>
             <p className="text-xs text-gray-400">{puja.duration}</p>
           </div>

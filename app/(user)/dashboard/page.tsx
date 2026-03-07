@@ -5,6 +5,8 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Calendar, Clock, Download, ChevronRight, Video, Star, Building2, Flame, BookOpen, CheckCircle2, CalendarOff } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
+import { formatCurrency, convertINRtoUSD } from "@/lib/currency";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Order {
@@ -78,6 +80,7 @@ function SkeletonBooking() {
 
 // ── Main Export ───────────────────────────────────────────────────────────────
 export default function DashboardPage() {
+  const { currency, exchangeRate } = useCurrency();
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -359,7 +362,7 @@ export default function DashboardPage() {
                         {/* Bottom Actions */}
                         <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#f0dcc8]">
                           <span className="font-bold text-[#ff7f0a]">
-                            ₹{order.totalAmount?.toLocaleString()}
+                            {formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount, exchangeRate) : order.totalAmount, currency)}
                           </span>
                           <div className="flex gap-2">
                             {order.videoUrl && (

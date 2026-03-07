@@ -9,6 +9,8 @@ import StarRating from "@/components/ui/StarRating";
 import Badge from "@/components/ui/Badge";
 import { MapPin, Clock, Globe, Phone, ChevronRight, Heart } from "lucide-react";
 import { getUserTempleFavorites, toggleTempleFavorite } from "@/lib/actions/user";
+import { useCurrency } from "@/context/CurrencyContext";
+import { formatCurrency, convertINRtoUSD } from "@/lib/currency";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -99,6 +101,7 @@ function PoojaRow({
   pooja: Pooja;
   showPrice?: boolean;
 }) {
+  const { currency, exchangeRate } = useCurrency();
   return (
     <Link
       href={`/poojas/${pooja.slug}`}
@@ -123,7 +126,7 @@ function PoojaRow({
       </div>
       {showPrice && (
         <span className="text-xs font-bold text-[#ff7f0a] shrink-0 ml-2">
-          ₹{pooja.price?.toLocaleString()}
+          {formatCurrency(currency === "USD" ? convertINRtoUSD(pooja.price, exchangeRate) : pooja.price, currency)}
         </span>
       )}
     </Link>

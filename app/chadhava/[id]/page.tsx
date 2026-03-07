@@ -7,6 +7,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, MapPin, CheckCircle2, Info, Share2, Heart, ShieldCheck, Clock } from "lucide-react";
 import { getUserFavorites, toggleChadhavaFavorite } from "@/lib/actions/user";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Temple {
@@ -42,6 +44,7 @@ export default function ChadhavaDetailPage() {
   const [isDonation, setIsDonation] = useState(false);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
+  const { currency, exchangeRate } = useCurrency();
 
   useEffect(() => {
     if (!id) return;
@@ -168,8 +171,12 @@ export default function ChadhavaDetailPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="text-3xl font-bold text-amber-600">₹{item.price?.toLocaleString()}</div>
-                      <div className="text-xs text-gray-500 line-through">₹{(item.price * 1.2).toFixed(0)}</div>
+                      <div className="text-3xl font-bold text-amber-600">
+                        {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price) : item.price, currency)}
+                      </div>
+                      <div className="text-xs text-gray-500 line-through">
+                        {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price * 1.2) : item.price * 1.2, currency)}
+                      </div>
                       <div className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-lg">20% OFF</div>
                     </div>
 
@@ -254,7 +261,9 @@ export default function ChadhavaDetailPage() {
                   <div className="space-y-4 mb-8">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Item Amount</span>
-                      <span className="font-semibold text-gray-900">₹{item.price?.toLocaleString()}</span>
+                      <span className="font-semibold text-gray-900">
+                        {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price, exchangeRate) : item.price, currency)}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Service Fee</span>
@@ -263,7 +272,9 @@ export default function ChadhavaDetailPage() {
                     <div className="h-px bg-amber-50"></div>
                     <div className="flex justify-between items-center mb-6">
                       <span className="font-bold text-gray-900">Total Payable</span>
-                      <span className="text-2xl font-black text-amber-600">₹{(item.price * quantity).toLocaleString()}</span>
+                      <span className="text-2xl font-black text-amber-600">
+                        {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price * (isDonation ? 1 : quantity), exchangeRate) : item.price * (isDonation ? 1 : quantity), currency)}
+                      </span>
                     </div>
 
                     <div className="space-y-4 mb-8">
@@ -315,7 +326,7 @@ export default function ChadhavaDetailPage() {
                             Additional Donation / Dakshina (Optional)
                           </label>
                           <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">{currency === 'INR' ? '₹' : '$'}</span>
                             <input
                               type="number"
                               placeholder="Enter amount (e.g. 501, 1100)"

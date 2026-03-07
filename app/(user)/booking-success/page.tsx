@@ -15,6 +15,8 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
+import { formatCurrency, convertINRtoUSD } from "@/lib/currency";
 
 interface Order {
   _id: string;
@@ -51,6 +53,7 @@ interface Order {
 }
 
 function BookingSuccessContent() {
+  const { currency, exchangeRate } = useCurrency();
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
 
@@ -252,7 +255,7 @@ function BookingSuccessContent() {
     <div class="name">${order.sankalpName}</div>
     
     <div class="content">
-      For their generous donation of <strong>₹${order.totalAmount.toLocaleString()}</strong> towards<br/>
+      For their generous donation of <strong>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount) : order.totalAmount, currency)}</strong> towards<br/>
       <strong>${order.poojaId?.name || "Sacred Offering"}</strong> at <strong>${order.templeId?.name}</strong>.<br/>
       Your contribution supports the divine service and maintenance of the sacred temple.
     </div>
@@ -395,10 +398,9 @@ function BookingSuccessContent() {
         ${order.chadhavaItems
           .map(
             (item) => `
-          <div class="chadhava-item">
             <span>${item.emoji}</span>
             <span style="flex:1">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ""}</span>
-            <span style="font-weight:600">₹${(item.price * (item.quantity || 1)).toLocaleString()}</span>
+            <span style="font-weight:600">${formatCurrency(currency === "USD" ? convertINRtoUSD(item.price * (item.quantity || 1)) : item.price * (item.quantity || 1), currency)}</span>
           </div>
         `,
           )
@@ -411,13 +413,13 @@ function BookingSuccessContent() {
         <div class="section-title">Payment Summary</div>
         <div class="price-row">
           <span style="color:#6b7280">Pooja Amount</span>
-          <span>₹${order.poojaAmount.toLocaleString("en-IN")}</span>
+          <span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.poojaAmount) : order.poojaAmount, currency)}</span>
         </div>
         ${order.chadhavaAmount > 0
         ? `
         <div class="price-row">
           <span style="color:#6b7280">Chadhava Amount</span>
-          <span>₹${order.chadhavaAmount.toLocaleString("en-IN")}</span>
+          <span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.chadhavaAmount) : order.chadhavaAmount, currency)}</span>
         </div>`
         : ""
       }
@@ -425,13 +427,13 @@ function BookingSuccessContent() {
         ? `
         <div class="price-row">
           <span style="color:#6b7280">Additional Donation</span>
-          <span>₹${order.extraDonation.toLocaleString("en-IN")}</span>
+          <span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.extraDonation) : order.extraDonation, currency)}</span>
         </div>`
         : ""
       }
         <div class="total-row">
           <span>Total Paid</span>
-          <span>₹${order.totalAmount.toLocaleString("en-IN")}</span>
+          <span>${formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount) : order.totalAmount, currency)}</span>
         </div>
         <div style="text-align:right;margin-top:8px">
           <span class="status-paid">✅ Payment Successful</span>
@@ -625,7 +627,7 @@ function BookingSuccessContent() {
                       )}
                     </span>
                     <span className="font-semibold text-gray-700">
-                      ₹{(item.price * (item.quantity || 1)).toLocaleString()}
+                      {formatCurrency(currency === "USD" ? convertINRtoUSD(item.price * (item.quantity || 1), exchangeRate) : item.price * (item.quantity || 1), currency)}
                     </span>
                   </div>
                 ))}
@@ -641,28 +643,28 @@ function BookingSuccessContent() {
               {order.poojaAmount > 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Pooja Amount</span>
-                  <span>₹{order.poojaAmount.toLocaleString("en-IN")}</span>
+                  <span>{formatCurrency(currency === "USD" ? convertINRtoUSD(order.poojaAmount, exchangeRate) : order.poojaAmount, currency)}</span>
                 </div>
               )}
 
               {order.chadhavaAmount > 0 && (
                 <div className="flex justify-between text-gray-500">
                   <span>Chadhava</span>
-                  <span>₹{order.chadhavaAmount.toLocaleString("en-IN")}</span>
+                  <span>{formatCurrency(currency === "USD" ? convertINRtoUSD(order.chadhavaAmount, exchangeRate) : order.chadhavaAmount, currency)}</span>
                 </div>
               )}
 
               {order.extraDonation > 0 && (
                 <div className="flex justify-between text-amber-600 font-bold">
                   <span>Additional Donation</span>
-                  <span>₹{order.extraDonation.toLocaleString("en-IN")}</span>
+                  <span>{formatCurrency(currency === "USD" ? convertINRtoUSD(order.extraDonation, exchangeRate) : order.extraDonation, currency)}</span>
                 </div>
               )}
 
               <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
                 <span>Total Paid</span>
                 <span className="text-orange-500">
-                  ₹{order.totalAmount.toLocaleString("en-IN")}
+                  {formatCurrency(currency === "USD" ? convertINRtoUSD(order.totalAmount, exchangeRate) : order.totalAmount, currency)}
                 </span>
               </div>
             </div>

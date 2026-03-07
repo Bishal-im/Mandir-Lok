@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 import { getSettings } from "@/lib/actions/admin";
 import GoogleTranslate from "../GoogleTranslate";
@@ -41,6 +42,7 @@ export default function Navbar() {
   const [authLoading, setAuthLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const { cartCount } = useCart();
+  const { currency } = useCurrency();
   const profileRef = useRef<HTMLDivElement>(null);
 
   // ── Fetch Logo ──
@@ -241,6 +243,7 @@ export default function Navbar() {
             {/* DESKTOP CTA */}
             <div className="hidden md:flex items-center gap-3">
               <GoogleTranslate />
+
 
               {/* Cart Button */}
               <Link href="/cart" className="relative p-2 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all group">

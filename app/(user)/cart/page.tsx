@@ -7,6 +7,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, Shield, Loader2, Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
 import { useCart, CartItem } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 // ── Cashfree types ─────────────────────────────────────────────────────────────
 declare global {
@@ -52,6 +54,7 @@ const COUNTRIES = [
 function CartContent() {
   const router = useRouter();
   const { cart, removeFromCart, clearCart, cartCount, toggleSelectItem, addToCart } = useCart();
+  const { currency, exchangeRate } = useCurrency();
 
   const [loadingConfig, setLoadingConfig] = useState(false);
   const [form, setForm] = useState({
@@ -257,7 +260,9 @@ function CartContent() {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
                         <h3 className="font-bold text-[#1a1209] truncate">{item.poojaName}</h3>
-                        <p className="font-bold text-[#ff7f0a] ml-2">₹{item.totalPrice.toLocaleString()}</p>
+                        <p className="font-bold text-[#ff7f0a] ml-2">
+                          {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
+                        </p>
                       </div>
                       <p className="text-xs text-[#6b5b45] flex items-center gap-1 mt-1">
                         <MapPin size={12} className="text-[#ff7f0a]" /> {item.templeName}
@@ -423,7 +428,7 @@ function CartContent() {
                 <div className="flex items-center justify-between">
                   <button onClick={() => setStep(1)} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
                   <button onClick={handlePay} disabled={paying} className="btn-saffron text-sm px-8 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                    {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay ₹{totalAmount.toLocaleString()} →</>}
+                    {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)} →</>}
                   </button>
                 </div>
                 <p className="text-center text-xs text-[#6b5b45] mt-4 flex items-center justify-center gap-1">
@@ -452,7 +457,9 @@ function CartContent() {
                         <p className="text-[10px] text-[#6b5b45]">{item.templeName}</p>
                         <p className="text-[10px] text-[#ff7f0a] font-medium">{item.packageName}</p>
                       </div>
-                      <p className="font-bold text-[#1a1209] text-xs ml-2">₹{item.totalPrice.toLocaleString()}</p>
+                      <p className="font-bold text-[#1a1209] text-xs ml-2">
+                        {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -461,7 +468,9 @@ function CartContent() {
               <div className="border-t border-[#f0dcc8] pt-3">
                 <div className="flex justify-between font-bold text-base text-[#1a1209]">
                   <span>Total Amount</span>
-                  <span className="text-[#ff7f0a]">₹{totalAmount.toLocaleString()}</span>
+                  <span className="text-[#ff7f0a]">
+                    {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)}
+                  </span>
                 </div>
               </div>
 

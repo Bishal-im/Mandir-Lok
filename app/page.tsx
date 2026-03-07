@@ -8,6 +8,8 @@ import { getSettings } from "@/lib/actions/admin";
 import { getHomepageReviews } from "@/lib/actions/reviews";
 import { getFeaturedPoojas } from "@/lib/actions/poojas";
 import { Users, ShieldCheck, Building2, Video, Flame } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Pooja {
@@ -253,6 +255,7 @@ function SectionHeader({
 
 // ── Puja Card ────────────────────────────────────────────────────────────────
 function PujaCard({ puja }: { puja: Pooja }) {
+  const { currency, exchangeRate } = useCurrency();
   return (
     <div className="group bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 flex flex-col h-full">
       <div className="relative h-48 sm:h-56 bg-gradient-to-br from-orange-400 via-orange-500 to-amber-500 flex items-center justify-center overflow-hidden">
@@ -310,8 +313,10 @@ function PujaCard({ puja }: { puja: Pooja }) {
         <div className="mt-auto flex flex-col gap-4">
           <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100/50">
             <div>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Benefit</p>
-              <p className="font-bold text-gray-900 text-sm">{puja.benefits?.[0] || "Grace"}</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Price</p>
+              <p className="font-bold text-gray-900 text-sm">
+                <span className="text-amber-700 font-bold">{formatCurrency(currency === "USD" ? convertINRtoUSD(puja.price, exchangeRate) : puja.price, currency)}</span>
+              </p>
             </div>
             <div className="text-right">
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Schedule</p>

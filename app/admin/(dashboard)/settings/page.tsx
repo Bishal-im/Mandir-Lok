@@ -10,6 +10,7 @@ import {
     Save,
     Plus,
     Trash2,
+    RefreshCcw,
     Image as ImageIcon
 } from "lucide-react";
 import { getSettings, updateSettings } from "@/lib/actions/admin";
@@ -20,6 +21,8 @@ export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("general");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [fetchingRate, setFetchingRate] = useState(false);
+    const [exchangeRate, setExchangeRate] = useState<number>(83);
 
     const [slides, setSlides] = useState<any[]>([]);
     const [dashboardSettings, setDashboardSettings] = useState({
@@ -68,12 +71,13 @@ export default function SettingsPage() {
         { id: "contact", label: "Contact Settings", icon: <Bell size={18} /> },
         { id: "about", label: "About Us", icon: <Layout size={18} /> },
         { id: "payments", label: "Payments", icon: <IndianRupee size={18} /> },
+        { id: "currency", label: "Currency", icon: <Globe size={18} /> },
     ];
 
     useEffect(() => {
         async function fetchSettings() {
             setLoading(true);
-            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes, marqueeRes] = await Promise.all([
+            const [slideRes, dashRes, bannerRes, logoRes, aartiRes, contactRes, aboutRes, marqueeRes, rateRes] = await Promise.all([
                 getSettings("landing_page_slides"),
                 getSettings("dashboard_settings"),
                 getSettings("page_banners"),
@@ -81,7 +85,8 @@ export default function SettingsPage() {
                 getSettings("aarti_settings"),
                 getSettings("contact_settings"),
                 getSettings("about_settings"),
-                getSettings("homepage_marquee_items")
+                getSettings("homepage_marquee_items"),
+                getSettings("usd_exchange_rate")
             ]);
 
             if (slideRes && slideRes.value) setSlides(slideRes.value);
@@ -104,6 +109,7 @@ export default function SettingsPage() {
             }
             if (contactRes && contactRes.value) setContactSettings(prev => ({ ...prev, ...contactRes.value }));
             if (aboutRes && aboutRes.value) setAboutSettings(prev => ({ ...prev, ...aboutRes.value }));
+            if (rateRes && rateRes.value) setExchangeRate(Number(rateRes.value));
 
             setLoading(false);
         }
@@ -159,6 +165,28 @@ export default function SettingsPage() {
         setAartiSettings({ ...aartiSettings, deities: newDeities });
     };
 
+    const fetchLatestRate = async () => {
+        setFetchingRate(true);
+        try {
+            const res = await fetch("https://api.exchangerate-api.com/v4/latest/INR");
+            const data = await res.json();
+            if (data && data.rates && data.rates.USD) {
+                // The API gives 1 INR = X USD. We want 1 USD = X INR.
+                const oneInrInUsd = data.rates.USD;
+                const oneUsdInInr = 1 / oneInrInUsd;
+                setExchangeRate(Number(oneUsdInInr.toFixed(2)));
+                alert(`Latest rate fetched: 1 USD = ₹${oneUsdInInr.toFixed(2)}`);
+            } else {
+                throw new Error("Invalid data format");
+            }
+        } catch (err) {
+            console.error("Failed to fetch exchange rate:", err);
+            alert("Failed to fetch latest rate. Please enter it manually.");
+        } finally {
+            setFetchingRate(false);
+        }
+    };
+
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -178,6 +206,8 @@ export default function SettingsPage() {
                 await updateSettings("contact_settings", contactSettings, "Contact Us page configurations");
             } else if (activeTab === "about") {
                 await updateSettings("about_settings", aboutSettings, "About Us page configurations");
+            } else if (activeTab === "currency") {
+                await updateSettings("usd_exchange_rate", exchangeRate, "USD to INR Exchange Rate");
             }
             alert("Settings saved successfully!");
         } catch (err) {
@@ -856,6 +886,59 @@ export default function SettingsPage() {
                                             Payouts are processed within 2-3 business days.
                                             Platform commission is calculated on the total order amount (Pooja + Chadhava).
                                         </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "currency" && (
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+                                            <Globe size={20} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-900">Currency & Exchange Rate</h3>
+                                            <p className="text-xs text-gray-500">Manage the conversion rate between INR and USD.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 rounded-2xl border border-gray-100 bg-gray-50/50 space-y-6">
+                                        <div className="max-w-md space-y-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">USD to INR Exchange Rate</label>
+                                                <div className="flex gap-3">
+                                                    <div className="relative flex-1">
+                                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                                                        <input 
+                                                            type="number" 
+                                                            step="0.01"
+                                                            value={exchangeRate}
+                                                            onChange={(e) => setExchangeRate(Number(e.target.value))}
+                                                            className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 font-bold text-gray-900" 
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={fetchLatestRate}
+                                                        disabled={fetchingRate}
+                                                        className="flex items-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-xs hover:bg-blue-100 transition-all disabled:opacity-50"
+                                                    >
+                                                        {fetchingRate ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+                                                        Auto-Fetch
+                                                    </button>
+                                                </div>
+                                                <p className="text-[10px] text-gray-400 italic">Current Value: 1 USD = ₹{exchangeRate}</p>
+                                            </div>
+
+                                            <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                                                <h4 className="text-xs font-bold text-amber-800 mb-1 flex items-center gap-2">
+                                                    <Layout size={14} /> How it works
+                                                </h4>
+                                                <p className="text-[11px] text-amber-700 leading-relaxed">
+                                                    All prices in the database are stored in INR. When a user outside India visits the site, prices are converted to USD using this specific rate. 
+                                                    Changing this value will update all prices for international users instantly.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             )}
