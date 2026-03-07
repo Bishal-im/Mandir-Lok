@@ -32,7 +32,7 @@ const NotificationSchema = new Schema<INotification>(
 
 // Register "Admin" as an alias for "User" model to satisfy refPath
 if (!mongoose.models.Admin) {
-    mongoose.model("Admin", User.schema);
+    mongoose.model("Admin", User.schema, "users");
 }
 
 const Notification: Model<INotification> =

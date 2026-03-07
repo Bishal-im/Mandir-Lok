@@ -11,10 +11,9 @@ const fromPhoneNumber = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+141552388
  */
 export async function sendWhatsApp(to: string, message: string) {
   const cleanFrom = fromPhoneNumber.trim();
-  const cleanTo = to.trim();
-
-  // Ensure 'to' starts with whatsapp: prefix and has +
-  const formattedTo = cleanTo.startsWith("whatsapp:") ? cleanTo : `whatsapp:+${cleanTo.replace(/^\+/, '')}`;
+  // Clean the phone number: remove any non-digit characters except for a potentially leading plus
+  const digitsOnly = to.replace(/\D/g, '');
+  const formattedTo = `whatsapp:+${digitsOnly}`;
 
   // Ensure 'from' starts with whatsapp: prefix and has +
   const formattedFrom = cleanFrom.startsWith("whatsapp:")

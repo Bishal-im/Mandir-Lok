@@ -355,28 +355,41 @@ export async function updateOrderStatus(id: string, status: string) {
 export async function assignPanditToOrder(orderId: string, panditId: string) {
     try {
         await connectDB();
-        const order = await Order.findByIdAndUpdate(
+        // Update the order status and assign pandit
+        const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
             { panditId, orderStatus: "assigned" },
-            { returnDocument: 'after' }
-        ).populate("panditId", "name whatsapp").populate("poojaId", "name");
+            { new: true }
+        );
+
+        if (!updatedOrder) return { success: false, error: "Order not found" };
+
+        // Fetch populated order for notifications
+        const order = await Order.findById(orderId)
+            .populate("panditId")
+            .populate("poojaId");
 
         if (order) {
+            const pandit = order.panditId as any;
+            const pooja = order.poojaId as any;
+            const poojaName = pooja?.name || "Sacred Pooja";
+            const panditName = pandit?.name || "Panditji";
+            const panditWhatsapp = pandit?.whatsapp;
             try {
                 await sendWhatsApp(
                     order.whatsapp,
-                    `🙏 *Jai Shri Ram!*\n\n*Update:* A Pandit has been assigned for your pooja.\n\n📿 *Pooja:* ${(order.poojaId as any)?.name}\n🧘 *Pandit:* ${(order.panditId as any)?.name}\n📋 *Booking ID:* ${order.bookingId}\n\nYou will receive another update when the pooja starts.\n\n🛕 *Mandirlok — Divine Blessings Delivered*`
+                    `🙏 *Jai Shri Ram!*\n\n*Update:* A Pandit has been assigned for your pooja.\n\n📿 *Pooja:* ${poojaName}\n🧘 *Pandit:* ${panditName}\n📋 *Booking ID:* ${order.bookingId}\n\nYou will receive another update when the pooja starts.\n\n🛕 *Mandirlok — Divine Blessings Delivered*`
                 );
             } catch (e) {
                 console.error("[WhatsApp pandit assigned notification failed]", e);
             }
 
             // Notify Pandit via WhatsApp
-            if ((order.panditId as any)?.whatsapp) {
+            if (panditWhatsapp) {
                 try {
                     await sendWhatsApp(
-                        (order.panditId as any).whatsapp,
-                        `🛕 *New Pooja Assigned — Mandirlok*\n\n📿 *Pooja:* ${(order.poojaId as any)?.name}\n📅 *Date:* ${new Date(order.bookingDate).toLocaleDateString("en-IN")}\n📋 *Booking ID:* ${order.bookingId}\n\nPlease log in to your Pandit Portal to view full details.`
+                        panditWhatsapp,
+                        `🛕 *New Pooja Assigned — Mandirlok*\n\n📿 *Pooja:* ${poojaName}\n📅 *Date:* ${new Date(order.bookingDate).toLocaleDateString("en-IN")}\n📋 *Booking ID:* ${order.bookingId}\n\nPlease log in to your Pandit Portal to view full details.`
                     );
                 } catch (waError) {
                     console.error("[WhatsApp pandit assignment notification failed]", waError);
@@ -389,7 +402,7 @@ export async function assignPanditToOrder(orderId: string, panditId: string) {
                     recipientId: panditId,
                     recipientModel: "Pandit",
                     title: "New Puja Assigned! 📿",
-                    message: `You have been assigned to a new pooja: ${(order.poojaId as any)?.name}.`,
+                    message: `You have been assigned to a new pooja: ${poojaName}.`,
                     type: "booking",
                     link: `/pandit/orders`
                 });

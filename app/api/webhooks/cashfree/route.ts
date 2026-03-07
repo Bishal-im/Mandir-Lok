@@ -3,9 +3,9 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
 import Notification from "@/models/Notification";
+import User from "@/models/User";
 import { sendWhatsApp } from "@/lib/whatsapp";
 import Pandit from "@/models/Pandit";
-import mongoose from "mongoose";
 
 /**
  * Cashfree Payment Gateway Webhook Handler
@@ -65,20 +65,20 @@ export async function POST(req: Request) {
 
       if (dbOrder && dbOrder.paymentStatus !== "paid") {
         console.log(`[Cashfree Webhook] Marking order ${dbOrder.bookingId} as paid`);
-        
+
         dbOrder.paymentStatus = "paid";
         dbOrder.cashfreePaymentId = cashfreePaymentId;
-        
+
         // If order was in 'pending' status, it's now officially paid and confirmed
         if (dbOrder.orderStatus === "pending") {
           dbOrder.orderStatus = "confirmed";
         }
-        
+
         await dbOrder.save();
 
         // ── Trigger Post-Payment Actions ───────────────────────────────────────────
+        // 1. Notify Devotee (In-app)
         try {
-          // 1. Notify the Devotee
           await Notification.create({
             recipientId: dbOrder.userId,
             recipientModel: "User",
@@ -87,13 +87,22 @@ export async function POST(req: Request) {
             type: "booking",
             link: `/dashboard`
           });
+        } catch (err: any) {
+          console.error("[Webhook Notification Error] User In-app failed", err);
+        }
 
+        // 2. Notify Devotee (WhatsApp)
+        try {
           if (dbOrder.whatsapp) {
             await sendWhatsApp(dbOrder.whatsapp, `🙏 *Jai Shri Ram!*\n\nYour booking #${dbOrder.bookingId} has been confirmed successfully.\n\nThank you for choosing MandirLok.\n\n🛕 *Mandirlok*`);
           }
+        } catch (err: any) {
+          console.error("[Webhook Notification Error] User WhatsApp failed", err);
+        }
 
-          // 2. Notify Admins
-          const admins = await mongoose.model("User").find({ role: "admin" });
+        // 3. Notify Admins
+        try {
+          const admins = await User.find({ role: "admin" });
           for (const admin of admins) {
             await Notification.create({
               recipientId: admin._id,
@@ -104,9 +113,13 @@ export async function POST(req: Request) {
               link: `/admin/orders/${dbOrder._id}`
             });
           }
+        } catch (err: any) {
+          console.error("[Webhook Notification Error] Admin notifications failed", err);
+        }
 
-          // 3. Assign Pandit automatically if not already assigned (and not a donation)
-          if (!dbOrder.isDonation && !dbOrder.panditId) {
+        // 4. Assign Pandit automatically
+        if (!dbOrder.isDonation && !dbOrder.panditId) {
+          try {
             const assignedPandit = await Pandit.findOne({ assignedTemples: dbOrder.templeId, isActive: true });
             if (assignedPandit) {
               dbOrder.panditId = assignedPandit._id;
@@ -126,9 +139,9 @@ export async function POST(req: Request) {
                 await sendWhatsApp(assignedPandit.whatsapp, `🛕 *New Pooja Assigned!*\n\nBooking ID: ${dbOrder.bookingId}\nDevotee: ${dbOrder.sankalpName}\n\nPlease check your panel for details.\n\n🚩 *Mandirlok*`);
               }
             }
+          } catch (err: any) {
+            console.error("[Webhook Notification Error] Pandit assignment failed", err);
           }
-        } catch (notifErr) {
-          console.error("[Cashfree Webhook] Error sending notifications:", notifErr);
         }
       } else if (!dbOrder) {
         // This is expected if the webhook hits before the redirect logic creates the order.

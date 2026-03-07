@@ -5,6 +5,7 @@ import { verifyToken } from "@/lib/jwt";
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
 import Notification from "@/models/Notification";
+import User from "@/models/User";
 import Pooja from "@/models/Pooja";
 import Chadhava from "@/models/Chadhava";
 import Pandit from "@/models/Pandit";
@@ -256,58 +257,72 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
 // Helper to handle notifications and pandit assignment
 async function handleOrderPostProcess(order: any, poojaName: string, userId: string, sankalpName: string) {
   try {
-    const Notification = (await import("@/models/Notification")).default;
-    const Pandit = (await import("@/models/Pandit")).default;
-    const { sendWhatsApp } = await import("@/lib/whatsapp");
-
-    // 1. Notify User
-    await Notification.create({
-      recipientId: userId,
-      recipientModel: "User",
-      title: order.isDonation ? "Donation Successful! 🙏" : "Booking Confirmed! 📿",
-      message: `Order ID: ${order.bookingId} for ${poojaName}`,
-      type: "booking",
-      link: `/dashboard`
-    });
-    await sendWhatsApp(order.whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}\nPUJA: ${poojaName}`);
-
-    // 2. Notify Admins
-    const admins = await mongoose.model("User").find({ role: "admin" });
-    for (const admin of admins) {
+    // 1. Notify User (In-app)
+    try {
       await Notification.create({
-        recipientId: admin._id,
-        recipientModel: "Admin",
-        title: order.isDonation ? "New Donation Received! 💰" : "New Pooja Booking! 📿",
-        message: `New booking ${order.bookingId} for ${poojaName}`,
+        recipientId: userId,
+        recipientModel: "User",
+        title: order.isDonation ? "Donation Successful! 🙏" : "Booking Confirmed! 📿",
+        message: `Order ID: ${order.bookingId} for ${poojaName}`,
         type: "booking",
-        link: `/admin/orders/${order._id}`
+        link: `/dashboard`
       });
+    } catch (err: any) {
+      console.error("[Notification Error] User In-app failed", err);
     }
 
-    // 3. Pandit Assignment
-    if (!order.isDonation) {
-      const assignedPandit = await Pandit.findOne({ assignedTemples: order.templeId, isActive: true });
-      if (assignedPandit) {
-        order.panditId = assignedPandit._id;
-        order.orderStatus = "confirmed";
-        await order.save();
+    // 2. Notify User (WhatsApp)
+    try {
+      await sendWhatsApp(order.whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}\nPUJA: ${poojaName}`);
+    } catch (err: any) {
+      console.error("[Notification Error] User WhatsApp failed", err);
+    }
 
+    // 3. Notify Admins
+    try {
+      const admins = await User.find({ role: "admin" });
+      for (const admin of admins) {
         await Notification.create({
-          recipientId: assignedPandit._id,
-          recipientModel: "Pandit",
-          title: "New Puja Assigned! 📿",
-          message: `You have been assigned to a new pooja: ${poojaName}.`,
+          recipientId: admin._id,
+          recipientModel: "Admin",
+          title: order.isDonation ? "New Donation Received! 💰" : "New Pooja Booking! 📿",
+          message: `New booking ${order.bookingId} for ${poojaName}`,
           type: "booking",
-          link: `/pandit/orders/${order._id}`
+          link: `/admin/orders/${order._id}`
         });
+      }
+    } catch (err: any) {
+      console.error("[Notification Error] Admin notifications failed", err);
+    }
 
-        if (assignedPandit.whatsapp) {
-          await sendWhatsApp(assignedPandit.whatsapp, `🛕 New Pooja Assigned!\nID: ${order.bookingId}\nDevotee: ${sankalpName}`);
+    // 4. Pandit Auto-Assignment
+    if (!order.isDonation) {
+      try {
+        const assignedPandit = await Pandit.findOne({ assignedTemples: order.templeId, isActive: true });
+        if (assignedPandit) {
+          order.panditId = assignedPandit._id;
+          order.orderStatus = "confirmed";
+          await order.save();
+
+          await Notification.create({
+            recipientId: assignedPandit._id,
+            recipientModel: "Pandit",
+            title: "New Puja Assigned! 📿",
+            message: `You have been assigned to a new pooja: ${poojaName}.`,
+            type: "booking",
+            link: `/pandit/orders/${order._id}`
+          });
+
+          if (assignedPandit.whatsapp) {
+            await sendWhatsApp(assignedPandit.whatsapp, `🛕 New Pooja Assigned!\nID: ${order.bookingId}\nDevotee: ${sankalpName}`);
+          }
         }
+      } catch (err: any) {
+        console.error("[Notification Error] Pandit assignment failed", err);
       }
     }
-  } catch (e) {
-    console.error("Order post-process error", e);
+  } catch (e: any) {
+    console.error("Order post-process critical error", e);
   }
 }
 

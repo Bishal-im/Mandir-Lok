@@ -1,5 +1,6 @@
 "use server";
 
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import Notification from "@/models/Notification";
 import { cookies } from "next/headers";
@@ -75,10 +76,18 @@ export async function getUnreadNotificationCount() {
 
 async function getAuthAdmin() {
     const token = cookies().get("mandirlok_token")?.value;
-    if (!token) return null;
+    if (!token) {
+        return null;
+    }
 
     const decoded = verifyToken(token);
-    if (!decoded || decoded.role !== "admin") return null;
+    if (!decoded) {
+        return null;
+    }
+
+    if (decoded.role !== "admin") {
+        return null;
+    }
 
     return decoded.userId;
 }
@@ -90,6 +99,7 @@ export async function getAdminNotifications() {
 
         await connectDB();
         const notifications = await Notification.find({
+            recipientId: adminId,
             recipientModel: "Admin"
         })
             .sort({ createdAt: -1 })
@@ -126,6 +136,7 @@ export async function getUnreadAdminNotificationCount() {
 
         await connectDB();
         const count = await Notification.countDocuments({
+            recipientId: new mongoose.Types.ObjectId(adminId),
             recipientModel: "Admin",
             read: false
         });
