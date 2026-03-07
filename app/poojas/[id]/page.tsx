@@ -117,20 +117,20 @@ export default function PoojaDetailPage() {
     );
   }
 
-  // Create the cart link
-  const cartQuery = new URLSearchParams();
-  cartQuery.set("poojaId", pooja._id);
-  cartQuery.set("templeId", selectedTempleId || "");
+  // Create the checkout link
+  const checkoutQuery = new URLSearchParams();
+  checkoutQuery.set("poojaId", pooja._id);
+  checkoutQuery.set("templeId", selectedTempleId || "");
   if (selectedDate !== null) {
-    cartQuery.set("date", dates[selectedDate].value);
+    checkoutQuery.set("date", dates[selectedDate].value);
   }
   if (selectedPackageIndex !== null) {
-    cartQuery.set("packageIndex", selectedPackageIndex.toString());
+    checkoutQuery.set("packageIndex", selectedPackageIndex.toString());
   }
   if (addedOfferings.length > 0) {
-    cartQuery.set("offerings", addedOfferings.join(","));
+    checkoutQuery.set("offerings", addedOfferings.join(","));
   }
-  const cartLink = `/cart?${cartQuery.toString()}`;
+  const checkoutLink = `/checkout?${checkoutQuery.toString()}`;
 
   const handleProceedClick = (e: React.MouseEvent) => {
     if (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) {
@@ -537,7 +537,7 @@ export default function PoojaDetailPage() {
                 </div>
 
                 <Link
-                  href={cartLink}
+                  href={checkoutLink}
                   onClick={handleProceedClick}
                   className={`btn-saffron w-full text-center text-sm block mb-3 transition-all ${showValidation && (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) ? "bg-red-500 border-red-500 shadow-none scale-[0.98]" : ""}`}
                 >

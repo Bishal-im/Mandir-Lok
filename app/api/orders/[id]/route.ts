@@ -33,7 +33,8 @@ export async function GET(
         const order = await Order.findById(params.id)
             .populate("poojaId", "name emoji duration images")
             .populate("templeId", "name location")
-            .populate("panditId", "name phone whatsapp photo");
+            .populate("panditId", "name phone whatsapp photo")
+            .populate("chadhavaItems.chadhavaId", "name image emoji");
 
         if (!order) {
             return NextResponse.json(

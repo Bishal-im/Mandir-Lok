@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, Check, X, Trash2, Shield, ShieldAlert, MessageSquare } from "lucide-react";
+import { Star, Check, X, Trash2, Shield, ShieldAlert, MessageSquare, Flame, Building2 } from "lucide-react";
 import { getAdminReviews, updateReviewStatus, deleteReview } from "@/lib/actions/reviews";
 
 export default function AdminReviewsPage() {
@@ -68,11 +68,10 @@ export default function AdminReviewsPage() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                filter === f
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === f
                   ? "bg-orange-500 text-white shadow-md shadow-orange-100"
                   : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-              }`}
+                }`}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
@@ -101,9 +100,8 @@ export default function AdminReviewsPage() {
           {filteredReviews.map((review) => (
             <div
               key={review._id}
-              className={`bg-white rounded-2xl border transition-all duration-300 ${
-                review.isApproved ? "border-gray-100 shadow-sm" : "border-orange-200 shadow-orange-50 shadow-lg"
-              }`}
+              className={`bg-white rounded-2xl border transition-all duration-300 ${review.isApproved ? "border-gray-100 shadow-sm" : "border-orange-200 shadow-orange-50 shadow-lg"
+                }`}
             >
               {/* Review Header */}
               <div className="p-5 border-b border-gray-50 flex items-start justify-between">
@@ -133,11 +131,11 @@ export default function AdminReviewsPage() {
                   "{review.comment || "No comment provided."}"
                 </p>
                 <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-widest font-bold">
-                  <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded border border-orange-100">
-                    📿 {review.poojaId?.name || "Deleted Pooja"}
+                  <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded border border-orange-100 flex items-center gap-1">
+                    <Flame size={10} /> {review.poojaId?.name || "Deleted Pooja"}
                   </span>
-                  <span className="bg-gray-50 text-gray-500 px-2 py-1 rounded border border-gray-100">
-                    🛕 {review.templeId?.name || "Deleted Temple"}
+                  <span className="bg-gray-50 text-gray-500 px-2 py-1 rounded border border-gray-100 flex items-center gap-1">
+                    <Building2 size={10} /> {review.templeId?.name || "Deleted Temple"}
                   </span>
                 </div>
               </div>
@@ -147,11 +145,10 @@ export default function AdminReviewsPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleStatusUpdate(review._id, !review.isApproved)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      review.isApproved
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${review.isApproved
                         ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
                         : "bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-100"
-                    }`}
+                      }`}
                   >
                     {review.isApproved ? (
                       <>
@@ -166,11 +163,10 @@ export default function AdminReviewsPage() {
 
                   <button
                     onClick={() => handleToggleFeatured(review._id, !review.isFeatured)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      review.isFeatured
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${review.isFeatured
                         ? "bg-amber-500 text-white hover:bg-amber-600 shadow-md shadow-amber-100"
                         : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     {review.isFeatured ? (
                       <>

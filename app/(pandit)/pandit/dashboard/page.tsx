@@ -6,7 +6,7 @@ import PanditSidebar from '@/components/pandit/PanditSidebar'
 import VideoUploadModal from '@/components/pandit/VideoUploadModal'
 import {
   Calendar, CheckCircle, Clock, IndianRupee,
-  ChevronRight, Phone, ExternalLink, Play
+  ChevronRight, Phone, ExternalLink, Play, Flame, Building2, User, Video, MessageCircle, IndianRupee as Rupee
 } from 'lucide-react'
 import { formatINR } from '@/lib/utils'
 
@@ -54,10 +54,10 @@ export default function PanditDashboard() {
   ).slice(0, 5)
 
   const stats = [
-    { label: "Today's Poojas", value: todayPoojas.length, icon: '🪔', color: 'text-orange-600' },
-    { label: 'Pending Response', value: orders.filter(o => o.orderStatus === 'confirmed').length, icon: '⏳', color: 'text-blue-600' },
-    { label: 'Completed', value: orders.filter(o => o.orderStatus === 'completed').length, icon: '✅', color: 'text-green-600' },
-    { label: 'Total Earned', value: formatINR(pandit?.totalEarnings || 0), icon: '💰', color: 'text-[#8b0000]' },
+    { label: "Today's Poojas", value: todayPoojas.length, icon: <Flame size={18} className="text-orange-600" />, color: 'text-orange-600' },
+    { label: 'Pending Response', value: orders.filter(o => o.orderStatus === 'confirmed').length, icon: <Clock size={18} className="text-blue-600" />, color: 'text-blue-600' },
+    { label: 'Completed', value: orders.filter(o => o.orderStatus === 'completed').length, icon: <CheckCircle size={18} className="text-green-600" />, color: 'text-green-600' },
+    { label: 'Total Earned', value: formatINR(pandit?.totalEarnings || 0), icon: <IndianRupee size={18} className="text-[#8b0000]" />, color: 'text-[#8b0000]' },
   ]
 
   if (loading) {
@@ -81,7 +81,7 @@ export default function PanditDashboard() {
             <p className="text-xs text-[#6b5b45]">Welcome back, Pt. {pandit?.name}</p>
           </div>
           <div className="hidden sm:flex items-center gap-2">
-            <span className="badge-saffron">🧘 Online Now</span>
+            <span className="badge-saffron flex items-center gap-1"><User size={12} /> Online Now</span>
           </div>
         </header>
 
@@ -90,7 +90,7 @@ export default function PanditDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {stats.map((s) => (
               <div key={s.label} className="bg-white border border-[#f0dcc8] rounded-2xl p-4 shadow-card">
-                <div className="text-2xl mb-2">{s.icon}</div>
+                <div className="flex justify-center mb-2">{s.icon}</div>
                 <div className={`text-xl font-bold ${s.color}`}>{s.value}</div>
                 <div className="text-xs text-[#6b5b45] font-medium mt-1">{s.label}</div>
               </div>
@@ -116,17 +116,17 @@ export default function PanditDashboard() {
                     <div key={order._id} className="bg-white border border-[#f0dcc8] rounded-2xl shadow-card p-5 group">
                       <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-[#fff8f0] rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
-                            {order.poojaId?.emoji || '🙏'}
+                          <div className="w-12 h-12 bg-[#fff8f0] rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                            <Flame size={22} className="text-[#ff7f0a]" />
                           </div>
                           <div>
                             <h3 className="font-display font-bold text-gray-900">{order.poojaId?.name || 'Pooja'}</h3>
-                            <p className="text-xs text-[#6b5b45]">🛕 {order.templeId?.name || 'Temple'}</p>
+                            <p className="text-xs text-[#6b5b45] flex items-center gap-1"><Building2 size={11} className="shrink-0" /> {order.templeId?.name || 'Temple'}</p>
                           </div>
                         </div>
                         <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${order.orderStatus === 'in-progress'
-                            ? 'bg-blue-50 text-blue-600 border-blue-100'
-                            : 'bg-orange-50 text-orange-600 border-orange-100'
+                          ? 'bg-blue-50 text-blue-600 border-blue-100'
+                          : 'bg-orange-50 text-orange-600 border-orange-100'
                           }`}>
                           {order.orderStatus === 'in-progress' ? 'In Progress' : 'Confirmed'}
                         </div>
@@ -134,12 +134,12 @@ export default function PanditDashboard() {
 
                       <div className="grid grid-cols-2 gap-4 mb-5 text-[13px]">
                         <div className="space-y-2">
-                          <p className="text-[#6b5b45]">👤 <span className="text-gray-900 font-semibold">{order.sankalpName}</span></p>
-                          <p className="text-[#6b5b45]">📞 <span className="text-gray-900 font-semibold">{order.phone}</span></p>
+                          <p className="text-[#6b5b45] flex items-center gap-1"><User size={12} /> <span className="text-gray-900 font-semibold">{order.sankalpName}</span></p>
+                          <p className="text-[#6b5b45] flex items-center gap-1"><Phone size={12} /> <span className="text-gray-900 font-semibold">{order.phone}</span></p>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-[#6b5b45]">💬 <span className="text-[#25D366] font-semibold">WA: {order.whatsapp}</span></p>
-                          <p className="text-[#6b5b45]">💰 <span className="text-gray-900 font-semibold">{formatINR(order.totalAmount)}</span></p>
+                          <p className="text-[#6b5b45] flex items-center gap-1"><MessageCircle size={12} /> <span className="text-[#25D366] font-semibold">WA: {order.whatsapp}</span></p>
+                          <p className="text-[#6b5b45] flex items-center gap-1"><IndianRupee size={12} /> <span className="text-gray-900 font-semibold">{formatINR(order.totalAmount)}</span></p>
                         </div>
                       </div>
 
@@ -149,14 +149,14 @@ export default function PanditDashboard() {
                             onClick={() => startPooja(order._id)}
                             className="flex-1 btn-saffron py-2.5 text-xs flex items-center justify-center gap-2"
                           >
-                            <Play size={14} /> Start Pooja 🙏
+                            <Play size={14} /> Start Pooja
                           </button>
                         ) : (
                           <button
                             onClick={() => setSelectedOrder(order)}
                             className="flex-1 bg-blue-600 text-white font-bold rounded-xl py-2.5 text-xs hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
                           >
-                            <ExternalLink size={14} /> Upload Video 📹
+                            <ExternalLink size={14} /> Upload Video
                           </button>
 
                         )}
@@ -172,7 +172,7 @@ export default function PanditDashboard() {
                 </div>
               ) : (
                 <div className="bg-white border border-dashed border-[#f0dcc8] rounded-2xl p-12 text-center text-[#6b5b45]">
-                  <p className="text-3xl mb-3">🪔</p>
+                  <div className="flex justify-center mb-3"><Flame size={28} className="text-orange-200" /></div>
                   <p className="font-semibold text-gray-900 mb-1 text-sm">No poojas scheduled for today</p>
                   <p className="text-xs">Take some rest or check upcoming poojas.</p>
                 </div>
@@ -194,8 +194,8 @@ export default function PanditDashboard() {
                       href={`/pandit/orders/${order._id}`}
                       className="bg-white border border-[#f0dcc8] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-center gap-3 group"
                     >
-                      <div className="w-10 h-10 bg-[#fff8f0] rounded-lg flex items-center justify-center text-lg">
-                        {order.poojaId?.emoji || '🙏'}
+                      <div className="w-10 h-10 bg-[#fff8f0] rounded-lg flex items-center justify-center">
+                        <Flame size={18} className="text-[#ff7f0a]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-xs text-gray-900 truncate">{order.poojaId?.name || 'Pooja'}</h4>

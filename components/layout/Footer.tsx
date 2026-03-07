@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getFooterData } from "@/lib/actions/footer";
+import { Building2, Sparkles, Phone, Lock, MessageCircle, CheckCircle2 } from "lucide-react";
 
 const links = [
   { label: "About Us", href: "/about" },
@@ -69,7 +70,7 @@ export default function Footer() {
                 href="#"
                 className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#ff7f0a] flex items-center justify-center transition-colors text-sm font-bold uppercase"
               >
-                 {s === "wa" ? "📞" : s === "fb" ? "fb" : s === "in" ? "ig" : "yt"}
+                {s === "wa" ? <Phone size={14} /> : s === "fb" ? "fb" : s === "in" ? "ig" : "yt"}
               </a>
             ))}
           </div>
@@ -88,7 +89,7 @@ export default function Footer() {
                     href={`/temples/${t.slug}`}
                     className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
                   >
-                     <span className="text-[#ff7f0a] text-xs">🛕</span> {t.name}
+                    <Building2 size={12} className="text-[#ff7f0a] shrink-0" /> {t.name}
                   </Link>
                 </li>
               ))
@@ -111,7 +112,7 @@ export default function Footer() {
                     href={`/poojas/${p.slug}`}
                     className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors flex items-center gap-2"
                   >
-                     <span className="text-[#f0bc00] text-xs">🌸</span> {p.name}
+                    <Sparkles size={12} className="text-[#f0bc00] shrink-0" /> {p.name}
                   </Link>
                 </li>
               ))
@@ -145,13 +146,13 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="container-app py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#7a6050]">
           <p>
-             © {new Date().getFullYear()} Mandirlok. All rights reserved. Made
+            © {new Date().getFullYear()} Mandirlok. All rights reserved. Made
             in India
           </p>
           <div className="flex items-center gap-4">
-            <span>🔒 Razorpay Secured</span>
-            <span>💬 WhatsApp Updates</span>
-            <span>✅ Verified Pandits</span>
+            <span className="flex items-center gap-1"><Lock size={11} className="text-green-400" /> Razorpay Secured</span>
+            <span className="flex items-center gap-1"><MessageCircle size={11} className="text-green-400" /> WhatsApp Updates</span>
+            <span className="flex items-center gap-1"><CheckCircle2 size={11} className="text-green-400" /> Verified Pandits</span>
           </div>
         </div>
       </div>

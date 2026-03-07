@@ -342,7 +342,7 @@ export default function ChadhavaDetailPage() {
                       const dd = String(targetDate.getDate()).padStart(2, "0");
                       const dateValue = `${yyyy}-${mm}-${dd}`;
 
-                      router.push(`/cart?templeId=${item.templeId?._id}&offerings=${item._id}:${quantity}&qty=1&date=${dateValue}&isDonation=${isDonation}&customAmount=${customAmount || 0}`);
+                      router.push(`/checkout?templeId=${item.templeId?._id}&offerings=${item._id}:${quantity}&qty=${quantity}&date=${dateValue}&isDonation=${isDonation}&customAmount=${customAmount || 0}`);
                     }}
                     className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold py-4 rounded-2xl shadow-[0_8px_30px_rgb(245,158,11,0.3)] hover:shadow-[0_12px_40px_rgb(245,158,11,0.4)] transition-all active:scale-[0.98] mb-4"
                   >

@@ -7,7 +7,7 @@ import VideoUploadModal from '@/components/pandit/VideoUploadModal'
 import {
   ChevronLeft, Calendar, User, Phone,
   CheckCircle, Play, Video, ExternalLink,
-  History, Info, CreditCard
+  History, Info, CreditCard, Flame, Building2, Gift
 } from 'lucide-react'
 import { formatINR, formatDate } from '@/lib/utils'
 
@@ -72,13 +72,13 @@ export default function OrderDetailPage() {
 
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-[#fff8f0] to-[#f0dcc8] rounded-2xl flex items-center justify-center text-4xl shadow-inner shadow-orange-200">
-                  {order.poojaId?.emoji || '🙏'}
+                <div className="w-20 h-20 bg-gradient-to-br from-[#fff8f0] to-[#f0dcc8] rounded-2xl flex items-center justify-center shadow-inner shadow-orange-200">
+                  <Flame size={36} className="text-[#ff7f0a]" />
                 </div>
                 <div>
                   <h1 className="font-display text-2xl font-bold text-gray-900">{order.poojaId?.name || 'Pooja'}</h1>
                   <p className="text-[#ff7f0a] font-semibold flex items-center gap-1.5 mt-1">
-                    🛕 {order.templeId?.name || 'Temple'}
+                    <Building2 size={14} className="shrink-0" /> {order.templeId?.name || 'Temple'}
                   </p>
                   <p className="text-xs text-[#6b5b45] mt-1">{order.templeId?.location || ''}</p>
                 </div>
@@ -168,7 +168,9 @@ export default function OrderDetailPage() {
                       {order.chadhavaItems.map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center justify-between text-xs font-medium text-gray-900">
                           <span className="flex items-center gap-2">
-                            <span className="w-6 h-6 bg-gray-50 rounded flex items-center justify-center">{item.emoji || '🎁'}</span>
+                            <span className="w-6 h-6 bg-gray-50 rounded flex items-center justify-center">
+                              <Gift size={13} className="text-[#ff7f0a]" />
+                            </span>
                             {item.name}
                           </span>
                           <span>{formatINR(item.price)}</span>
@@ -249,7 +251,7 @@ export default function OrderDetailPage() {
                   className="flex-1 btn-saffron py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-orange-500/30"
                 >
                   <Play size={20} />
-                  <span className="text-base">Start Pooja Now 🙏</span>
+                  <span className="text-base">Start Pooja Now</span>
                 </button>
               )}
               {order.orderStatus === 'in-progress' && (
@@ -258,7 +260,7 @@ export default function OrderDetailPage() {
                   className="flex-1 bg-blue-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all"
                 >
                   <Video size={20} />
-                  <span className="text-base">Upload Pooja Video 📹</span>
+                  <span className="text-base">Upload Pooja Video</span>
                 </button>
               )}
               {order.orderStatus === 'completed' && (

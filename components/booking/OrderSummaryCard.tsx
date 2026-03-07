@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Calendar, Clock } from "lucide-react";
+import { Shield, Calendar, Clock, Building2, Sparkles, Video, User, RefreshCcw } from "lucide-react";
 
 interface OrderItem {
   label: string;
@@ -60,7 +60,7 @@ export default function OrderSummaryCard({
           <p className="font-semibold text-[#1a1209] text-sm leading-snug">
             {poojaName}
           </p>
-          <p className="text-xs text-[#ff7f0a] mt-0.5">🛕 {templeNam}</p>
+          <p className="text-xs text-[#ff7f0a] mt-0.5 flex items-center gap-1"><Building2 size={11} className="shrink-0" /> {templeNam}</p>
           {selectedDate && (
             <p className="text-xs text-[#6b5b45] mt-1 flex items-center gap-1">
               <Calendar size={10} /> {formatDate(selectedDate)}
@@ -82,7 +82,7 @@ export default function OrderSummaryCard({
 
         {addOns.map((a) => (
           <div key={a.label} className="flex justify-between text-sm">
-            <span className="text-[#6b5b45]">🌸 {a.label}</span>
+            <span className="text-[#6b5b45] flex items-center gap-1"><Sparkles size={11} className="text-[#f0bc00]" /> {a.label}</span>
             <span className="text-[#1a1209]">₹{a.price}</span>
           </div>
         ))}
@@ -130,12 +130,12 @@ export default function OrderSummaryCard({
 
       <div className="space-y-1.5 pt-3 border-t border-[#f0dcc8]">
         {[
-          "📹 HD Pooja video on WhatsApp",
-          "🧘 Verified experienced pandit",
-          "↩️ Full refund if cancelled 24h before",
+          { icon: <Video size={10} className="text-[#ff7f0a] shrink-0" />, text: "HD Pooja video on WhatsApp" },
+          { icon: <User size={10} className="text-[#ff7f0a] shrink-0" />, text: "Verified experienced pandit" },
+          { icon: <RefreshCcw size={10} className="text-[#ff7f0a] shrink-0" />, text: "Full refund if cancelled 24h before" },
         ].map((t) => (
-          <p key={t} className="text-[10px] text-[#6b5b45]">
-            {t}
+          <p key={t.text} className="text-[10px] text-[#6b5b45] flex items-center gap-1">
+            {t.icon} {t.text}
           </p>
         ))}
       </div>

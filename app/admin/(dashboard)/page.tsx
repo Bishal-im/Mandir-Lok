@@ -4,6 +4,9 @@ import {
   IndianRupee,
   Star,
   ShoppingBag,
+  Building2,
+  Flame,
+  User,
 } from "lucide-react";
 import { getDashboardStats, getOrdersAdmin } from "@/lib/actions/admin";
 
@@ -85,16 +88,16 @@ export default async function AdminDashboard() {
       {/* ── Quick Actions ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Add Temple", emoji: "🛕", href: "/admin/temples/add" },
-          { label: "Add Pooja", emoji: "🪔", href: "/admin/poojas/add" },
-          { label: "Add Pandit", emoji: "🧘", href: "/admin/pandits/add" },
+          { label: "Add Temple", icon: <Building2 size={22} className="text-[#ff7f0a]" />, href: "/admin/temples/add" },
+          { label: "Add Pooja", icon: <Flame size={22} className="text-[#ff7f0a]" />, href: "/admin/poojas/add" },
+          { label: "Add Pandit", icon: <User size={22} className="text-[#ff7f0a]" />, href: "/admin/pandits/add" },
         ].map((a) => (
           <Link
             key={a.label}
             href={a.href}
             className="bg-white border border-gray-100 rounded-xl p-4 text-center hover:border-[#ffbd6e] hover:shadow-sm transition-all"
           >
-            <div className="text-2xl mb-1.5">{a.emoji}</div>
+            <div className="flex justify-center mb-1.5">{a.icon}</div>
             <p className="text-xs font-semibold text-gray-700">{a.label}</p>
           </Link>
         ))}

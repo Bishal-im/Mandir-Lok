@@ -7,7 +7,7 @@ import PanditSidebar from '@/components/pandit/PanditSidebar'
 import VideoUploadModal from '@/components/pandit/VideoUploadModal'
 import {
   Calendar, Search, Phone, ExternalLink,
-  ChevronRight, Play, CheckCircle, Clock, AlertCircle, Video
+  ChevronRight, Play, CheckCircle, Clock, AlertCircle, Video, Flame, Building2
 } from 'lucide-react'
 
 import { formatINR, formatDate } from '@/lib/utils'
@@ -157,10 +157,10 @@ export default function PanditOrdersPage() {
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xl">{order.poojaId?.emoji || '🙏'}</span>
+                            <Flame size={18} className="text-[#ff7f0a]" />
                             <h3 className="font-display font-bold text-gray-900">{order.poojaId?.name || 'Pooja'}</h3>
                           </div>
-                          <p className="text-xs text-[#6b5b45]">Mandir: 🛕 {order.templeId?.name || 'Temple'}</p>
+                          <p className="text-xs text-[#6b5b45] flex items-center gap-1">Mandir: <Building2 size={11} className="shrink-0" /> {order.templeId?.name || 'Temple'}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-lg font-bold text-gray-900">{formatINR(order.totalAmount)}</p>

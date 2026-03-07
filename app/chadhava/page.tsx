@@ -154,7 +154,7 @@ function DonationCard({ temples }: { temples: Temple[] }) {
     if (!selectedTemple) return alert("Please select a temple");
     if (!amount || parseInt(amount) < 1) return alert("Please enter a valid amount");
 
-    router.push(`/cart?templeId=${selectedTemple}&isDonation=true&customAmount=${amount}`);
+    router.push(`/checkout?templeId=${selectedTemple}&isDonation=true&customAmount=${amount}`);
   };
 
   return (

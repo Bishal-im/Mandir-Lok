@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Calendar, Clock, Download, ChevronRight, Video, Star } from "lucide-react";
+import { Calendar, Clock, Download, ChevronRight, Video, Star, Building2, Flame, BookOpen, CheckCircle2, CalendarOff } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Order {
@@ -32,6 +32,8 @@ interface Order {
   totalAmount: number;
   orderStatus: "pending" | "assigned" | "confirmed" | "in-progress" | "completed" | "cancelled";
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
+  isDonation: boolean;
+  chadhavaItems?: { name: string; price: number; emoji?: string }[];
   videoUrl?: string;
   poojaImage?: string;
   createdAt: string;
@@ -230,12 +232,12 @@ export default function DashboardPage() {
               {/* Stats Row */}
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { label: "Total Bookings", value: totalBookings, emoji: "" },
-                  { label: "Completed", value: completedCount, emoji: "" },
-                  { label: "Videos Received", value: videosReceived, emoji: "" },
+                  { label: "Total Bookings", value: totalBookings, icon: <BookOpen size={18} className="text-[#ff7f0a]" /> },
+                  { label: "Completed", value: completedCount, icon: <CheckCircle2 size={18} className="text-green-500" /> },
+                  { label: "Videos Received", value: videosReceived, icon: <Video size={18} className="text-blue-500" /> },
                 ].map((s) => (
                   <div key={s.label} className="bg-white border border-[#f0dcc8] rounded-2xl p-4 text-center shadow-card">
-                    <div className="text-2xl mb-1">{s.emoji}</div>
+                    <div className="flex justify-center mb-1">{s.icon}</div>
                     <div className="text-2xl font-display font-bold text-[#ff7f0a]">
                       {loading ? "—" : s.value}
                     </div>
@@ -277,7 +279,7 @@ export default function DashboardPage() {
               {/* Empty State */}
               {!loading && !error && filtered.length === 0 && (
                 <div className="bg-white border border-[#f0dcc8] rounded-2xl p-10 text-center shadow-card">
-                  <div className="text-5xl mb-4"></div>
+                  <div className="flex justify-center mb-4"><CalendarOff size={40} className="text-[#f0dcc8]" /></div>
                   <h3 className="font-display font-semibold text-[#1a1209] mb-2">No bookings yet</h3>
                   <p className="text-xs text-[#6b5b45] mb-5">
                     You haven't booked any pooja yet. Start your divine journey today!
@@ -299,11 +301,15 @@ export default function DashboardPage() {
                           {/* Emoji */}
                           <div className="w-12 h-12 bg-[#fff8f0] rounded-xl flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
                             {order.poojaImage ? (
-                              <img src={order.poojaImage} alt={order.poojaId?.name} className="w-full h-full object-cover" />
+                              <img src={order.poojaImage} alt={order.poojaId?.name || "Chadhava"} className="w-full h-full object-cover" />
                             ) : order.poojaId?.images?.[0] ? (
                               <img src={order.poojaId.images[0]} alt={order.poojaId.name} className="w-full h-full object-cover" />
+                            ) : order.chadhavaItems && order.chadhavaItems.length > 0 && (order.chadhavaItems[0] as any).chadhavaId?.image ? (
+                              <img src={(order.chadhavaItems[0] as any).chadhavaId.image} alt={order.chadhavaItems[0].name} className="w-full h-full object-cover" />
+                            ) : order.chadhavaItems && order.chadhavaItems.length > 0 && order.chadhavaItems[0].emoji ? (
+                              <span className="text-2xl">{order.chadhavaItems[0].emoji}</span>
                             ) : (
-                              order.poojaId?.emoji || "🙏"
+                              <Flame size={22} className="text-[#ff7f0a]" />
                             )}
                           </div>
 
@@ -311,15 +317,21 @@ export default function DashboardPage() {
                           <div className="flex-1">
                             <div className="flex items-start justify-between gap-2 mb-1">
                               <h3 className="font-display font-semibold text-[#1a1209]">
-                                {order.poojaId?.name || "Pooja"}
+                                {order.isDonation
+                                  ? "Direct Temple Donation"
+                                  : order.poojaId?.name
+                                    ? order.poojaId.name
+                                    : (order.chadhavaItems && order.chadhavaItems.length > 0)
+                                      ? order.chadhavaItems.map((c: any) => c.name).join(", ")
+                                      : "Pooja"}
                               </h3>
                               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${sc.bg} ${sc.border} ${sc.text}`}>
                                 {sc.label}
                               </span>
                             </div>
 
-                            <p className="text-xs text-[#ff7f0a] mb-2">
-                              🛕 {order.templeId?.name}
+                            <p className="text-xs text-[#ff7f0a] mb-2 flex items-center gap-1">
+                              <Building2 size={11} className="shrink-0" /> {order.templeId?.name}
                             </p>
 
                             <div className="flex flex-wrap gap-4 text-xs text-[#6b5b45]">
@@ -327,10 +339,12 @@ export default function DashboardPage() {
                                 <Calendar size={11} className="text-[#ff7f0a]" />
                                 {formatDate(order.bookingDate)}
                               </span>
-                              <span className="flex items-center gap-1">
-                                <Clock size={11} className="text-[#ff7f0a]" />
-                                {order.poojaId?.duration}
-                              </span>
+                              {order.poojaId?.duration && (
+                                <span className="flex items-center gap-1">
+                                  <Clock size={11} className="text-[#ff7f0a]" />
+                                  {order.poojaId.duration}
+                                </span>
+                              )}
                               <span>
                                 Pandit: {order.panditId?.name || "TBD"}
                               </span>
@@ -363,7 +377,7 @@ export default function DashboardPage() {
                                 <Download size={12} /> Receipt
                               </button>
                             )}
-                            {order.orderStatus === "completed" && order.poojaId && (
+                            {order.orderStatus === "completed" && order.poojaId && !order.isDonation && (
                               <Link
                                 href={`/bookings/${order._id}#review-section`}
                                 className="flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-full font-medium hover:bg-amber-100"

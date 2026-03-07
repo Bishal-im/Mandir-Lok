@@ -28,6 +28,7 @@ export async function GET() {
       .populate("poojaId", "name emoji duration images")
       .populate("templeId", "name location")
       .populate("panditId", "name phone")
+      .populate("chadhavaItems.chadhavaId", "name image emoji")
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, data: orders });

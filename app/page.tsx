@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
 import { getHomepageReviews } from "@/lib/actions/reviews";
 import { getFeaturedPoojas } from "@/lib/actions/poojas";
+import { Users, ShieldCheck, Building2, Video, Flame } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Pooja {
@@ -75,10 +76,10 @@ const SLIDE_IMAGES = [
 ];
 
 const TRUST_BADGES = [
-  { icon: "🙏", label: "Trusted by 1 Million+ Devotees" },
-  { icon: "🛡️", label: "100% Secure Payments" },
-  { icon: "🛕", label: "500+ Sacred Temples" },
-  { icon: "📹", label: "Video Proof of Every Puja" },
+  { icon: <Users size={18} className="text-[#ff7f0a]" />, label: "Trusted by 1 Million+ Devotees" },
+  { icon: <ShieldCheck size={18} className="text-[#ff7f0a]" />, label: "100% Secure Payments" },
+  { icon: <Building2 size={18} className="text-[#ff7f0a]" />, label: "500+ Sacred Temples" },
+  { icon: <Video size={18} className="text-[#ff7f0a]" />, label: "Video Proof of Every Puja" },
 ];
 
 
@@ -268,8 +269,8 @@ function PujaCard({ puja }: { puja: Pooja }) {
                 <path d="M50 0 L100 50 L50 100 L0 50 Z" fill="white" fillOpacity="0.2" />
               </svg>
             </div>
-            <span className="text-8xl transform group-hover:scale-110 transition-transform duration-700 relative z-10">
-              {puja.emoji || "🔱"}
+            <span className="transform group-hover:scale-110 transition-transform duration-700 relative z-10">
+              <Flame size={64} className="text-white/80" />
             </span>
           </>
         )}

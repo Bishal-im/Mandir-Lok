@@ -17,8 +17,7 @@ import {
     AlertCircle
 } from "lucide-react";
 import Link from "next/link";
-import { getOrderById, getPanditsAdmin, assignPanditToOrder, updateOrderStatus, updateOrderVideo } from "@/lib/actions/admin";
-import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
+import { getOrderById, getPanditsAdmin, assignPanditToOrder } from "@/lib/actions/admin";
 
 export default function OrderDetailPage() {
     const { id } = useParams() as { id: string };
@@ -27,7 +26,6 @@ export default function OrderDetailPage() {
     const [pandits, setPandits] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedPandit, setSelectedPandit] = useState("");
-    const [videoUrl, setVideoUrl] = useState("");
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -37,7 +35,6 @@ export default function OrderDetailPage() {
             setOrder(orderData);
             setPandits(panditsData);
             if (orderData?.panditId?._id) setSelectedPandit(orderData.panditId._id);
-            if (orderData?.videoUrl) setVideoUrl(orderData.videoUrl);
             setLoading(false);
         }
         fetchData();
@@ -46,22 +43,6 @@ export default function OrderDetailPage() {
     const handleAssignPandit = async () => {
         setSaving(true);
         await assignPanditToOrder(id, selectedPandit);
-        const updated = await getOrderById(id);
-        setOrder(updated);
-        setSaving(false);
-    };
-
-    const handleStatusChange = async (status: string) => {
-        setSaving(true);
-        await updateOrderStatus(id, status);
-        const updated = await getOrderById(id);
-        setOrder(updated);
-        setSaving(false);
-    };
-
-    const handleSaveVideo = async () => {
-        setSaving(true);
-        await updateOrderVideo(id, videoUrl);
         const updated = await getOrderById(id);
         setOrder(updated);
         setSaving(false);
@@ -153,66 +134,10 @@ export default function OrderDetailPage() {
                         )}
                     </div>
 
-                    {/* Video / Delivery Card */}
-                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
-                        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Video size={16} className="text-[#ff7f0a]" /> Pooja Video URL</h3>
-
-                        {/* Direct Cloudinary Upload */}
-                        <div className="pb-2 border-b border-gray-50 mb-4">
-                            <CloudinaryUploader
-                                folder="pooja_recordings"
-                                onUploadSuccess={(url) => {
-                                    setVideoUrl(url);
-                                    // Optionally auto-save after upload
-                                    updateOrderVideo(id, url).then(updated => {
-                                        if (updated) setOrder(updated);
-                                    });
-                                }}
-                            />
-                        </div>
-
-                        <div className="flex gap-2">
-                            <input
-                                value={videoUrl}
-                                onChange={(e) => setVideoUrl(e.target.value)}
-                                placeholder="Enter S3/YouTube/Cloudinary Link"
-                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#ff7f0a]/20 outline-none text-sm"
-                            />
-                            <button
-                                onClick={handleSaveVideo}
-                                disabled={saving}
-                                className="bg-[#ff7f0a] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#e67208] transition-all disabled:opacity-50 text-sm"
-                            >
-                                Save & Complete
-                            </button>
-                        </div>
-                        {order.videoSentAt && (
-                            <p className="text-[10px] text-green-600 font-medium">Video uploaded & marked complete on {new Date(order.videoSentAt).toLocaleString()}</p>
-                        )}
-                    </div>
                 </div>
 
                 {/* Right Column: Management */}
                 <div className="space-y-6">
-                    {/* Status Card */}
-                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
-                        <h3 className="text-sm font-bold text-gray-900">Order Status</h3>
-                        <div className="grid grid-cols-1 gap-2">
-                            {["pending", "confirmed", "in-progress", "completed", "cancelled"].map((status) => (
-                                <button
-                                    key={status}
-                                    onClick={() => handleStatusChange(status)}
-                                    disabled={saving}
-                                    className={`w-full py-2.5 rounded-xl text-xs font-bold uppercase transition-all border ${order.orderStatus === status
-                                        ? "bg-gray-900 text-white border-gray-900"
-                                        : "bg-white text-gray-500 border-gray-100 hover:border-gray-300"
-                                        }`}
-                                >
-                                    {status}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
 
                     {/* Pandit Assignment Card */}
                     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
@@ -220,7 +145,8 @@ export default function OrderDetailPage() {
                         <select
                             value={selectedPandit}
                             onChange={(e) => setSelectedPandit(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none bg-white text-sm"
+                            disabled={order.orderStatus === "completed"}
+                            className={`w-full px-4 py-3 rounded-xl border border-gray-200 outline-none bg-white text-sm ${order.orderStatus === "completed" ? "opacity-50 cursor-not-allowed bg-gray-50" : ""}`}
                         >
                             <option value="">Unassigned</option>
                             {pandits.map((p) => (
@@ -229,8 +155,8 @@ export default function OrderDetailPage() {
                         </select>
                         <button
                             onClick={handleAssignPandit}
-                            disabled={saving || !selectedPandit}
-                            className="w-full py-3 rounded-xl bg-gray-100 text-gray-900 font-bold text-sm hover:bg-[#ff7f0a] hover:text-white transition-all disabled:opacity-50"
+                            disabled={saving || !selectedPandit || order.orderStatus === "completed"}
+                            className={`w-full py-3 rounded-xl bg-gray-100 text-gray-900 font-bold text-sm transition-all ${order.orderStatus === "completed" ? "opacity-50 cursor-not-allowed" : "hover:bg-[#ff7f0a] hover:text-white"}`}
                         >
                             {saving ? "Updating..." : "Confirm Assignment"}
                         </button>

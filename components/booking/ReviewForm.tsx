@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { submitReview } from "@/lib/actions/reviews";
 
 interface ReviewFormProps {
@@ -58,9 +58,9 @@ export default function ReviewForm({
         // If this was an update, the page parent (page.tsx) will handle the new state
         // through revalidatePath in the server action, but for immediate UI feedback:
         if (existingReview) {
-            existingReview.rating = rating;
-            existingReview.comment = comment;
-            existingReview.isApproved = false;
+          existingReview.rating = rating;
+          existingReview.comment = comment;
+          existingReview.isApproved = false;
         }
       } else {
         setError(res.error || "Failed to submit review.");
@@ -75,13 +75,13 @@ export default function ReviewForm({
   if (submitted && !existingReview && !isEditing) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
-        <div className="text-3xl mb-2">🙏</div>
+        <Heart size={32} className="text-orange-500 mx-auto mb-2" />
         <h3 className="font-display font-semibold text-green-800">Review Submitted!</h3>
         <p className="text-sm text-green-700 mt-1">
           Thank you for sharing your experience. Your feedback helps other devotees.
           It will be visible once approved by our team.
         </p>
-        <button 
+        <button
           onClick={() => setIsEditing(true)}
           className="mt-4 text-xs font-semibold text-green-700 border border-green-200 px-4 py-1.5 rounded-full hover:bg-green-100 transition"
         >
@@ -96,7 +96,7 @@ export default function ReviewForm({
       <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 shadow-card">
         <div className="flex justify-between items-start mb-4">
           <h3 className="font-display font-semibold text-[#1a1209]">Your Review</h3>
-          <button 
+          <button
             onClick={() => setIsEditing(true)}
             className="text-xs font-semibold text-[#ff7f0a] border border-[#ffd9a8] px-3 py-1 rounded-full hover:bg-[#fff8f0] transition"
           >
@@ -108,11 +108,10 @@ export default function ReviewForm({
             <Star
               key={star}
               size={20}
-              className={`${
-                star <= (existingReview.rating === rating ? existingReview.rating : rating)
+              className={`${star <= (existingReview.rating === rating ? existingReview.rating : rating)
                   ? "fill-amber-400 text-amber-400"
                   : "text-gray-300"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -151,11 +150,10 @@ export default function ReviewForm({
               >
                 <Star
                   size={32}
-                  className={`${
-                    star <= (hover || rating)
+                  className={`${star <= (hover || rating)
                       ? "fill-amber-400 text-amber-400"
                       : "text-gray-300"
-                  } transition-colors`}
+                    } transition-colors`}
                 />
               </button>
             ))}
