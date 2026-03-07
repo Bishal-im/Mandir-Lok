@@ -49,6 +49,8 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
           price: parseInt(searchParams.get("packagePrice") || "0")
         } : undefined,
         chadhavaData: searchParams.get("chadhavaData") || undefined,
+        isBulk: searchParams.get("isBulk") || undefined,
+        selectedItemIds: searchParams.get("selectedItemIds") || undefined,
       };
     } else {
       // POST request
@@ -62,7 +64,7 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
       templeId,
       bookingDate,
       qty = 1,
-      chadhavaItems: incomingChadhavaItems = [], 
+      chadhavaItems: incomingChadhavaItems = [],
       sankalpName,
       gotra,
       dob,
@@ -74,20 +76,21 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
       extraDonation,
       packageSelected,
       chadhavaData,
+      isBulk,
+      selectedItemIds,
     } = params;
 
     // 2. Verify Cashfree Payment
     const cashfreeOrder = await verifyCashfreePayment(cashfreeOrderId);
-    
+
     if (cashfreeOrder.order_status !== "PAID") {
-       // If it's a redirect, we might want to redirect to a failure page instead of JSON
-       if (searchParams) {
-         return NextResponse.redirect(`${new URL(req.url).origin}/booking-failure?orderId=${cashfreeOrderId}`);
-       }
-       return NextResponse.json({ success: false, message: "Payment not completed" }, { status: 400 });
+      if (searchParams) {
+        return NextResponse.redirect(`${new URL(req.url).origin}/booking-failure?orderId=${cashfreeOrderId}`);
+      }
+      return NextResponse.json({ success: false, message: "Payment not completed" }, { status: 400 });
     }
 
-    // Check if order already exists (prevent duplicate creation on refresh)
+    // Check if order already exists
     const existingOrder = await Order.findOne({ cashfreeOrderId });
     if (existingOrder) {
       if (searchParams) {
@@ -96,143 +99,215 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
       return NextResponse.json({ success: true, data: { orderId: existingOrder._id } });
     }
 
-    // 3. Fetch pooja/chadhava details and calculate amounts
-    let poojaAmount = 0;
-    let poojaName = isDonation ? "Sacred Support" : "Sacred Offering";
+    let createdOrderIds: string[] = [];
 
-    if (poojaId) {
-      const pooja = await Pooja.findById(poojaId);
-      if (pooja) {
-        if (packageSelected) {
-          const dbPackage = pooja.packages?.find((p: any) => p.name === packageSelected.name);
-          poojaAmount = dbPackage ? dbPackage.price : packageSelected.price;
-        } else {
-          poojaAmount = pooja.price * qty;
-        }
-        poojaName = pooja.name;
+    if (isBulk === "true") {
+      // BULK CHECKOUT LOGIC
+      const CartItem = (await import("@/models/CartItem")).default;
+      let cartItems = [];
+      const selectedIds = selectedItemIds ? selectedItemIds.split(",") : [];
+
+      if (selectedIds.length > 0) {
+        cartItems = await CartItem.find({ userId: decoded.userId, id: { $in: selectedIds } });
+      } else {
+        cartItems = await CartItem.find({ userId: decoded.userId });
       }
-    }
 
-    // Chadhava items handled similarly
-    let chadhavaItems: any[] = [];
-    let chadhavaAmount = 0;
-
-    if (incomingChadhavaItems && incomingChadhavaItems.length > 0) {
-      chadhavaItems = incomingChadhavaItems;
-    } else if (chadhavaData) {
-      // Parse from chadhavaData: id:quantity,id:quantity
-      const pairs = chadhavaData.split(",");
-      for (const p of pairs) {
-        const [id, q] = p.split(":");
-        const item = await Chadhava.findById(id);
-        if (item) {
-          chadhavaItems.push({
-            chadhavaId: item._id,
-            name: item.name,
-            price: item.price,
-            emoji: item.emoji || "🙏",
-            quantity: parseInt(q || "1")
-          });
-        }
+      if (cartItems.length === 0) {
+        return NextResponse.json({ success: false, message: "No items found in cart for bulk order" }, { status: 400 });
       }
-    }
 
-    if (chadhavaItems.length > 0) {
-      chadhavaAmount = chadhavaItems.reduce((sum: number, c: any) => sum + (c.price * c.quantity), 0);
-    }
-
-    const totalAmount = poojaAmount + chadhavaAmount + (extraDonation || 0);
-
-    // 4. Save order to DB
-    const order = await Order.create({
-      userId: decoded.userId,
-      templeId,
-      bookingDate: new Date(bookingDate),
-      sankalpName,
-      gotra: gotra || "",
-      dob: dob || "",
-      phone,
-      whatsapp,
-      sankalp: sankalp || "",
-      address: address || "",
-      qty: Number(qty),
-      chadhavaItems,
-      poojaAmount,
-      chadhavaAmount,
-      totalAmount,
-      paymentStatus: "paid",
-      cashfreeOrderId,
-      cashfreePaymentId: cashfreeOrder.order_id,
-      orderStatus: isDonation ? "completed" : "pending",
-      isDonation: !!isDonation,
-      extraDonation: extraDonation || 0,
-      packageSelected: packageSelected || undefined,
-      poojaId: poojaId || undefined,
-    });
-
-    // Notifications and WhatsApp
-    try {
-        // 1. Notify User
-        await Notification.create({
-            recipientId: decoded.userId,
-            recipientModel: "User",
-            title: isDonation ? "Donation Successful! 🙏" : "Booking Confirmed! 📿",
-            message: `Order ID: ${order.bookingId} for ${poojaName}`,
-            type: "booking",
-            link: `/dashboard`
+      for (const item of cartItems) {
+        const order = await Order.create({
+          userId: decoded.userId,
+          templeId: item.templeId,
+          bookingDate: item.date,
+          sankalpName, // Shared info from form
+          gotra: gotra || "",
+          dob: dob || "",
+          phone,
+          whatsapp,
+          sankalp: sankalp || "",
+          address: address || "",
+          qty: 1, // Default to 1 per pooja in cart
+          chadhavaItems: item.offerings.map(o => ({
+            chadhavaId: o.id,
+            name: o.name,
+            price: o.price,
+            emoji: o.emoji,
+            quantity: o.quantity
+          })),
+          poojaAmount: item.packagePrice,
+          chadhavaAmount: item.totalPrice - item.packagePrice,
+          totalAmount: item.totalPrice,
+          paymentStatus: "paid",
+          cashfreeOrderId,
+          cashfreePaymentId: cashfreeOrder.order_id,
+          orderStatus: "pending",
+          packageSelected: {
+            name: item.packageName,
+            price: item.packagePrice
+          },
+          poojaId: item.poojaId,
+          poojaImage: item.poojaImage || "",
         });
-        await sendWhatsApp(whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}`);
+        createdOrderIds.push(order._id.toString());
 
-        // 2. Notify Admins
-        const admins = await mongoose.model("User").find({ role: "admin" });
-        for (const admin of admins) {
-            await Notification.create({
-                recipientId: admin._id,
-                recipientModel: "Admin",
-                title: isDonation ? "New Donation Received! 💰" : "New Pooja Booking! 📿",
-                message: `New booking ${order.bookingId} for ${poojaName}`,
-                type: "booking",
-                link: `/admin/orders/${order._id}`
+        // Trigger Pandit Assignment and Notifications for each
+        await handleOrderPostProcess(order, item.poojaName, decoded.userId, sankalpName);
+      }
+
+      // Clear only selected items from Cart from DB
+      if (selectedIds.length > 0) {
+        await CartItem.deleteMany({ userId: decoded.userId, id: { $in: selectedIds } });
+      } else {
+        await CartItem.deleteMany({ userId: decoded.userId });
+      }
+
+    } else {
+      // SINGLE ORDER LOGIC (Original)
+      let poojaAmount = 0;
+      let poojaName = isDonation ? "Sacred Support" : "Sacred Offering";
+      let poojaImage = "";
+
+      if (poojaId) {
+        const pooja = await Pooja.findById(poojaId);
+        if (pooja) {
+          if (packageSelected) {
+            const dbPackage = pooja.packages?.find((p: any) => p.name === packageSelected.name);
+            poojaAmount = dbPackage ? dbPackage.price : packageSelected.price;
+          } else {
+            poojaAmount = pooja.price * qty;
+          }
+          poojaName = pooja.name;
+          poojaImage = pooja.images?.[0] || "";
+        }
+      }
+
+      let chadhavaItems: any[] = [];
+      let chadhavaAmount = 0;
+
+      if (incomingChadhavaItems && incomingChadhavaItems.length > 0) {
+        chadhavaItems = incomingChadhavaItems;
+      } else if (chadhavaData) {
+        const pairs = chadhavaData.split(",");
+        for (const p of pairs) {
+          const [id, q] = p.split(":");
+          const item = await Chadhava.findById(id);
+          if (item) {
+            chadhavaItems.push({
+              chadhavaId: item._id,
+              name: item.name,
+              price: item.price,
+              emoji: item.emoji || "🙏",
+              quantity: parseInt(q || "1")
             });
+          }
         }
-    } catch (e) { console.error("Notification error", e); }
+      }
 
-    // Pandit Assignment
-    if (!isDonation) {
-        const assignedPandit = await Pandit.findOne({ assignedTemples: templeId, isActive: true });
-        if (assignedPandit) {
-            order.panditId = assignedPandit._id;
-            order.orderStatus = "confirmed";
-            await order.save();
+      if (chadhavaItems.length > 0) {
+        chadhavaAmount = chadhavaItems.reduce((sum: number, c: any) => sum + (c.price * c.quantity), 0);
+      }
 
-            // 3. Notify Assigned Pandit
-            try {
-                await Notification.create({
-                    recipientId: assignedPandit._id,
-                    recipientModel: "Pandit",
-                    title: "New Puja Assigned! 📿",
-                    message: `You have been assigned to a new pooja: ${poojaName}.`,
-                    type: "booking",
-                    link: `/pandit/orders/${order._id}`
-                });
-                
-                if (assignedPandit.whatsapp) {
-                    await sendWhatsApp(assignedPandit.whatsapp, `🛕 New Pooja Assigned!\nID: ${order.bookingId}\nDevotee: ${sankalpName}`);
-                }
-            } catch (notifErr) {
-                console.error("Pandit notification error", notifErr);
-            }
-        }
+      const totalAmount = poojaAmount + chadhavaAmount + (extraDonation || 0);
+
+      const order = await Order.create({
+        userId: decoded.userId,
+        templeId,
+        bookingDate: new Date(bookingDate),
+        sankalpName,
+        gotra: gotra || "",
+        dob: dob || "",
+        phone,
+        whatsapp,
+        sankalp: sankalp || "",
+        address: address || "",
+        qty: Number(qty),
+        chadhavaItems,
+        poojaAmount,
+        chadhavaAmount,
+        totalAmount,
+        paymentStatus: "paid",
+        cashfreeOrderId,
+        cashfreePaymentId: cashfreeOrder.order_id,
+        orderStatus: isDonation ? "completed" : "pending",
+        isDonation: !!isDonation,
+        extraDonation: extraDonation || 0,
+        packageSelected: packageSelected || undefined,
+        poojaId: poojaId || undefined,
+        poojaImage: poojaImage || "",
+      });
+      createdOrderIds.push(order._id.toString());
+      await handleOrderPostProcess(order, poojaName, decoded.userId, sankalpName);
     }
 
     if (searchParams) {
-      return NextResponse.redirect(`${new URL(req.url).origin}/booking-success?orderId=${order._id}`);
+      return NextResponse.redirect(`${new URL(req.url).origin}/booking-success?orderId=${createdOrderIds[0]}`);
     }
-    return NextResponse.json({ success: true, data: { orderId: order._id } });
+    return NextResponse.json({ success: true, data: { orderIds: createdOrderIds } });
 
   } catch (error: any) {
     console.error("Verification error:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+  }
+}
+
+// Helper to handle notifications and pandit assignment
+async function handleOrderPostProcess(order: any, poojaName: string, userId: string, sankalpName: string) {
+  try {
+    const Notification = (await import("@/models/Notification")).default;
+    const Pandit = (await import("@/models/Pandit")).default;
+    const { sendWhatsApp } = await import("@/lib/whatsapp");
+
+    // 1. Notify User
+    await Notification.create({
+      recipientId: userId,
+      recipientModel: "User",
+      title: order.isDonation ? "Donation Successful! 🙏" : "Booking Confirmed! 📿",
+      message: `Order ID: ${order.bookingId} for ${poojaName}`,
+      type: "booking",
+      link: `/dashboard`
+    });
+    await sendWhatsApp(order.whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}\nPUJA: ${poojaName}`);
+
+    // 2. Notify Admins
+    const admins = await mongoose.model("User").find({ role: "admin" });
+    for (const admin of admins) {
+      await Notification.create({
+        recipientId: admin._id,
+        recipientModel: "Admin",
+        title: order.isDonation ? "New Donation Received! 💰" : "New Pooja Booking! 📿",
+        message: `New booking ${order.bookingId} for ${poojaName}`,
+        type: "booking",
+        link: `/admin/orders/${order._id}`
+      });
+    }
+
+    // 3. Pandit Assignment
+    if (!order.isDonation) {
+      const assignedPandit = await Pandit.findOne({ assignedTemples: order.templeId, isActive: true });
+      if (assignedPandit) {
+        order.panditId = assignedPandit._id;
+        order.orderStatus = "confirmed";
+        await order.save();
+
+        await Notification.create({
+          recipientId: assignedPandit._id,
+          recipientModel: "Pandit",
+          title: "New Puja Assigned! 📿",
+          message: `You have been assigned to a new pooja: ${poojaName}.`,
+          type: "booking",
+          link: `/pandit/orders/${order._id}`
+        });
+
+        if (assignedPandit.whatsapp) {
+          await sendWhatsApp(assignedPandit.whatsapp, `🛕 New Pooja Assigned!\nID: ${order.bookingId}\nDevotee: ${sankalpName}`);
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Order post-process error", e);
   }
 }
 

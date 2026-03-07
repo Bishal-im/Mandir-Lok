@@ -25,7 +25,7 @@ export async function GET() {
     }
 
     const orders = await Order.find({ userId: decoded.userId })
-      .populate("poojaId", "name emoji duration")
+      .populate("poojaId", "name emoji duration images")
       .populate("templeId", "name location")
       .populate("panditId", "name phone")
       .sort({ createdAt: -1 });

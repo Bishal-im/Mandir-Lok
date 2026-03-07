@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 import { getSettings } from "@/lib/actions/admin";
 import GoogleTranslate from "../GoogleTranslate";
@@ -38,6 +40,7 @@ export default function Navbar() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const { cartCount } = useCart();
   const profileRef = useRef<HTMLDivElement>(null);
 
   // ── Fetch Logo ──
@@ -238,6 +241,17 @@ export default function Navbar() {
             {/* DESKTOP CTA */}
             <div className="hidden md:flex items-center gap-3">
               <GoogleTranslate />
+
+              {/* Cart Button */}
+              <Link href="/cart" className="relative p-2 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all group">
+                <ShoppingCart size={22} />
+                {cartCount > 0 && (
+                  <span className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 bg-[#ff7f0a] text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm group-hover:scale-110 transition-transform">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
               {authLoading ? (
                 // Loading skeleton
                 <div className="w-24 h-9 bg-gray-100 rounded-xl animate-pulse" />
@@ -434,9 +448,25 @@ export default function Navbar() {
                 </Link>
               ))}
 
+              <Link
+                href="/cart"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+                  Cart
+                </div>
+                {cartCount > 0 && (
+                  <span className="bg-[#ff7f0a] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {cartCount} Items
+                  </span>
+                )}
+              </Link>
+
               <div className="px-4 py-2 border-y border-orange-50 my-1 bg-orange-50/30 rounded-xl">
-                 <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">Switch Language</p>
-                 <GoogleTranslate align="left" />
+                <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">Switch Language</p>
+                <GoogleTranslate align="left" />
               </div>
 
               {IS_LOGGED_IN ? (

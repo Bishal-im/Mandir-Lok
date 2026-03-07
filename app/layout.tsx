@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
 import RootMusicProvider from '@/components/RootMusicProvider'
+import { CartProvider } from '@/context/CartContext'
 
 export const metadata: Metadata = {
   title: 'Mandirlok – Online Pooja & Temple Booking',
@@ -33,9 +34,11 @@ export default function RootLayout({
         <script src="https://checkout.razorpay.com/v1/checkout.js" async />
       </head>
       <body className="bg-[#fdf6ee] text-[#1a1209] antialiased">
-        <RootMusicProvider>
-          {children}
-        </RootMusicProvider>
+        <CartProvider>
+          <RootMusicProvider>
+            {children}
+          </RootMusicProvider>
+        </CartProvider>
       </body>
     </html>
   )

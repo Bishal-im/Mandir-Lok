@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ChevronRight, Shield, Loader2, Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
+import { useCart, CartItem } from "@/context/CartContext";
 
 // ── Cashfree types ─────────────────────────────────────────────────────────────
 declare global {
@@ -50,30 +51,9 @@ const COUNTRIES = [
 
 function CartContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { cart, removeFromCart, clearCart, cartCount, toggleSelectItem, addToCart } = useCart();
 
-  const poojaId = searchParams.get("poojaId");
-  const templeId = searchParams.get("templeId");
-  const dateStr = searchParams.get("date");
-  const qtyStr = searchParams.get("qty");
-  const offeringsStr = searchParams.get("offerings"); // comma-separated ids
-  const packageIndex = searchParams.get("packageIndex");
-  const isDonationParam = searchParams.get("isDonation") === "true";
-  const customAmountParam = parseInt(searchParams.get("customAmount") || "0", 10);
-
-  const qty = qtyStr ? parseInt(qtyStr, 10) : 1;
-  const rawOfferings = offeringsStr ? offeringsStr.split(",") : [];
-  const selectedOfferingData = rawOfferings.map(s => {
-    const [id, q] = s.split(":");
-    return { id, quantity: q ? parseInt(q, 10) : 1 };
-  });
-  const selectedOfferingIds = selectedOfferingData.map(o => o.id);
-
-  const [pooja, setPooja] = useState<any>(null);
-  const [selectedOfferings, setSelectedOfferings] = useState<any[]>([]);
-  const [loadingConfig, setLoadingConfig] = useState(true);
-  const [configError, setConfigError] = useState("");
-
+  const [loadingConfig, setLoadingConfig] = useState(false);
   const [form, setForm] = useState({
     name: "",
     gotra: "",
@@ -88,128 +68,99 @@ function CartContent() {
   const [sameAsPhone, setSameAsPhone] = useState(true);
   const [step, setStep] = useState<1 | 2>(1);
   const [paying, setPaying] = useState(false);
-  const [payError, setPayError] = useState("");
+  const searchParams = useSearchParams();
+  const [loadingParam, setLoadingParam] = useState(false);
 
+  // Handle direct "Proceed to Book" parameters
   useEffect(() => {
-    async function fetchData() {
-      setLoadingConfig(true);
-      setConfigError("");
+    const poojaId = searchParams.get("poojaId");
+    const templeId = searchParams.get("templeId");
+    const date = searchParams.get("date");
+    const packageIndexStr = searchParams.get("packageIndex");
+    const offeringsStr = searchParams.get("offerings");
 
-      try {
-        if (poojaId) {
-          // Case 1: Booking with a Pooja
-          const res = await fetch(`/api/poojas/${poojaId}`);
-          const data = await res.json();
-          if (data.success) {
-            setPooja(data.data.pooja);
-            const allOfferings = data.data.chadhavaItems || [];
-            const filtered = allOfferings.filter((o: any) => selectedOfferingIds.includes(o._id));
-            setSelectedOfferings(filtered.map((o: any) => ({
-              ...o,
-              quantity: selectedOfferingData.find(d => d.id === o._id)?.quantity || 1
-            })));
-          } else {
-            setConfigError("Pooja details could not be loaded.");
-          }
-        } else if (templeId && selectedOfferingIds.length > 0) {
-          // Case 2: Standalone Chadhava booking
-          // Fetch temple details for the summary
-          const templeRes = await fetch(`/api/temples/${templeId}`);
-          const templeData = await templeRes.json();
+    if (poojaId && templeId && date && !loadingParam) {
+      // Check if already in cart to avoid duplicates
+      const exists = cart.find(item =>
+        item.poojaId === poojaId &&
+        item.templeId === templeId &&
+        item.date === date
+      );
 
-          // Fetch the chadhava items details
-          // We can use the generic chadhava API or just fetch them one by one/filter
-          // For now, let's fetch them using the chadhava list API with IDs
-          const chadhavaRes = await fetch(`/api/chadhava?templeId=${templeId}`);
-          const chadhavaData = await chadhavaRes.json();
+      if (!exists) {
+        setLoadingParam(true);
+        fetch(`/api/poojas/${poojaId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const pooja = data.data.pooja;
+              const packageIndex = packageIndexStr ? parseInt(packageIndexStr) : 0;
+              const pkg = pooja.packages[packageIndex];
 
-          if (templeData.success && chadhavaData.success) {
-            // Mock a "pooja" object for the UI context where it expects templeId.name
-            setPooja({
-              name: "Sacred Offering",
-              price: 0,
-              templeId: templeData.data
-            });
-            const allOfferings = chadhavaData.data || [];
-            const filtered = allOfferings.filter((o: any) => selectedOfferingIds.includes(o._id));
-            setSelectedOfferings(filtered.map((o: any) => ({
-              ...o,
-              quantity: selectedOfferingData.find(d => d.id === o._id)?.quantity || 1
-            })));
-          } else {
-            setConfigError("Offering details could not be loaded.");
-          }
-        } else if (templeId && isDonationParam) {
-          const templeRes = await fetch(`/api/temples/${templeId}`);
-          const templeData = await templeRes.json();
-          if (templeData.success) {
-            setPooja({
-              name: "Sacred Contribution",
-              price: 0,
-              templeId: templeData.data
-            });
-          } else {
-            setConfigError("Temple details could not be loaded.");
-          }
-        } else {
-          setConfigError("Invalid booking link (Missing details).");
-        }
-      } catch (err) {
-        setConfigError("Network error while loading details.");
-      } finally {
-        setLoadingConfig(false);
+              const selectedOfferingIds = offeringsStr ? offeringsStr.split(",") : [];
+              const allOfferings = data.data.chadhavaItems || [];
+              const selectedOfferingItems = allOfferings
+                .filter((o: any) => selectedOfferingIds.includes(o._id))
+                .map((o: any) => ({
+                  id: o._id,
+                  name: o.name,
+                  price: o.price,
+                  emoji: o.emoji || "🙏",
+                  quantity: 1
+                }));
+
+              addToCart({
+                poojaId: pooja._id,
+                poojaName: pooja.name,
+                poojaEmoji: pooja.emoji || "🪔",
+                poojaImage: pooja.images?.[0] || "",
+                templeId,
+                templeName: pooja.templeIds.find((t: any) => t?._id === templeId)?.name ||
+                  pooja.templeId?.name || "Temple",
+                date,
+                packageIndex,
+                packageName: pkg.name,
+                packagePrice: pkg.price,
+                offeringIds: selectedOfferingIds,
+                offerings: selectedOfferingItems,
+                totalPrice: pkg.price + selectedOfferingItems.reduce((sum: number, o: any) => sum + o.price, 0)
+              });
+            }
+          })
+          .finally(() => setLoadingParam(false));
       }
     }
+  }, [searchParams, cart, addToCart, loadingParam]);
 
-    fetchData();
-  }, [poojaId, templeId, offeringsStr]);
+  const [payError, setPayError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  const isStep1Valid = form.name && form.phone && form.whatsapp;
+  const selectedItems = cart.filter(item => item.selected);
+  const isStep1Valid = form.name && form.phone && form.whatsapp && selectedItems.length > 0;
 
-  let totalObj = { base: 0, offerings: 0, sum: 0 };
-  const selectedPackage = (pooja && packageIndex !== null) ? pooja.packages[parseInt(packageIndex)] : null;
-
-  if (pooja) {
-    totalObj.base = selectedPackage ? selectedPackage.price : (pooja.price * qty);
-    totalObj.offerings = selectedOfferings.reduce((sum, o) => sum + (o.price * (o.quantity || 1)), 0);
-    totalObj.sum = totalObj.base + totalObj.offerings + customAmountParam;
-  } else if (templeId && isDonationParam) {
-    totalObj.sum = customAmountParam;
-  }
+  const totalAmount = selectedItems.reduce((sum: number, item: CartItem) => sum + item.totalPrice, 0);
 
   const handlePay = async () => {
     setPayError("");
     setPaying(true);
 
     try {
-      if (!templeId) {
-        throw new Error("Missing temple information for booking.");
-      }
-
-      if (!poojaId && !isDonationParam) {
-        throw new Error("Missing pooja selection.");
-      }
-
-      if (poojaId && !dateStr) {
-        throw new Error("Missing date information for pooja booking.");
-      }
-
       const loaded = await loadCashfreeScript();
-      if (!loaded) throw new Error("Could not load Cashfree SDK. Check your internet connection.");
+      if (!loaded) throw new Error("Could not load Cashfree SDK.");
 
+      // For bulk checkout, we pass only selected items.
       const orderRes = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          poojaId,
-          qty,
-          chadhavaIds: selectedOfferings.length > 0 ? selectedOfferings.map(o => ({ id: o._id, quantity: o.quantity || 1 })) : selectedOfferingIds,
-          extraDonation: customAmountParam,
-          packageIndex: packageIndex !== null ? parseInt(packageIndex) : undefined,
+          isBulk: true,
+          amount: totalAmount,
+          phone: `+${countryCode}${form.phone}`,
+          name: form.name,
+          selectedItemIds: selectedItems.map(i => i.id) // Pass selected IDs to sync logic in verify
         }),
       });
       const orderData = await orderRes.json();
@@ -223,7 +174,7 @@ function CartContent() {
 
       await cashfree.checkout({
         paymentSessionId: payment_session_id,
-        returnUrl: `${window.location.origin}/api/payment/verify?order_id=${order_id}&poojaId=${poojaId || ''}&templeId=${templeId}&bookingDate=${dateStr}&qty=${qty}&sankalpName=${encodeURIComponent(form.name)}&gotra=${encodeURIComponent(form.gotra)}&dob=${form.dob}&phone=${encodeURIComponent(countryCode + form.phone)}&whatsapp=${encodeURIComponent((sameAsPhone ? countryCode : whatsappCountryCode) + form.whatsapp)}&sankalp=${encodeURIComponent(form.sankalp)}&address=${encodeURIComponent(form.address)}&isDonation=${isDonationParam}&extraDonation=${customAmountParam}${selectedPackage ? `&packageName=${encodeURIComponent(selectedPackage.name)}&packagePrice=${selectedPackage.price}` : ''}&chadhavaData=${encodeURIComponent(selectedOfferings.map(o => `${o._id}:${o.quantity || 1}`).join(","))}`,
+        returnUrl: `${window.location.origin}/api/payment/verify?order_id=${order_id}&isBulk=true&sankalpName=${encodeURIComponent(form.name)}&gotra=${encodeURIComponent(form.gotra)}&dob=${form.dob}&phone=${encodeURIComponent('+' + countryCode + form.phone)}&whatsapp=${encodeURIComponent('+' + (sameAsPhone ? countryCode : whatsappCountryCode) + form.whatsapp)}&sankalp=${encodeURIComponent(form.sankalp)}&address=${encodeURIComponent(form.address)}&selectedItemIds=${encodeURIComponent(selectedItems.map(i => i.id).join(","))}`,
       });
 
     } catch (err: any) {
@@ -233,21 +184,16 @@ function CartContent() {
     }
   };
 
-  if (loadingConfig) {
+  if (cartCount === 0 && step === 1) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <Loader2 size={40} className="animate-spin text-[#ff7f0a] mb-4" />
-        <p className="text-[#6b5b45]">Setting up your cart...</p>
-      </div>
-    );
-  }
-
-  if (configError || !pooja) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
-        <p className="text-red-600 mb-4">{configError || "Pooja not found."}</p>
-        <Link href="/poojas" className="btn-saffron px-6 text-sm">
-          Return to Poojas
+      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mb-4">
+          <Sparkles className="text-[#ff7f0a]" size={40} />
+        </div>
+        <h2 className="heading-md mb-2">Your cart is empty</h2>
+        <p className="text-[#6b5b45] mb-6 max-w-sm">Add some sacred poojas to your cart to begin your spiritual journey.</p>
+        <Link href="/poojas" className="btn-saffron px-8 py-3 rounded-xl text-sm font-bold shadow-lg">
+          Explore Poojas
         </Link>
       </div>
     );
@@ -256,6 +202,7 @@ function CartContent() {
   return (
     <>
       <div className="container-app py-8">
+        {/* Step Indicator */}
         <div className="flex items-center justify-center gap-0 mb-8 max-w-md mx-auto">
           {["Sankalp Details", "Payment"].map((label, i) => (
             <div key={label} className="flex items-center flex-1">
@@ -282,7 +229,62 @@ function CartContent() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Cart Items List */}
+            {step === 1 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="heading-md text-[#1a1209]">Items in Cart ({cartCount})</h2>
+                  <button onClick={clearCart} className="text-xs text-red-500 hover:text-red-600 font-medium">Clear All</button>
+                </div>
+                {cart.map((item) => (
+                  <div key={item.id} className="bg-white border border-[#f0dcc8] rounded-2xl p-4 shadow-card flex gap-4 transition-all hover:border-[#ff7f0a]/30 group relative">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={item.selected}
+                        onChange={() => toggleSelectItem(item.id)}
+                        className="w-5 h-5 accent-[#ff7f0a] cursor-pointer"
+                      />
+                    </div>
+                    <div className="w-16 h-16 bg-[#fff8f0] rounded-xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform shrink-0 overflow-hidden">
+                      {item.poojaImage ? (
+                        <img src={item.poojaImage} alt={item.poojaName} className="w-full h-full object-cover" />
+                      ) : (
+                        item.poojaEmoji
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-[#1a1209] truncate">{item.poojaName}</h3>
+                        <p className="font-bold text-[#ff7f0a] ml-2">₹{item.totalPrice.toLocaleString()}</p>
+                      </div>
+                      <p className="text-xs text-[#6b5b45] flex items-center gap-1 mt-1">
+                        <MapPin size={12} className="text-[#ff7f0a]" /> {item.templeName}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <span className="text-[10px] bg-orange-50 text-[#ff7f0a] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                          <Calendar size={10} /> {new Date(item.date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' })}
+                        </span>
+                        {item.packageName && (
+                          <span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-medium">
+                            {item.packageName}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                      title="Remove from cart"
+                    >
+                      <span className="text-xl font-light">×</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {step === 1 && (
               <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 shadow-card">
                 <h2 className="heading-md text-[#1a1209] mb-1">Sankalp Details</h2>
@@ -375,7 +377,6 @@ function CartContent() {
                       />
                       <span className="text-[10px] text-[#6b5b45]">Same as mobile number</span>
                     </label>
-                    <p className="text-[10px] text-[#25D366] mt-1">💬 Pooja video & updates will be sent to this WhatsApp</p>
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">Special Wish / Sankalp (Optional)</label>
@@ -388,7 +389,6 @@ function CartContent() {
                 </div>
 
                 <div className="mt-6 flex items-center justify-between">
-                  {/* back logic */}
                   <button onClick={() => router.back()} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
                   <button
                     onClick={() => setStep(2)}
@@ -404,7 +404,7 @@ function CartContent() {
             {step === 2 && (
               <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 shadow-card">
                 <h2 className="heading-md text-[#1a1209] mb-2">Payment</h2>
-                <p className="text-xs text-[#6b5b45] mb-6">Complete your booking with secure online payment via Cashfree</p>
+                <p className="text-xs text-[#6b5b45] mb-6">Complete your booking for {cartCount} item{cartCount > 1 ? 's' : ''} with secure online payment</p>
                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-4 mb-6">
                   <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Your Sankalp Details</h4>
                   <div className="grid grid-cols-2 gap-2 text-xs text-[#6b5b45]">
@@ -419,17 +419,11 @@ function CartContent() {
                     ⚠️ {payError}
                   </div>
                 )}
-                <div className="bg-[#f9f9f9] border border-[#f0dcc8] rounded-xl p-4 mb-6">
-                  <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Payment via Cashfree</h4>
-                  <p className="text-xs text-[#6b5b45]">You can pay using UPI, Debit/Credit Card, or Net Banking through the secure Cashfree checkout.</p>
-                  <div className="flex gap-3 mt-3 text-sm font-medium text-[#6b5b45]">
-                    <span>UPI</span><span>Card</span><span>Net Banking</span>
-                  </div>
-                </div>
+
                 <div className="flex items-center justify-between">
                   <button onClick={() => setStep(1)} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
                   <button onClick={handlePay} disabled={paying} className="btn-saffron text-sm px-8 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                    {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay ₹{totalObj.sum.toLocaleString()} →</>}
+                    {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay ₹{totalAmount.toLocaleString()} →</>}
                   </button>
                 </div>
                 <p className="text-center text-xs text-[#6b5b45] mt-4 flex items-center justify-center gap-1">
@@ -441,85 +435,40 @@ function CartContent() {
 
           <div>
             <div className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card sticky top-24">
-              <h3 className="font-display font-semibold text-[#1a1209] mb-4">Order Summary</h3>
-              <div className="flex items-center gap-3 pb-4 border-b border-[#f0dcc8] mb-4">
-                <div className="w-12 h-12 bg-[#fff8f0] rounded-xl flex items-center justify-center text-2xl overflow-hidden">
-                  {pooja?.images && pooja.images.length > 0 ? (
-                    <img src={pooja.images[0]} alt={pooja.name} className="w-full h-full object-cover" />
-                  ) : pooja ? (
-                    <svg className="w-6 h-6 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-amber-100 text-amber-600">
-                      <Heart size={24} fill="currentColor" />
+              <h3 className="font-display font-semibold text-[#1a1209] mb-4">Summary</h3>
+              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-4">
+                {selectedItems.map((item) => (
+                  <div key={item.id} className="pb-3 border-b border-[#f0dcc8] last:border-0 last:pb-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="shrink-0 w-8 h-8 rounded bg-[#fff8f0] overflow-hidden">
+                        {item.poojaImage ? (
+                          <img src={item.poojaImage} alt={item.poojaName} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="flex items-center justify-center h-full text-sm">{item.poojaEmoji}</span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[#1a1209] text-xs truncate">{item.poojaName}</p>
+                        <p className="text-[10px] text-[#6b5b45]">{item.templeName}</p>
+                        <p className="text-[10px] text-[#ff7f0a] font-medium">{item.packageName}</p>
+                      </div>
+                      <p className="font-bold text-[#1a1209] text-xs ml-2">₹{item.totalPrice.toLocaleString()}</p>
                     </div>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-[#1a1209] text-sm">
-                    {pooja ? (pooja.name === 'Sacred Offering' ? 'Chadhava Offering' : pooja.name) : 'Sacred Contribution'}
-                  </p>
-                  <p className="text-xs text-[#ff7f0a]">Temple: {pooja?.templeId?.name}</p>
-                  {isDonationParam && (
-                    <p className="text-[10px] inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-bold mt-1">
-                      {pooja ? 'Direct Donation' : 'Temple Support'}
-                    </p>
-                  )}
-                  {dateStr && (
-                    <p className="text-xs text-[#6b5b45]">Date: {new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
-                  )}
-                  {selectedPackage ? (
-                    <p className="text-xs font-bold text-amber-600 mt-1">Package: {selectedPackage.name}</p>
-                  ) : pooja && pooja.name !== 'Sacred Offering' && (
-                    <p className="text-xs text-[#6b5b45]">Devotees: {qty} Devotee{qty > 1 ? "s" : ""}</p>
-                  )}
-                </div>
-                {totalObj.base > 0 && (
-                  <p className="font-bold text-[#ff7f0a]">₹{totalObj.base.toLocaleString()}</p>
-                )}
-              </div>
-              {selectedOfferings.map((o) => (
-                <div key={o._id} className="flex justify-between items-center text-xs text-[#6b5b45] mb-2">
-                  <div className="flex items-center gap-2">
-                    {o.image ? (
-                      <img src={o.image} alt={o.name} className="w-4 h-4 rounded-sm object-cover" />
-                    ) : (
-                      <svg className="w-3 h-3 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    )}
-                    {o.name}
-                    {o.quantity > 1 && <span className="ml-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">x{o.quantity}</span>}
                   </div>
-                  <span>₹{(o.price * o.quantity).toLocaleString()}</span>
-                </div>
-              ))}
-              {customAmountParam > 0 && (
-                <div className="flex justify-between items-center text-xs text-amber-600 font-bold mt-2 pt-2 border-t border-amber-50/50">
-                  <span>✨ Additional Donation </span>
-                  <span>₹{customAmountParam.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="border-t border-[#f0dcc8] mt-3 pt-3">
+                ))}
+              </div>
+
+              <div className="border-t border-[#f0dcc8] pt-3">
                 <div className="flex justify-between font-bold text-base text-[#1a1209]">
-                  <span>Total Payable</span>
-                  <span className="text-[#ff7f0a]">₹{totalObj.sum.toLocaleString()}</span>
+                  <span>Total Amount</span>
+                  <span className="text-[#ff7f0a]">₹{totalAmount.toLocaleString()}</span>
                 </div>
               </div>
+
               <div className="mt-4 space-y-1.5 text-xs text-[#6b5b45]">
-                {!isDonationParam ? (
-                  <>
-                    <p>Video on WhatsApp after pooja</p>
-                    <p>Personalized sankalp by pandit</p>
-                  </>
-                ) : (
-                  <>
-                    <p>Immediate digital certificate</p>
-                    <p>Meritorious donation contribution</p>
-                  </>
-                )}
-                <p>Full refund if cancelled 24hrs before</p>
+                <p className="flex items-center gap-2"><Sparkles size={12} className="text-[#ff7f0a]" /> Video on WhatsApp after pooja</p>
+                <p className="flex items-center gap-2"><Sparkles size={12} className="text-[#ff7f0a]" /> Personalized sankalp by pandit</p>
+                <p className="flex items-center gap-2"><Shield size={12} className="text-green-500" /> 100% Safe & Secure Payments</p>
               </div>
             </div>
           </div>

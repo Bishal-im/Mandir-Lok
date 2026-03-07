@@ -31,7 +31,7 @@ export async function GET(
         }
 
         const order = await Order.findById(params.id)
-            .populate("poojaId", "name emoji duration")
+            .populate("poojaId", "name emoji duration images")
             .populate("templeId", "name location")
             .populate("panditId", "name phone whatsapp photo");
 

@@ -39,6 +39,7 @@ interface Order {
     emoji: string;
     duration: string;
     deity: string;
+    images?: string[];
   };
   templeId: {
     name: string;
@@ -46,6 +47,7 @@ interface Order {
     state: string;
   };
   isDonation: boolean;
+  poojaImage?: string;
 }
 
 function BookingSuccessContent() {
@@ -373,11 +375,11 @@ function BookingSuccessContent() {
         </div>
         <div class="row">
           <span class="key">Phone</span>
-          <span class="val">+${order.phone}</span>
+          <span class="val">${order.phone.startsWith('+') ? order.phone : '+' + order.phone}</span>
         </div>
         <div class="row">
           <span class="key">WhatsApp</span>
-          <span class="val">+${order.whatsapp}</span>
+          <span class="val">${order.whatsapp.startsWith('+') ? order.whatsapp : '+' + order.whatsapp}</span>
         </div>
         ${order.sankalp ? `<div class="row"><span class="key">Sankalp</span><span class="val" style="max-width:260px">${order.sankalp}</span></div>` : ""}
         <div class="row">
@@ -437,7 +439,7 @@ function BookingSuccessContent() {
       </div>
 
       <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 16px;font-size:13px;color:#1e40af;line-height:1.7">
-        📱 <strong>Next steps:</strong> ${order.isDonation ? `Your contribution has been received by *${order.templeId?.name}*. You can now download your certificate of devotion.` : `Your pandit will be assigned shortly. You will receive pooja video and confirmation on your WhatsApp number <strong>+${order.whatsapp}</strong> after the pooja is completed.`}
+        📱 <strong>Next steps:</strong> ${order.isDonation ? `Your contribution has been received by *${order.templeId?.name}*. You can now download your certificate of devotion.` : `Your pandit will be assigned shortly. You will receive pooja video and confirmation on your WhatsApp number <strong>${order.whatsapp.startsWith('+') ? order.whatsapp : '+' + order.whatsapp}</strong> after the pooja is completed.`}
       </div>
 
     </div>
@@ -541,8 +543,14 @@ function BookingSuccessContent() {
               {order.poojaId ? "Pooja Details" : "Donation Details"}
             </p>
             <div className="flex items-start gap-3">
-              <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
-                {order.poojaId?.emoji || "🙏"}
+              <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                {order.poojaImage ? (
+                  <img src={order.poojaImage} alt={order.poojaId?.name} className="w-full h-full object-cover" />
+                ) : order.poojaId?.images?.[0] ? (
+                  <img src={order.poojaId.images[0]} alt={order.poojaId?.name} className="w-full h-full object-cover" />
+                ) : (
+                  order.poojaId?.emoji || "🙏"
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-gray-900">
@@ -573,7 +581,7 @@ function BookingSuccessContent() {
                 {
                   icon: <Phone size={13} className="text-orange-400" />,
                   label: "WhatsApp",
-                  value: `+${order.whatsapp}`,
+                  value: order.whatsapp.startsWith('+') ? order.whatsapp : '+' + order.whatsapp,
                 },
                 {
                   icon: <span className="text-orange-400 text-xs">🕉️</span>,
@@ -678,7 +686,7 @@ function BookingSuccessContent() {
             ) : (
               <>
                 <li>A pandit will be assigned to your pooja</li>
-                <li>You'll receive a WhatsApp update at +{order.whatsapp}</li>
+                <li>You'll receive a WhatsApp update at {order.whatsapp.startsWith('+') ? order.whatsapp : '+' + order.whatsapp}</li>
                 <li>Pooja video will be sent after completion</li>
               </>
             )}
