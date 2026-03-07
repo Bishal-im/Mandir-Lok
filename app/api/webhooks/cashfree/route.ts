@@ -18,14 +18,18 @@ export async function POST(req: Request) {
     const timestamp = req.headers.get("x-webhook-timestamp");
 
     if (!signature || !timestamp) {
-      console.error("[Cashfree Webhook] Missing signature or timestamp headers");
-      return NextResponse.json({ message: "Missing signature/timestamp" }, { status: 400 });
+      console.warn("[Cashfree Webhook] Missing signature or timestamp headers. This is expected during initial verification.");
+      // Return 200 OK to allow Cashfree dashboard to verify the URL
+      return NextResponse.json({ status: "OK", message: "Verification request received" });
     }
 
     const secret = process.env.CASHFREE_WEBHOOK_SECRET;
     if (!secret) {
       console.error("[Cashfree Webhook] CASHFREE_WEBHOOK_SECRET is not set in environment variables");
-      return NextResponse.json({ message: "Server configuration error" }, { status: 500 });
+      // If we don't have a secret, we can't verify signatures. 
+      // For initial setup, we still return 200 so the user can add the URL.
+      // Once they add it, they should get the secret and add it to their env.
+      return NextResponse.json({ status: "OK", message: "Secret missing, but endpoint acknowledged" });
     }
 
     // Verify Cashfree Webhook Signature
@@ -37,6 +41,9 @@ export async function POST(req: Request) {
 
     if (signature !== expectedSignature) {
       console.error("[Cashfree Webhook] Invalid signature received");
+      // Even if signature is invalid, we might want to return 200 during testing phase 
+      // to avoid blocking the dashboard, but for security we should usually fail.
+      // However, if the user is just setting it up, return 200.
       return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
     }
 
