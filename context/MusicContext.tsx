@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { usePathname } from "next/navigation";
 
 interface Song {
@@ -58,15 +58,14 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const lastDeityRef = useRef<string>("");
 
-    const pathname = usePathname();
-    const isOnAartiPage = pathname?.startsWith("/aarti");
+    const [isOnAartiPage, setIsOnAartiPage] = useState(false);
 
     // Pause when leaving /aarti (don't auto-resume on return)
     useEffect(() => {
         if (!isOnAartiPage && isPlaying) {
             setIsPlaying(false);
         }
-    }, [isOnAartiPage]);
+    }, [isOnAartiPage, isPlaying]);
 
     const currentSong = songs[currentSongIndex] ?? null;
 
@@ -164,6 +163,9 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
             loadDeity, togglePlay,
             nextSong, prevSong, selectSong, seekTo,
         }}>
+            <Suspense fallback={null}>
+                <PathWatcher onChange={(path) => setIsOnAartiPage(path.startsWith("/aarti"))} />
+            </Suspense>
             {children}
             {/* Persistent hidden audio element — never unmounts */}
             <audio
@@ -174,4 +176,13 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
             />
         </MusicContext.Provider>
     );
+}
+
+// Internal helper to safely use navigation hooks
+function PathWatcher({ onChange }: { onChange: (path: string) => void }) {
+    const pathname = usePathname();
+    useEffect(() => {
+        onChange(pathname || "");
+    }, [pathname, onChange]);
+    return null;
 }

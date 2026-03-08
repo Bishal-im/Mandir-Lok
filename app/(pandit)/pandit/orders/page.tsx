@@ -12,7 +12,7 @@ import {
 
 import { formatINR, formatDate } from '@/lib/utils'
 
-export default function PanditOrdersPage() {
+function PanditOrdersContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab') || 'today'
@@ -277,5 +277,18 @@ export default function PanditOrdersPage() {
       )}
 
     </div>
+  )
+}
+
+import { Suspense } from 'react'
+export default function PanditOrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#fdf6ee] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#ff7f0a] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <PanditOrdersContent />
+    </Suspense>
   )
 }

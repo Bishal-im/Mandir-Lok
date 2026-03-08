@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
 import { useMusicPlayer } from "@/context/MusicContext";
-import { Play, Pause } from "lucide-react";
+import { Play, Pause, Search, User, CircleUser, X } from "lucide-react";
 
 const DEFAULT_DEITIES = [
     { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png", color: "from-blue-500 to-indigo-800" },
@@ -30,9 +30,56 @@ export default function AartiPage() {
     const [isLampGlowing, setIsLampGlowing] = useState(false);
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const shankhAudioRef = useRef<HTMLAudioElement | null>(null);
+    const aartiTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const flowerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Music context
-    const { setIsOpen, loadDeity, currentTime, isPlaying, currentSong } = useMusicPlayer();
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const { setIsOpen, loadDeity, currentTime, isPlaying, currentSong, isOpen } = useMusicPlayer();
+
+    const stopAllAartiEffects = () => {
+        // Stop Bell/Aarti
+        setIsAartiPerforming(false);
+        setIsLampGlowing(false);
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+        if (aartiTimeoutRef.current) {
+            clearTimeout(aartiTimeoutRef.current);
+            aartiTimeoutRef.current = null;
+        }
+
+        // Stop flowers
+        if (flowerIntervalRef.current) {
+            clearInterval(flowerIntervalRef.current);
+            flowerIntervalRef.current = null;
+        }
+        setFlowers([]);
+
+        // Stop Shankh
+        setConchPlaying(false);
+        if (shankhAudioRef.current) {
+            shankhAudioRef.current.pause();
+            shankhAudioRef.current.currentTime = 0;
+        }
+    };
+
+    // Effect to stop all Aarti sounds when music player is opened
+    useEffect(() => {
+        if (isOpen) {
+            stopAllAartiEffects();
+        }
+    }, [isOpen]);
+
+    // Effect to stop all Aarti effects when deity is changed
+    useEffect(() => {
+        stopAllAartiEffects();
+        loadDeity(selectedDeity.id, selectedDeity.name);
+    }, [selectedDeity.id]);
 
     useEffect(() => {
         async function fetchSettings() {
@@ -45,21 +92,44 @@ export default function AartiPage() {
         fetchSettings();
     }, []);
 
-    // Load songs for the selected deity whenever it changes
-    useEffect(() => {
-        loadDeity(selectedDeity.id, selectedDeity.name);
-    }, [selectedDeity.id]);
-
     const handleDeepClick = () => {
+        // Clear existing timeout if any
+        if (aartiTimeoutRef.current) {
+            clearTimeout(aartiTimeoutRef.current);
+        }
+
         setIsAartiPerforming(true);
         handlePushpaClick(15000);
-        setTimeout(() => setIsAartiPerforming(false), 15000);
+
+        // Setup sound
+        if (!audioRef.current) {
+            audioRef.current = new Audio("/sounds/bell.mp3");
+            audioRef.current.loop = true;
+        }
+
+        // Start playing from beginning if not playing
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(err => console.log("Audio play failed:", err));
+
+        aartiTimeoutRef.current = setTimeout(() => {
+            setIsAartiPerforming(false);
+            setIsLampGlowing(false);
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
+        }, 15000);
+
         setCounts(prev => ({ ...prev, deep: prev.deep + 1 }));
         setIsLampGlowing(true);
-        setTimeout(() => setIsLampGlowing(false), 15000);
     };
 
     const handlePushpaClick = (customDuration?: number) => {
+        // Clear existing interval if any
+        if (flowerIntervalRef.current) {
+            clearInterval(flowerIntervalRef.current);
+        }
+
         const duration = customDuration || 5000;
         setCounts((prev) => ({ ...prev, pushpa: prev.pushpa + 1 }));
 
@@ -67,6 +137,7 @@ export default function AartiPage() {
         const interval = setInterval(() => {
             if (Date.now() - startTime > duration) {
                 clearInterval(interval);
+                flowerIntervalRef.current = null;
                 return;
             }
             const batch = Array.from({ length: 5 }).map((_, i) => ({
@@ -81,168 +152,278 @@ export default function AartiPage() {
                 setFlowers((prev) => prev.filter((f) => !batch.find(b => b.id === f.id)));
             }, 4000);
         }, 200);
+
+        flowerIntervalRef.current = interval;
     };
 
     const handleShankhClick = () => {
         setCounts((prev) => ({ ...prev, shankh: prev.shankh + 1 }));
         setConchPlaying(true);
-        const audio = new Audio("/sounds/shankh.mp3");
-        audio.play().catch(err => console.log("Audio play failed:", err));
+
+        if (!shankhAudioRef.current) {
+            shankhAudioRef.current = new Audio("/sounds/shankh.mp3");
+        }
+
+        // Stop and restart to prevent overlap
+        shankhAudioRef.current.pause();
+        shankhAudioRef.current.currentTime = 0;
+        shankhAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+
         setTimeout(() => setConchPlaying(false), 5000);
     };
+
+    // Cleanup audio on unmount
+    useEffect(() => {
+        return () => {
+            stopAllAartiEffects();
+            if (audioRef.current) audioRef.current = null;
+            if (shankhAudioRef.current) shankhAudioRef.current = null;
+        };
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#0f0a05] text-white flex flex-col">
             <Navbar />
 
-            <main className="flex-1 relative flex flex-col items-center pt-8 pb-16 overflow-hidden">
+            <main className="flex-1 relative flex flex-col items-center pb-16 overflow-hidden">
                 {/* Background Atmosphere */}
                 <div className={`absolute inset-0 bg-gradient-to-b ${selectedDeity.color} opacity-10 pointer-events-none transition-colors duration-1000`} />
 
-                {/* Deity Selection Header */}
-                <div className="flex gap-4 mb-8 z-10 overflow-x-auto px-4 max-w-full no-scrollbar">
-                    {deities.map((deity) => (
-                        <button
-                            key={deity.id}
-                            onClick={() => setSelectedDeity(deity)}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap ${selectedDeity.id === deity.id
-                                ? "bg-orange-600 border-orange-400 shadow-[0_0_15px_rgba(234,88,12,0.5)]"
-                                : "bg-white/5 border-white/20 hover:bg-white/10"
-                                }`}
-                        >
-                            <span className="text-xl">🕉️</span>
-                            <span className="font-bold">{deity.name}</span>
-                        </button>
-                    ))}
-                </div>
-
-                {/* Main Aarti Frame Container */}
-                <div className="relative w-[95%] sm:w-[500px] aspect-[3/4] sm:aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30">
-
-                    {/* Frame Image */}
-                    <img
-                        src="/images/aarti/frame.png"
-                        alt="Sacred Frame"
-                        className="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
-                    />
-
-                    {/* Deity Image Content */}
-                    <div className="absolute inset-0 z-10 overflow-hidden">
-                        <AnimatePresence mode="wait">
-                            <motion.img
-                                key={selectedDeity.id}
-                                src={selectedDeity.image}
-                                alt={selectedDeity.name}
-                                className="w-full h-full object-cover"
-                                initial={{ opacity: 0, scale: 1.1 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.8 }}
-                            />
-                        </AnimatePresence>
-
-                        {/* Aarti Image */}
-                        <div className="absolute inset-x-0 bottom-2 sm:bottom-4 flex justify-center z-50 pointer-events-none">
-                            <motion.div
-                                animate={isAartiPerforming ? { rotate: 360 } : { rotate: 0 }}
-                                transition={isAartiPerforming ? { duration: 5, repeat: 2, ease: "linear" } : { duration: 0 }}
-                                style={{ originX: "50%", originY: "-80px" }}
-                                className="flex justify-center"
+                {/* --- New Premium Top Bar (Refined Phase 3 - Ultra Compact) --- */}
+                <div className="w-full bg-gradient-to-b from-[#fcd34d] to-[#f4b400] pt-1 pb-4 px-4 relative z-[60] shadow-xl">
+                    <div className="max-w-4xl mx-auto flex items-center gap-3">
+                        {/* Search Button (Left) */}
+                        <div className="flex items-center shrink-0">
+                            <button
+                                onClick={() => setIsSearchOpen(true)}
+                                className="w-9 h-9 rounded-full bg-black/10 flex items-center justify-center text-white hover:bg-black/20 transition-all border border-white/20 shadow-sm"
                             >
-                                <motion.img
-                                    src="/images/aarti/aarti-thali.png"
-                                    alt="Aarti"
-                                    className="w-32 sm:w-44 h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
-                                    animate={isAartiPerforming ? { rotate: -360, scale: [1, 1.05, 1] } : { rotate: 0, scale: 1 }}
-                                    transition={isAartiPerforming ? { duration: 5, repeat: 2, ease: "linear" } : { duration: 0 }}
-                                />
-                            </motion.div>
+                                <Search size={18} />
+                            </button>
                         </div>
 
-                        {/* Falling Flowers Animation */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
-                            <AnimatePresence>
-                                {flowers.map((f) => (
-                                    <motion.div
-                                        key={f.id}
-                                        className="absolute top-[-40px]"
-                                        style={{ left: `${f.x}%` }}
-                                        initial={{ y: -50, opacity: 0, rotate: f.rotate }}
-                                        animate={{ y: 900, opacity: [0, 1, 1, 0], rotate: f.rotate + 360 }}
-                                        transition={{ duration: f.duration, ease: "linear", delay: f.delay }}
+                        {/* Round Deity Icons Scroll Area (Centered with Fix) */}
+                        <div className="flex-1 overflow-x-auto no-scrollbar py-1 px-2 scroll-smooth">
+                            <div className="flex gap-4 min-w-max mx-auto px-2">
+                                {deities.map((deity) => (
+                                    <button
+                                        key={deity.id}
+                                        onClick={() => setSelectedDeity(deity)}
+                                        className={`relative shrink-0 w-10 h-10 rounded-full border-2 transition-all duration-500 overflow-hidden shadow-md active:scale-95 ${selectedDeity.id === deity.id
+                                            ? "border-white scale-110 z-10 shadow-[0_0_15px_rgba(255,255,255,0.6)]"
+                                            : "border-white/40 opacity-80 hover:opacity-100 hover:scale-105"
+                                            }`}
                                     >
                                         <img
-                                            src="/images/aarti/flower.png"
-                                            alt="flower"
-                                            className="w-14 h-14 object-contain"
+                                            src={deity.image}
+                                            alt={deity.name}
+                                            className="w-full h-full object-cover"
                                         />
-                                    </motion.div>
+                                    </button>
                                 ))}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Glowing Aura Effect */}
-                        {isLampGlowing && (
-                            <motion.div
-                                className="absolute inset-0 bg-orange-500/10 mix-blend-color-dodge pointer-events-none"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                            />
-                        )}
-                    </div>
-
-                    {/* Left Interaction Buttons */}
-                    <div className="absolute left-4 sm:left-6 bottom-24 sm:bottom-32 flex flex-col gap-4 sm:gap-6 z-30">
-                        <button onClick={handleDeepClick} className="group flex flex-col items-center gap-1">
-                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-orange-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
-                                🪔
-                            </div>
-                        </button>
-
-                        <button onClick={() => handlePushpaClick()} className="group flex flex-col items-center gap-1">
-                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-rose-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
-                                🌸
-                            </div>
-                        </button>
-
-                        <button onClick={handleShankhClick} className="group flex flex-col items-center gap-1">
-                            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-blue-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
-                                🐚
-                            </div>
-                        </button>
-                    </div>
-
-                    {/* Bottom Controls */}
-                    <div className="absolute inset-x-0 bottom-0 p-6 z-40">
-                        <div className="w-full flex justify-end items-center">
-                            <div className="flex flex-col items-center">
-                                <button
-                                    onClick={() => setIsOpen(true)}
-                                    className={`w-14 h-14 rounded-full flex flex-col items-center justify-center text-white shadow-lg transition-all hover:scale-105 active:scale-95 ${isPlaying ? "bg-orange-500 shadow-orange-500/40" : "bg-rose-600"}`}
-                                >
-                                    <span className="text-xl leading-none">🎵</span>
-                                    {currentTime > 0 && (
-                                        <span className="text-[9px] font-bold mt-0.5 leading-none">
-                                            {formatTime(currentTime)}
-                                        </span>
-                                    )}
-                                </button>
-                                <span className="text-[10px] font-bold mt-1 text-white">
-                                    {isPlaying ? "Playing" : "Music"}
-                                </span>
                             </div>
                         </div>
+
+                        {/* Search button balance - hidden */}
+                        <div className="w-9 h-9 pointer-events-none opacity-0" />
+                    </div>
+
+                    {/* Decorative Header Frame Border (Simplified) */}
+                    <div className="absolute bottom-0 left-0 right-0 h-4 translate-y-full pointer-events-none z-[61]">
+                        <svg className="w-full h-full text-[#f4b400] drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]" viewBox="0 0 1440 16" fill="currentColor" preserveAspectRatio="none">
+                            <path d="M0,0 L1440,0 L1440,6 C1440,6 1080,16 720,16 C360,16 0,6 0,6 L0,0 Z" />
+                        </svg>
+                        {/* Subtle pattern overlay */}
+                        <div className="absolute inset-0 top-[-10px] opacity-15 mix-blend-overlay" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #fff 1px, transparent 0)', backgroundSize: '16px 16px' }} />
                     </div>
                 </div>
 
-                {/* Informational Text */}
-                <div className="mt-12 text-center px-6 max-w-2xl">
-                    <h2 className="text-2xl font-bold mb-4 text-orange-400">Digital Aarti Seva</h2>
-                    <p className="text-gray-400 leading-relaxed">
-                        Experience the divine connection through our virtual Aarti. Select your deity, offer flowers,
-                        and light the sacred lamp from anywhere in the world. May the divine blessings be with you always.
-                    </p>
+                {/* --- Search Modal Overlay --- */}
+                <AnimatePresence>
+                    {isSearchOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col p-6 overflow-y-auto"
+                        >
+                            <div className="max-w-2xl mx-auto w-full">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h2 className="text-2xl font-bold text-orange-400">Search Deity</h2>
+                                    <button
+                                        onClick={() => setIsSearchOpen(false)}
+                                        className="p-2 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                                    >
+                                        <X size={28} />
+                                    </button>
+                                </div>
+
+                                <div className="relative mb-10">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                                    <input
+                                        type="text"
+                                        placeholder="Find your god..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all text-lg"
+                                        autoFocus
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                                    {deities.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())).map((deity) => (
+                                        <button
+                                            key={deity.id}
+                                            onClick={() => {
+                                                setSelectedDeity(deity);
+                                                setIsSearchOpen(false);
+                                                setSearchQuery("");
+                                            }}
+                                            className="group flex flex-col items-center gap-3 p-4 rounded-3xl hover:bg-white/5 transition-all text-center"
+                                        >
+                                            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-orange-500 transition-colors shadow-lg">
+                                                <img src={deity.image} alt={deity.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            </div>
+                                            <span className="font-bold text-white/80 group-hover:text-white group-hover:text-orange-400 transition-colors">
+                                                {deity.name}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <div className="mt-6 w-full flex flex-col items-center">
+                    {/* Main Aarti Frame Container */}
+                    <div className="relative w-[95%] sm:w-[500px] aspect-[3/4] sm:aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30">
+
+                        {/* Frame Image */}
+                        <img
+                            src="/images/aarti/frame.png"
+                            alt="Sacred Frame"
+                            className="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
+                        />
+
+                        {/* Deity Image Content */}
+                        <div className="absolute inset-0 z-10 overflow-hidden">
+                            <AnimatePresence mode="wait">
+                                <motion.img
+                                    key={selectedDeity.id}
+                                    src={selectedDeity.image}
+                                    alt={selectedDeity.name}
+                                    className="w-full h-full object-cover"
+                                    initial={{ opacity: 0, scale: 1.1 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.8 }}
+                                />
+                            </AnimatePresence>
+
+                            {/* Aarti Image */}
+                            <div className="absolute inset-x-0 bottom-2 sm:bottom-4 flex justify-center z-50 pointer-events-none">
+                                <motion.div
+                                    animate={isAartiPerforming ? { rotate: 360 } : { rotate: 0 }}
+                                    transition={isAartiPerforming ? { duration: 5, repeat: 2, ease: "linear" } : { duration: 0 }}
+                                    style={{ originX: "50%", originY: "-80px" }}
+                                    className="flex justify-center"
+                                >
+                                    <motion.img
+                                        src="/images/aarti/aarti-thali.png"
+                                        alt="Aarti"
+                                        className="w-32 sm:w-44 h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
+                                        animate={isAartiPerforming ? { rotate: -360, scale: [1, 1.05, 1] } : { rotate: 0, scale: 1 }}
+                                        transition={isAartiPerforming ? { duration: 5, repeat: 2, ease: "linear" } : { duration: 0 }}
+                                    />
+                                </motion.div>
+                            </div>
+
+                            {/* Falling Flowers Animation */}
+                            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
+                                <AnimatePresence>
+                                    {flowers.map((f) => (
+                                        <motion.div
+                                            key={f.id}
+                                            className="absolute top-[-40px]"
+                                            style={{ left: `${f.x}%` }}
+                                            initial={{ y: -50, opacity: 0, rotate: f.rotate }}
+                                            animate={{ y: 900, opacity: [0, 1, 1, 0], rotate: f.rotate + 360 }}
+                                            transition={{ duration: f.duration, ease: "linear", delay: f.delay }}
+                                        >
+                                            <img
+                                                src="/images/aarti/flower.png"
+                                                alt="flower"
+                                                className="w-14 h-14 object-contain"
+                                            />
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Glowing Aura Effect */}
+                            {isLampGlowing && (
+                                <motion.div
+                                    className="absolute inset-0 bg-orange-500/10 mix-blend-color-dodge pointer-events-none"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                />
+                            )}
+                        </div>
+
+                        {/* Left Interaction Buttons */}
+                        <div className="absolute left-4 sm:left-6 bottom-24 sm:bottom-32 flex flex-col gap-4 sm:gap-6 z-30">
+                            <button onClick={handleDeepClick} className="group flex flex-col items-center gap-1">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-orange-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
+                                    🪔
+                                </div>
+                            </button>
+
+                            <button onClick={() => handlePushpaClick()} className="group flex flex-col items-center gap-1">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-rose-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
+                                    🌸
+                                </div>
+                            </button>
+
+                            <button onClick={handleShankhClick} className="group flex flex-col items-center gap-1">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-blue-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
+                                    🐚
+                                </div>
+                            </button>
+                        </div>
+
+                        {/* Bottom Controls */}
+                        <div className="absolute inset-x-0 bottom-0 p-6 z-40">
+                            <div className="w-full flex justify-end items-center">
+                                <div className="flex flex-col items-center">
+                                    <button
+                                        onClick={() => setIsOpen(true)}
+                                        className={`w-14 h-14 rounded-full flex flex-col items-center justify-center text-white shadow-lg transition-all hover:scale-105 active:scale-95 ${isPlaying ? "bg-orange-500 shadow-orange-500/40" : "bg-rose-600"}`}
+                                    >
+                                        <span className="text-xl leading-none">🎵</span>
+                                        {currentTime > 0 && (
+                                            <span className="text-[9px] font-bold mt-0.5 leading-none">
+                                                {formatTime(currentTime)}
+                                            </span>
+                                        )}
+                                    </button>
+                                    <span className="text-[10px] font-bold mt-1 text-white">
+                                        {isPlaying ? "Playing" : "Music"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Informational Text */}
+                    <div className="mt-12 text-center px-6 max-w-2xl">
+                        <h2 className="text-2xl font-bold mb-4 text-orange-400">Digital Aarti Seva</h2>
+                        <p className="text-gray-400 leading-relaxed">
+                            Experience the divine connection through our virtual Aarti. Select your deity, offer flowers,
+                            and light the sacred lamp from anywhere in the world. May the divine blessings be with you always.
+                        </p>
+                    </div>
                 </div>
             </main>
 
