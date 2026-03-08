@@ -172,7 +172,7 @@ export default function Navbar() {
           </span>
           <span className="text-[#1a0500]/70 font-medium hidden md:inline text-[10px] sm:text-xs">Services</span>
         </div>
-        <div className="flex whitespace-nowrap ml-48">
+        <div className="flex whitespace-nowrap ml-16 sm:ml-48">
           <div className="top-marquee flex items-center gap-0">
             {[
               "Trusted by 1 Million+ Devotees", "100% Secure Payments", "500+ Sacred Temples",

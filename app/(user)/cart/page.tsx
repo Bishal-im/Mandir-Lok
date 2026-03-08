@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { ChevronRight, Shield, Loader2, Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
+import { ChevronRight, Shield, Loader2, Heart, Sparkles, MapPin, Calendar, ArrowRight, X } from "lucide-react";
 import { useCart, CartItem } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { convertINRtoUSD, formatCurrency } from "@/lib/currency";
@@ -206,26 +206,26 @@ function CartContent() {
     <>
       <div className="container-app py-8">
         {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-0 mb-8 max-w-md mx-auto">
-          {["Sankalp Details", "Payment"].map((label, i) => (
-            <div key={label} className="flex items-center flex-1">
+        <div className="flex items-center justify-center gap-0 mb-6 sm:mb-10 max-w-lg mx-auto px-1 sm:px-2">
+          {["Sankalp", "Payment"].map((label, i) => (
+            <div key={label} className="flex items-center flex-1 last:flex-none last:w-auto">
               <div className="flex flex-col items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${step > i + 1
+                  className={`w-6 h-6 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[10px] sm:text-sm font-bold transition-all shadow-sm ${step > i + 1
                     ? "bg-green-500 text-white"
                     : step === i + 1
-                      ? "bg-[#ff7f0a] text-white"
-                      : "bg-[#f0dcc8] text-[#6b5b45]"
+                      ? "bg-[#ff7f0a] text-white ring-2 sm:ring-4 ring-orange-50"
+                      : "bg-white border sm:border-2 border-[#f0dcc8] text-[#6b5b45]"
                     }`}
                 >
                   {step > i + 1 ? "✓" : i + 1}
                 </div>
-                <p className={`text-xs mt-1 ${step === i + 1 ? "text-[#ff7f0a] font-semibold" : "text-[#6b5b45]"}`}>
+                <p className={`text-[9px] sm:text-xs mt-1 sm:mt-1.5 font-bold uppercase tracking-wider ${step === i + 1 ? "text-[#ff7f0a]" : "text-[#6b5b45]/40"}`}>
                   {label}
                 </p>
               </div>
               {i < 1 && (
-                <div className={`flex-1 h-0.5 mx-2 ${step > 1 ? "bg-green-400" : "bg-[#f0dcc8]"}`} />
+                <div className={`flex-1 h-[1px] sm:h-0.5 mx-1 sm:mx-4 rounded-full ${step > 1 ? "bg-green-400" : "bg-[#f0dcc8]"}`} />
               )}
             </div>
           ))}
@@ -241,49 +241,72 @@ function CartContent() {
                   <button onClick={clearCart} className="text-xs text-red-500 hover:text-red-600 font-medium">Clear All</button>
                 </div>
                 {cart.map((item) => (
-                  <div key={item.id} className="bg-white border border-[#f0dcc8] rounded-2xl p-4 shadow-card flex gap-4 transition-all hover:border-[#ff7f0a]/30 group relative">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={item.selected}
-                        onChange={() => toggleSelectItem(item.id)}
-                        className="w-5 h-5 accent-[#ff7f0a] cursor-pointer"
-                      />
-                    </div>
-                    <div className="w-16 h-16 bg-[#fff8f0] rounded-xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform shrink-0 overflow-hidden">
-                      {item.poojaImage ? (
-                        <img src={item.poojaImage} alt={item.poojaName} className="w-full h-full object-cover" />
-                      ) : (
-                        item.poojaEmoji
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-[#1a1209] truncate">{item.poojaName}</h3>
-                        <p className="font-bold text-[#ff7f0a] ml-2">
+                  <div key={item.id} className="bg-white border border-[#f0dcc8] rounded-2xl p-3.5 sm:p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-4 transition-all hover:border-[#ff7f0a]/30 group relative overflow-hidden">
+                    {/* Checkbox and Image row for Mobile */}
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="pt-2 sm:pt-4 shrink-0 flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={item.selected}
+                          onChange={() => toggleSelectItem(item.id)}
+                          className="w-4 h-4 sm:w-5 sm:h-5 accent-[#ff7f0a] cursor-pointer rounded border-[#f0dcc8]"
+                        />
+                      </div>
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#fff8f0] rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-105 transition-transform shrink-0 overflow-hidden shadow-inner border border-orange-100/50">
+                        {item.poojaImage ? (
+                          <img src={item.poojaImage} alt={item.poojaName} className="w-full h-full object-cover" />
+                        ) : (
+                          item.poojaEmoji
+                        )}
+                      </div>
+                      <div className="flex-1 sm:hidden pr-6">
+                        <h3 className="font-bold text-[#1a1209] text-sm leading-[1.3] line-clamp-2">{item.poojaName}</h3>
+                        <p className="font-bold text-[#ff7f0a] text-base mt-1">
                           {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
                         </p>
                       </div>
-                      <p className="text-xs text-[#6b5b45] flex items-center gap-1 mt-1">
-                        <MapPin size={12} className="text-[#ff7f0a]" /> {item.templeName}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <span className="text-[10px] bg-orange-50 text-[#ff7f0a] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                          <Calendar size={10} /> {new Date(item.date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' })}
-                        </span>
-                        {item.packageName && (
-                          <span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-medium">
-                            {item.packageName}
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="sm:hidden text-[#6b5b45]/30 hover:text-red-500 transition-colors p-1 absolute top-2 right-2"
+                        title="Remove"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    {/* Content for Tablet/Desktop or expanded info on Mobile */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <div className="hidden sm:flex justify-between items-start">
+                        <h3 className="font-bold text-[#1a1209] text-lg lg:text-xl truncate pr-8">{item.poojaName}</h3>
+                        <p className="font-bold text-[#ff7f0a] text-lg shrink-0">
+                          {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1 mt-1 sm:mt-2">
+                        <p className="text-[11px] sm:text-sm text-[#6b5b45] flex items-center gap-1.5 font-medium">
+                          <MapPin size={12} className="text-[#ff7f0a] shrink-0" /> <span className="truncate">{item.templeName}</span>
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          <span className="text-[9px] sm:text-xs bg-orange-50 text-[#ff7f0a] px-2 py-0.5 rounded-full font-bold flex items-center gap-1.5 border border-orange-100/50">
+                            <Calendar size={11} /> {new Date(item.date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' })}
                           </span>
-                        )}
+                          {item.packageName && (
+                            <span className="text-[9px] sm:text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-bold border border-amber-100/50">
+                              {item.packageName}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
+
+                    {/* Desktop Close Button */}
                     <button
                       onClick={() => removeFromCart(item.id)}
-                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                      className="hidden sm:flex text-gray-300 hover:text-red-500 transition-colors p-2 absolute top-2 right-2 hover:bg-red-50 rounded-full"
                       title="Remove from cart"
                     >
-                      <span className="text-xl font-light">×</span>
+                      <X size={20} />
                     </button>
                   </div>
                 ))}
@@ -321,11 +344,11 @@ function CartContent() {
                           setCountryCode(e.target.value);
                           if (sameAsPhone) setWhatsappCountryCode(e.target.value);
                         }}
-                        className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none max-w-[100px]"
+                        className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none w-24 sm:w-28 shrink-0 appearance-none"
                       >
                         {COUNTRIES.map((c) => (
                           <option key={`${c.name}-${c.code}`} value={c.code}>
-                            {c.flag} +{c.code} ({c.name})
+                            +{c.code} ({c.name})
                           </option>
                         ))}
                       </select>
@@ -350,11 +373,11 @@ function CartContent() {
                         value={sameAsPhone ? countryCode : whatsappCountryCode}
                         disabled={sameAsPhone}
                         onChange={(e) => setWhatsappCountryCode(e.target.value)}
-                        className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none disabled:opacity-70 max-w-[100px]"
+                        className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none disabled:opacity-70 w-24 sm:w-28 shrink-0 appearance-none"
                       >
                         {COUNTRIES.map((c) => (
                           <option key={`wa-${c.name}-${c.code}`} value={c.code}>
-                            {c.flag} +{c.code}
+                            +{c.code}
                           </option>
                         ))}
                       </select>
@@ -393,14 +416,14 @@ function CartContent() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between">
-                  <button onClick={() => router.back()} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <button onClick={() => router.back()} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1">← Back to previous</button>
                   <button
                     onClick={() => setStep(2)}
                     disabled={!isStep1Valid}
-                    className={`btn-saffron text-sm px-8 ${!isStep1Valid ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`btn-saffron w-full sm:w-auto text-base px-10 py-4 rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 ${!isStep1Valid ? "opacity-50 cursor-not-allowed grayscale" : ""}`}
                   >
-                    Proceed to Payment →
+                    Proceed to Payment <ArrowRight size={18} />
                   </button>
                 </div>
               </div>
@@ -425,22 +448,24 @@ function CartContent() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between">
-                  <button onClick={() => setStep(1)} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
-                  <button onClick={handlePay} disabled={paying} className="btn-saffron text-sm px-8 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                    {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)} →</>}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <button onClick={() => setStep(1)} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1">← Modify Details</button>
+                  <button onClick={handlePay} disabled={paying} className="btn-saffron w-full sm:w-auto text-base px-10 py-4 rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                    {paying ? <><Loader2 size={18} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)} <ArrowRight size={18} /></>}
                   </button>
                 </div>
-                <p className="text-center text-xs text-[#6b5b45] mt-4 flex items-center justify-center gap-1">
-                  <Shield size={12} className="text-green-500" /> 100% Secured by Cashfree Encryption
+                <p className="text-center text-[10px] sm:text-xs text-[#6b5b45]/70 mt-6 flex items-center justify-center gap-1.5">
+                  <Shield size={14} className="text-green-500" /> Secure 256-bit SSL Encrypted Payment by Cashfree
                 </p>
               </div>
             )}
           </div>
 
-          <div>
-            <div className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card sticky top-24">
-              <h3 className="font-display font-semibold text-[#1a1209] mb-4">Summary</h3>
+          <div className="lg:col-span-1">
+            <div className="bg-white border border-[#f0dcc8] rounded-3xl p-6 sm:p-8 shadow-xl shadow-orange-900/5 lg:sticky lg:top-24 border-t-4 border-t-[#ff7f0a]">
+              <h3 className="font-display font-bold text-xl text-[#1a1209] mb-6 flex items-center gap-2">
+                <Shield size={20} className="text-[#ff7f0a]" /> Order Summary
+              </h3>
               <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-4">
                 {selectedItems.map((item) => (
                   <div key={item.id} className="pb-3 border-b border-[#f0dcc8] last:border-0 last:pb-0">
@@ -465,10 +490,10 @@ function CartContent() {
                 ))}
               </div>
 
-              <div className="border-t border-[#f0dcc8] pt-3">
-                <div className="flex justify-between font-bold text-base text-[#1a1209]">
-                  <span>Total Amount</span>
-                  <span className="text-[#ff7f0a]">
+              <div className="border-t border-[#f0dcc8] pt-6 mt-4">
+                <div className="flex justify-between items-center font-display font-bold text-xl text-[#1a1209]">
+                  <span className="text-sm uppercase tracking-wider text-[#6b5b45]">Total Payable</span>
+                  <span className="text-2xl text-[#ff7f0a]">
                     {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)}
                   </span>
                 </div>
@@ -491,12 +516,12 @@ export default function CartPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-20 min-h-screen bg-[#fdf6ee]">
-        <div className="bg-white border-b border-[#f0dcc8]">
-          <div className="container-app py-3 flex items-center gap-2 text-xs text-[#6b5b45]">
-            <Link href="/" className="hover:text-[#ff7f0a]">Home</Link>
-            <ChevronRight size={12} />
-            <span className="text-[#1a1209] font-medium">Booking Checkout</span>
+      <main className="pt-20 min-h-screen bg-[#fdf6ee] overflow-x-hidden">
+        <div className="bg-white border-b border-orange-100/50">
+          <div className="container-app py-2.5 sm:py-3 flex items-center gap-2 text-[10px] sm:text-xs text-[#6b5b45]">
+            <Link href="/" className="hover:text-[#ff7f0a] transition-colors">Home</Link>
+            <ChevronRight size={10} className="sm:w-3 sm:h-3" />
+            <span className="text-[#1a1209] font-bold">Booking Checkout</span>
           </div>
         </div>
         <Suspense fallback={
