@@ -140,18 +140,29 @@ export default function AartiPage() {
                 flowerIntervalRef.current = null;
                 return;
             }
-            const batch = Array.from({ length: 5 }).map((_, i) => ({
-                id: Math.random() + Date.now(),
-                x: 10 + Math.random() * 80,
-                delay: Math.random() * 0.5,
-                rotate: Math.random() * 360,
-                duration: 2 + Math.random() * 2
-            }));
+            const batch = Array.from({ length: 8 }).map((_, i) => {
+                const isOriginalFlower = Math.random() > 0.4;
+                const image = isOriginalFlower ? "/images/aarti/flower.png" : "/images/aarti/rose.png";
+                // Original flower gets a larger size range, Rose stays smaller/consistent
+                const size = isOriginalFlower 
+                    ? 35 + Math.random() * 20  // 35px to 55px
+                    : 15 + Math.random() * 15; // 15px to 30px
+                
+                return {
+                    id: Math.random() + Date.now(),
+                    x: 10 + Math.random() * 80,
+                    delay: Math.random() * 0.5,
+                    rotate: Math.random() * 720,
+                    duration: 1.5 + Math.random() * 2.5,
+                    size,
+                    image
+                };
+            });
             setFlowers((prev) => [...prev, ...batch]);
             setTimeout(() => {
                 setFlowers((prev) => prev.filter((f) => !batch.find(b => b.id === f.id)));
             }, 4000);
-        }, 200);
+        }, 150);
 
         flowerIntervalRef.current = interval;
     };
@@ -352,9 +363,10 @@ export default function AartiPage() {
                                             transition={{ duration: f.duration, ease: "linear", delay: f.delay }}
                                         >
                                             <img
-                                                src="/images/aarti/flower.png"
+                                                src={f.image}
                                                 alt="flower"
-                                                className="w-14 h-14 object-contain"
+                                                style={{ width: `${f.size}px`, height: `${f.size}px` }}
+                                                className="object-contain drop-shadow-md"
                                             />
                                         </motion.div>
                                     ))}
