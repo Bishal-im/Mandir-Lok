@@ -231,8 +231,8 @@ function CartContent() {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Cart Items List */}
             {step === 1 && (
               <div className="space-y-4">
@@ -314,13 +314,13 @@ function CartContent() {
             )}
 
             {step === 1 && (
-              <div className="bg-white border border-[#f0dcc8] rounded-2xl p-6 shadow-card">
+              <div className="bg-white border border-[#f0dcc8] rounded-2xl p-4 sm:p-6 shadow-sm">
                 <h2 className="heading-md text-[#1a1209] mb-1">Sankalp Details</h2>
-                <p className="text-xs text-[#6b5b45] mb-6">
+                <p className="text-[11px] sm:text-xs text-[#6b5b45] mb-6">
                   These details will be used for the personalized pooja sankalp. Please fill carefully.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="sm:col-span-2">
                     <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">
                       Full Name (for Sankalp) *
@@ -417,11 +417,11 @@ function CartContent() {
                 </div>
 
                 <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <button onClick={() => router.back()} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1">← Back to previous</button>
+                  <button onClick={() => router.back()} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1 transition-colors">← Back to previous</button>
                   <button
                     onClick={() => setStep(2)}
                     disabled={!isStep1Valid}
-                    className={`btn-saffron w-full sm:w-auto text-base px-10 py-4 rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 ${!isStep1Valid ? "opacity-50 cursor-not-allowed grayscale" : ""}`}
+                    className={`btn-saffron w-full sm:w-auto text-sm sm:text-base px-6 sm:px-10 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 ${!isStep1Valid ? "opacity-50 cursor-not-allowed grayscale" : ""}`}
                   >
                     Proceed to Payment <ArrowRight size={18} />
                   </button>
@@ -449,13 +449,13 @@ function CartContent() {
                 )}
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <button onClick={() => setStep(1)} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1">← Modify Details</button>
-                  <button onClick={handlePay} disabled={paying} className="btn-saffron w-full sm:w-auto text-base px-10 py-4 rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <button onClick={() => setStep(1)} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1 transition-colors">← Modify Details</button>
+                  <button onClick={handlePay} disabled={paying} className="btn-saffron w-full sm:w-auto text-sm sm:text-base px-6 sm:px-10 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
                     {paying ? <><Loader2 size={18} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)} <ArrowRight size={18} /></>}
                   </button>
                 </div>
-                <p className="text-center text-[10px] sm:text-xs text-[#6b5b45]/70 mt-6 flex items-center justify-center gap-1.5">
-                  <Shield size={14} className="text-green-500" /> Secure 256-bit SSL Encrypted Payment by Cashfree
+                <p className="text-center text-[10px] sm:text-xs text-[#6b5b45]/70 mt-6 flex items-center justify-center gap-1.5 px-4">
+                  <Shield size={14} className="text-green-500 shrink-0" /> Secure 256-bit SSL Encrypted Payment by Cashfree
                 </p>
               </div>
             )}
@@ -490,19 +490,19 @@ function CartContent() {
                 ))}
               </div>
 
-              <div className="border-t border-[#f0dcc8] pt-6 mt-4">
-                <div className="flex justify-between items-center font-display font-bold text-xl text-[#1a1209]">
-                  <span className="text-sm uppercase tracking-wider text-[#6b5b45]">Total Payable</span>
-                  <span className="text-2xl text-[#ff7f0a]">
+              <div className="border-t border-[#f0dcc8] pt-4 sm:pt-6 mt-4">
+                <div className="flex justify-between items-center font-display font-bold text-[#1a1209] gap-4">
+                  <span className="text-xs sm:text-sm uppercase tracking-wider text-[#6b5b45] shrink-0">Total Payable</span>
+                  <span className="text-xl sm:text-2xl text-[#ff7f0a] break-all text-right">
                     {formatCurrency(currency === "USD" ? convertINRtoUSD(totalAmount, exchangeRate) : totalAmount, currency)}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-4 space-y-1.5 text-xs text-[#6b5b45]">
-                <p className="flex items-center gap-2"><Sparkles size={12} className="text-[#ff7f0a]" /> Video on WhatsApp after pooja</p>
-                <p className="flex items-center gap-2"><Sparkles size={12} className="text-[#ff7f0a]" /> Personalized sankalp by pandit</p>
-                <p className="flex items-center gap-2"><Shield size={12} className="text-green-500" /> 100% Safe & Secure Payments</p>
+              <div className="mt-5 space-y-2 text-[11px] sm:text-xs text-[#6b5b45]/80">
+                <p className="flex items-center gap-2.5"><Sparkles size={14} className="text-[#ff7f0a] shrink-0" /> Video on WhatsApp after pooja</p>
+                <p className="flex items-center gap-2.5"><Sparkles size={14} className="text-[#ff7f0a] shrink-0" /> Personalized sankalp by pandit</p>
+                <p className="flex items-center gap-2.5"><Shield size={14} className="text-green-500 shrink-0" /> 100% Safe & Secure Payments</p>
               </div>
             </div>
           </div>

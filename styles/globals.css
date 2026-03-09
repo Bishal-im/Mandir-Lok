@@ -44,10 +44,11 @@
 }
 
 /* ── Base Styles ── */
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html,
+body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
 }
 
 body {
@@ -147,15 +148,16 @@ h4 {
 }
 
 .table-container table {
-  min-width: 650px; /* Reduced from 800px to avoid excessive scrolling on smaller tablets */
+  min-width: 650px;
+  /* Reduced from 800px to avoid excessive scrolling on smaller tablets */
 }
 
 @media (max-width: 640px) {
   .table-container table {
     min-width: 600px;
   }
-  
-  .table-container th, 
+
+  .table-container th,
   .table-container td {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;

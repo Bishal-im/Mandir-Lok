@@ -6,7 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getSettings } from "@/lib/actions/admin";
 import { useMusicPlayer } from "@/context/MusicContext";
-import { Play, Pause, Search, User, CircleUser, X } from "lucide-react";
+import { Play, Pause, Search, User, CircleUser, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const DEFAULT_DEITIES = [
     { id: "shiva", name: "Shiv ji", image: "/images/aarti/shiva.png", color: "from-blue-500 to-indigo-800" },
@@ -30,6 +30,7 @@ export default function AartiPage() {
     const [isLampGlowing, setIsLampGlowing] = useState(false);
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
+    const [direction, setDirection] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const shankhAudioRef = useRef<HTMLAudioElement | null>(null);
     const aartiTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,6 +81,20 @@ export default function AartiPage() {
         stopAllAartiEffects();
         loadDeity(selectedDeity.id, selectedDeity.name);
     }, [selectedDeity.id]);
+
+    const handleNext = () => {
+        const currentIndex = deities.findIndex(d => d.id === selectedDeity.id);
+        const nextIndex = (currentIndex + 1) % deities.length;
+        setDirection(1);
+        setSelectedDeity(deities[nextIndex]);
+    };
+
+    const handlePrev = () => {
+        const currentIndex = deities.findIndex(d => d.id === selectedDeity.id);
+        const prevIndex = (currentIndex - 1 + deities.length) % deities.length;
+        setDirection(-1);
+        setSelectedDeity(deities[prevIndex]);
+    };
 
     useEffect(() => {
         async function fetchSettings() {
@@ -172,6 +187,23 @@ export default function AartiPage() {
         setTimeout(() => setConchPlaying(false), 5000);
     };
 
+    // Keyboard Navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Don't trigger if user is typing in search
+            if (isSearchOpen) return;
+
+            if (e.key === "ArrowRight") {
+                handleNext();
+            } else if (e.key === "ArrowLeft") {
+                handlePrev();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isSearchOpen, selectedDeity.id]);
+
     // Cleanup audio on unmount
     useEffect(() => {
         return () => {
@@ -208,7 +240,12 @@ export default function AartiPage() {
                                 {deities.map((deity) => (
                                     <button
                                         key={deity.id}
-                                        onClick={() => setSelectedDeity(deity)}
+                                        onClick={() => {
+                                            const newIndex = deities.findIndex(d => d.id === deity.id);
+                                            const currentIndex = deities.findIndex(d => d.id === selectedDeity.id);
+                                            setDirection(newIndex > currentIndex ? 1 : -1);
+                                            setSelectedDeity(deity);
+                                        }}
                                         className={`relative shrink-0 w-10 h-10 rounded-full border-2 transition-all duration-500 overflow-hidden shadow-md active:scale-95 ${selectedDeity.id === deity.id
                                             ? "border-white scale-110 z-10 shadow-[0_0_15px_rgba(255,255,255,0.6)]"
                                             : "border-white/40 opacity-80 hover:opacity-100 hover:scale-105"
@@ -275,6 +312,9 @@ export default function AartiPage() {
                                         <button
                                             key={deity.id}
                                             onClick={() => {
+                                                const newIndex = deities.findIndex(d => d.id === deity.id);
+                                                const currentIndex = deities.findIndex(d => d.id === selectedDeity.id);
+                                                setDirection(newIndex > currentIndex ? 1 : -1);
                                                 setSelectedDeity(deity);
                                                 setIsSearchOpen(false);
                                                 setSearchQuery("");
@@ -297,7 +337,7 @@ export default function AartiPage() {
 
                 <div className="mt-6 w-full flex flex-col items-center">
                     {/* Main Aarti Frame Container */}
-                    <div className="relative w-[95%] sm:w-[500px] aspect-[3/4] sm:aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30">
+                    <div className="relative w-[95%] sm:w-[500px] aspect-[3/4] sm:aspect-[4/5] bg-[#1a0f05] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-yellow-900/30 group">
 
                         {/* Frame Image */}
                         <img
@@ -307,17 +347,54 @@ export default function AartiPage() {
                         />
 
                         {/* Deity Image Content */}
-                        <div className="absolute inset-0 z-10 overflow-hidden">
-                            <AnimatePresence mode="wait">
+                        <div className="absolute inset-0 z-10 overflow-hidden cursor-grab active:cursor-grabbing">
+                            <AnimatePresence mode="popLayout" custom={direction}>
                                 <motion.img
                                     key={selectedDeity.id}
                                     src={selectedDeity.image}
                                     alt={selectedDeity.name}
                                     className="w-full h-full object-cover"
-                                    initial={{ opacity: 0, scale: 1.1 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.8 }}
+                                    custom={direction}
+                                    variants={{
+                                        enter: (direction: number) => ({
+                                            x: direction > 0 ? 500 : -500,
+                                            opacity: 0,
+                                            scale: 1.1
+                                        }),
+                                        center: {
+                                            zIndex: 1,
+                                            x: 0,
+                                            opacity: 1,
+                                            scale: 1
+                                        },
+                                        exit: (direction: number) => ({
+                                            zIndex: 0,
+                                            x: direction < 0 ? 500 : -500,
+                                            opacity: 0,
+                                            scale: 0.9
+                                        })
+                                    }}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{
+                                        x: { type: "spring", stiffness: 300, damping: 30 },
+                                        opacity: { duration: 0.2 },
+                                        scale: { duration: 0.4 }
+                                    }}
+                                    drag="x"
+                                    dragConstraints={{ left: 0, right: 0 }}
+                                    dragElastic={0.2}
+                                    onDragEnd={(e, { offset, velocity }) => {
+                                        const swipe = Math.abs(offset.x) > 50 && Math.abs(velocity.x) > 500 || Math.abs(offset.x) > 100;
+                                        if (swipe) {
+                                            if (offset.x > 0) {
+                                                handlePrev();
+                                            } else {
+                                                handleNext();
+                                            }
+                                        }
+                                    }}
                                 />
                             </AnimatePresence>
 
