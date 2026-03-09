@@ -95,7 +95,11 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
     const existingOrder = await Order.findOne({ cashfreeOrderId });
     if (existingOrder) {
       if (searchParams) {
-        return NextResponse.redirect(`${new URL(req.url).origin}/booking-success?orderId=${existingOrder._id}`);
+        // If we find an existing order with this CF ID, it might be a bulk set. 
+        // For simplicity, find all orders with this CF ID.
+        const allOrders = await Order.find({ cashfreeOrderId });
+        const ids = allOrders.map(o => o._id).join(",");
+        return NextResponse.redirect(`${new URL(req.url).origin}/booking-success?orderIds=${ids}`);
       }
       return NextResponse.json({ success: true, data: { orderId: existingOrder._id } });
     }
@@ -244,7 +248,8 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
     }
 
     if (searchParams) {
-      return NextResponse.redirect(`${new URL(req.url).origin}/booking-success?orderId=${createdOrderIds[0]}`);
+      const orderIdsParam = createdOrderIds.join(",");
+      return NextResponse.redirect(`${new URL(req.url).origin}/booking-success?orderIds=${orderIdsParam}`);
     }
     return NextResponse.json({ success: true, data: { orderIds: createdOrderIds } });
 
