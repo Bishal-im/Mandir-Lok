@@ -20,10 +20,18 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, message: "Required fields missing" }, { status: 400 });
         }
 
+        // Normalize phone: strip all non-digit characters then re-add a single leading '+'
+        // This handles accidental double-prefix patterns like "+91+9779860804988" → "+9779860804988"
+        const normalizePhone = (num: string) => {
+            const digits = num.replace(/\D/g, '');
+            return digits ? `+${digits}` : num;
+        };
+        const cleanWhatsapp = normalizePhone(whatsapp);
+
         await connectDB();
         const pandit = await Pandit.findByIdAndUpdate(decoded.panditId, {
-            whatsapp,
-            phone: whatsapp, // sync phone to the number entered during onboarding
+            whatsapp: cleanWhatsapp,
+            phone: cleanWhatsapp, // sync phone to the number entered during onboarding
             aadhaarCardUrl,
             aadhaarStatus: "pending"
         }, { new: true });

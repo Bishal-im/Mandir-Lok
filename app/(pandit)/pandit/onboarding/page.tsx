@@ -5,6 +5,26 @@ import { useRouter } from 'next/navigation'
 import { Video, FileText, CheckCircle, Upload, X, Loader2 } from 'lucide-react'
 import { COUNTRIES } from '@/lib/countries'
 
+// Parse a stored phone string (e.g. "+9779860804988" or "+91+9779860804988") into
+// { code: '977', local: '9860804988' } by matching the longest known country code.
+function parseStoredPhone(stored: string): { code: string; local: string } {
+  // Strip all non-digit characters to get the raw digit string
+  const digits = stored.replace(/\D/g, '')
+  // Collect only entries that have a valid string code (exclude dividers)
+  const validCodes: string[] = COUNTRIES
+    .map(c => c.code)
+    .filter((code): code is string => typeof code === 'string' && code.length > 0)
+  // Sort longest-first so we match greedily (e.g. 977 before 9)
+  validCodes.sort((a, b) => b.length - a.length)
+  for (const code of validCodes) {
+    if (digits.startsWith(code)) {
+      return { code, local: digits.slice(code.length) }
+    }
+  }
+  // Fallback: return digits as-is with default India code
+  return { code: '91', local: digits }
+}
+
 export default function OnboardingPage() {
     const router = useRouter()
     const [step, setStep] = useState<1 | 2>(1)
@@ -24,7 +44,9 @@ export default function OnboardingPage() {
                 const res = await fetch('/api/pandit/me')
                 const data = await res.json()
                 if (data.success && data.data.whatsapp) {
-                    setWhatsapp(data.data.whatsapp.replace(/^\+91/, ''))
+                    const parsed = parseStoredPhone(data.data.whatsapp)
+                    setCountryCode(parsed.code)
+                    setWhatsapp(parsed.local)
                     setStep(2)
                 }
             } catch (err) {
@@ -38,8 +60,8 @@ export default function OnboardingPage() {
 
     const handleStep1 = (e: React.FormEvent) => {
         e.preventDefault()
-        if (whatsapp.length < 10) {
-            setError('Please enter a valid mobile number')
+        if (whatsapp.length < 7) {
+            setError('Please enter a valid mobile number (at least 7 digits)')
             return
         }
         setError('')
@@ -165,10 +187,10 @@ export default function OnboardingPage() {
                                     <input
                                         type="tel"
                                         value={whatsapp}
-                                        onChange={e => setWhatsapp(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                        onChange={e => setWhatsapp(e.target.value.replace(/\D/g, '').slice(0, 15))}
                                         placeholder="WhatsApp Number"
                                         className="input-divine flex-1"
-                                        maxLength={10}
+                                        maxLength={15}
                                         required
                                     />
                                 </div>
