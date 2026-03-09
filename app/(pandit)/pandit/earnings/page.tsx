@@ -71,7 +71,7 @@ export default function EarningsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fdf6ee] flex">
+      <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
         <PanditSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="w-10 h-10 border-4 border-[#ff7f0a] border-t-transparent rounded-full animate-spin" />
@@ -87,9 +87,9 @@ export default function EarningsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#fdf6ee] flex">
+    <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
       <PanditSidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto h-full">
         <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30">
           <h1 className="font-display font-bold text-gray-900 text-lg">Earnings & Payouts</h1>
         </header>

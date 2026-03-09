@@ -63,9 +63,9 @@ export default function NotificationsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fdf6ee] flex font-sans">
+        <div className="h-screen bg-[#fdf6ee] flex overflow-hidden font-sans">
             <PanditSidebar />
-            <div className="flex-1 overflow-auto text-gray-900">
+            <div className="flex-1 overflow-auto h-full text-gray-900">
                 <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30">
                     <h1 className="font-display font-bold text-gray-900 text-lg">Notifications</h1>
                     <p className="text-xs text-[#6b5b45]">Stay updated with your assigned pujas and payments.</p>

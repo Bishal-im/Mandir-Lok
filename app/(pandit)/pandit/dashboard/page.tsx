@@ -72,9 +72,9 @@ export default function PanditDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf6ee] flex">
+    <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
       <PanditSidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto h-full">
         <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 flex items-center justify-between sticky top-0 z-30">
           <div>
             <h1 className="font-display font-bold text-gray-900 text-lg">Dashboard Overview</h1>

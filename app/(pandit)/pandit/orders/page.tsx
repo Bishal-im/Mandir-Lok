@@ -85,9 +85,9 @@ function PanditOrdersContent() {
   )
 
   return (
-    <div className="min-h-screen bg-[#fdf6ee] flex">
+    <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
       <PanditSidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto h-full">
         <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h1 className="font-display font-bold text-gray-900 text-lg">Manage Poojas</h1>

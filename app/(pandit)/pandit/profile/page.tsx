@@ -73,7 +73,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fdf6ee] flex">
+      <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
         <PanditSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="w-10 h-10 border-4 border-[#ff7f0a] border-t-transparent rounded-full animate-spin" />
@@ -83,9 +83,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf6ee] flex">
+    <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
       <PanditSidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto h-full">
         <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30">
           <h1 className="font-display font-bold text-gray-900 text-lg">My Profile</h1>
         </header>
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                           className="flex-1 input-divine"
                           placeholder="https://..."
                         />
-                        <CloudinaryUploader 
+                        <CloudinaryUploader
                           onUploadSuccess={(url) => setFormData({ ...formData, photo: url })}
                           folder="pandits"
                           resourceType="image"
@@ -249,8 +249,8 @@ export default function ProfilePage() {
                 <p className="text-sm font-bold text-gray-900">Aadhaar Card</p>
                 {pandit?.aadhaarStatus && pandit.aadhaarStatus !== 'none' && (
                   <span className={`ml-auto px-2 py-0.5 rounded text-[9px] font-bold uppercase ${pandit.aadhaarStatus === 'verified' ? 'bg-green-100 text-green-700' :
-                      pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600' :
-                        'bg-yellow-100 text-yellow-700'
+                    pandit.aadhaarStatus === 'rejected' ? 'bg-red-100 text-red-600' :
+                      'bg-yellow-100 text-yellow-700'
                     }`}>
                     {pandit.aadhaarStatus}
                   </span>

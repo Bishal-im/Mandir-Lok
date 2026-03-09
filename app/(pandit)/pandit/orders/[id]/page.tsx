@@ -40,7 +40,7 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fdf6ee] flex">
+      <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
         <PanditSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="w-10 h-10 border-4 border-[#ff7f0a] border-t-transparent rounded-full animate-spin" />
@@ -50,9 +50,9 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf6ee] flex">
+    <div className="h-screen bg-[#fdf6ee] flex overflow-hidden">
       <PanditSidebar />
-      <div className="flex-1 overflow-auto pb-24 md:pb-8">
+      <div className="flex-1 overflow-auto h-full pb-24 md:pb-8">
         <header className="bg-white border-b border-[#f0dcc8] px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
           <button
             onClick={() => router.back()}
