@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { COUNTRIES } from '@/lib/countries'
 
 export default function PanditLoginPage() {
   const router = useRouter()
@@ -14,6 +15,24 @@ export default function PanditLoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [phoneCountryCode, setPhoneCountryCode] = useState('91')
+  const [whatsappCountryCode, setWhatsappCountryCode] = useState('91')
+  const [hasCheckedSession, setHasCheckedSession] = useState(false)
+
+  // Restore session if interrupted
+  useEffect(() => {
+    const savedStep = sessionStorage.getItem('pandit_login_step')
+    const savedId = sessionStorage.getItem('pandit_id')
+    const savedPhoneCC = sessionStorage.getItem('pandit_phone_cc')
+    const savedWaCC = sessionStorage.getItem('pandit_wa_cc')
+    if (savedStep === 'phone_setup' && savedId) {
+      setStep('phone_setup')
+      setPanditId(savedId)
+      if (savedPhoneCC) setPhoneCountryCode(savedPhoneCC)
+      if (savedWaCC) setWhatsappCountryCode(savedWaCC)
+    }
+    setHasCheckedSession(true)
+  }, [])
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,6 +45,7 @@ export default function PanditLoginPage() {
     setError('')
     setLoading(true)
     try {
+      console.log('[Send OTP] Fetching /api/pandit/auth/send-otp...')
       const res = await fetch('/api/pandit/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,6 +74,7 @@ export default function PanditLoginPage() {
     setError('')
     setLoading(true)
     try {
+      console.log('[Verify OTP] Fetching /api/pandit/auth/verify-otp...')
       const res = await fetch('/api/pandit/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,7 +85,29 @@ export default function PanditLoginPage() {
       })
       const data = await res.json()
       if (data.success) {
-        router.push('/pandit/dashboard')
+        // Refresh router to ensure cookie is recognized
+        router.refresh()
+
+        if (data.needsPhoneUpdate) {
+          console.log('[Verify OTP] Needs phone update, setting step to phone_setup')
+          setPanditId(data.panditId)
+          setStep('phone_setup')
+          sessionStorage.setItem('pandit_login_step', 'phone_setup')
+          sessionStorage.setItem('pandit_id', data.panditId)
+          // Persist country code defaults at time of login
+          sessionStorage.setItem('pandit_phone_cc', phoneCountryCode)
+          sessionStorage.setItem('pandit_wa_cc', whatsappCountryCode)
+        } else if (data.onboardingRequired) {
+          console.log('[Verify OTP] Onboarding required, redirecting...')
+          sessionStorage.removeItem('pandit_login_step')
+          sessionStorage.removeItem('pandit_id')
+          window.location.href = '/pandit/onboarding'
+        } else {
+          console.log('[Verify OTP] Login successful, redirecting to dashboard')
+          sessionStorage.removeItem('pandit_login_step')
+          sessionStorage.removeItem('pandit_id')
+          window.location.href = '/pandit/dashboard'
+        }
       } else {
         setError(data.message || 'Invalid OTP')
       }
@@ -77,8 +120,8 @@ export default function PanditLoginPage() {
 
   const handleSavePhone = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (phone.length !== 10 || whatsapp.length !== 10) {
-      setError('Please enter valid 10-digit numbers')
+    if (phone.length < 7 || phone.length > 15 || whatsapp.length < 7 || whatsapp.length > 15) {
+      setError('Please enter valid phone numbers (7-15 digits)')
       return
     }
     setError('')
@@ -87,12 +130,32 @@ export default function PanditLoginPage() {
       const res = await fetch('/api/pandit/auth/update-phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ panditId, phone, whatsapp }),
+        body: JSON.stringify({
+          panditId,
+          // Strip any accidental country code prefix from the local number
+          // e.g. if CC=977 and user typed 9779860804988, strip leading 977 → 9860804988
+          phone: `+${phoneCountryCode}${phone.startsWith(phoneCountryCode) ? phone.slice(phoneCountryCode.length) : phone}`,
+          whatsapp: `+${whatsappCountryCode}${whatsapp.startsWith(whatsappCountryCode) ? whatsapp.slice(whatsappCountryCode.length) : whatsapp}`
+        }),
       })
       const data = await res.json()
+      console.log('[Save Phone] API Response:', data)
+
       if (data.success) {
-        router.push('/pandit/dashboard')
+        console.log('[Save Phone] Success, redirecting...')
+        sessionStorage.removeItem('pandit_login_step')
+        sessionStorage.removeItem('pandit_id')
+        sessionStorage.removeItem('pandit_phone_cc')
+        sessionStorage.removeItem('pandit_wa_cc')
+
+        // Use window.location.href for aggressive redirect to ensure layout re-runs
+        if (data.onboardingRequired) {
+          window.location.href = '/pandit/onboarding'
+        } else {
+          window.location.href = '/pandit/dashboard'
+        }
       } else {
+        console.error('[Save Phone] Failed:', data.message)
         setError(data.message || 'Failed to update phone number')
       }
     } catch {
@@ -238,31 +301,63 @@ export default function PanditLoginPage() {
                   <label className="block text-sm font-semibold text-[#1a1209] mb-2">
                     📞 Phone Number
                   </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    placeholder="Enter 10-digit phone number"
-                    className="input-divine w-full"
-                    maxLength={10}
-                    required
-                    autoFocus
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={phoneCountryCode}
+                      onChange={e => setPhoneCountryCode(e.target.value)}
+                      className="px-2 py-2 bg-[#fff8f0] border border-[#f0dcc8] rounded-xl text-[#6b5b45] text-xs font-medium outline-none"
+                    >
+                      {COUNTRIES.map((c, i) => (
+                        c.divider ? (
+                          <option key={`divider-${i}`} disabled>──────────</option>
+                        ) : (
+                          <option key={c.code} value={c.code}>
+                            +{c.code} {c.flag}
+                          </option>
+                        )
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter phone number"
+                      className="input-divine flex-1"
+                      required
+                      autoFocus
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold text-[#1a1209] mb-2">
                     💬 WhatsApp Number
                   </label>
-                  <input
-                    type="tel"
-                    value={whatsapp}
-                    onChange={e => setWhatsapp(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    placeholder="Enter 10-digit WhatsApp number"
-                    className="input-divine w-full"
-                    maxLength={10}
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={whatsappCountryCode}
+                      onChange={e => setWhatsappCountryCode(e.target.value)}
+                      className="px-2 py-2 bg-[#fff8f0] border border-[#f0dcc8] rounded-xl text-[#6b5b45] text-xs font-medium outline-none"
+                    >
+                      {COUNTRIES.map((c, i) => (
+                        c.divider ? (
+                          <option key={`divider-${i}`} disabled>──────────</option>
+                        ) : (
+                          <option key={c.code} value={c.code}>
+                            +{c.code} {c.flag}
+                          </option>
+                        )
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      value={whatsapp}
+                      onChange={e => setWhatsapp(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter WhatsApp number"
+                      className="input-divine flex-1"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
 

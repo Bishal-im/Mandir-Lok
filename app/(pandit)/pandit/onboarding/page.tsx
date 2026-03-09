@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Video, FileText, CheckCircle, Upload, X, Loader2 } from 'lucide-react'
+import { COUNTRIES } from '@/lib/countries'
 
 export default function OnboardingPage() {
     const router = useRouter()
@@ -13,7 +14,27 @@ export default function OnboardingPage() {
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [loading, setLoading] = useState(false)
+    const [isCheckingProfile, setIsCheckingProfile] = useState(true)
     const [error, setError] = useState('')
+
+    // Fetch profile to see if Step 1 can be skipped
+    useEffect(() => {
+        const checkProfile = async () => {
+            try {
+                const res = await fetch('/api/pandit/me')
+                const data = await res.json()
+                if (data.success && data.data.whatsapp) {
+                    setWhatsapp(data.data.whatsapp.replace(/^\+91/, ''))
+                    setStep(2)
+                }
+            } catch (err) {
+                console.error("Failed to fetch profile", err)
+            } finally {
+                setIsCheckingProfile(false)
+            }
+        }
+        checkProfile()
+    }, [])
 
     const handleStep1 = (e: React.FormEvent) => {
         e.preventDefault()
@@ -108,7 +129,12 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="bg-white border border-[#f0dcc8] rounded-2xl shadow-card p-8 animate-in zoom-in-95 duration-200">
-                    {step === 1 ? (
+                    {isCheckingProfile ? (
+                        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                            <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+                            <p className="text-sm text-[#6b5b45]">Setting up your profile...</p>
+                        </div>
+                    ) : step === 1 ? (
                         <div className="space-y-6">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-4 mx-auto">
@@ -126,64 +152,15 @@ export default function OnboardingPage() {
                                         className="px-2 py-2 bg-[#fff8f0] border border-[#f0dcc8] rounded-xl text-[#6b5b45] text-xs font-medium outline-none"
                                     >
                                         {/* South Asia - Most common */}
-                                        <option value="91">+91 🇮🇳 India</option>
-                                        <option value="977">+977 🇳🇵 Nepal</option>
-                                        <option value="92">+92 🇵🇰 Pakistan</option>
-                                        <option value="880">+880 🇧🇩 Bangladesh</option>
-                                        <option value="94">+94 🇱🇰 Sri Lanka</option>
-                                        <option value="975">+975 🇧🇹 Bhutan</option>
-                                        <option value="960">+960 🇲🇻 Maldives</option>
-                                        <option disabled>──────────</option>
-                                        {/* Middle East */}
-                                        <option value="971">+971 🇦🇪 UAE</option>
-                                        <option value="966">+966 🇸🇦 Saudi Arabia</option>
-                                        <option value="974">+974 🇶🇦 Qatar</option>
-                                        <option value="965">+965 🇰🇼 Kuwait</option>
-                                        <option value="968">+968 🇴🇲 Oman</option>
-                                        <option value="973">+973 🇧🇭 Bahrain</option>
-                                        <option value="972">+972 🇮🇱 Israel</option>
-                                        <option disabled>──────────</option>
-                                        {/* East / Southeast Asia */}
-                                        <option value="1">+1 🇺🇸 USA / Canada</option>
-                                        <option value="44">+44 🇬🇧 UK</option>
-                                        <option value="61">+61 🇦🇺 Australia</option>
-                                        <option value="64">+64 🇳🇿 New Zealand</option>
-                                        <option disabled>──────────</option>
-                                        <option value="86">+86 🇨🇳 China</option>
-                                        <option value="81">+81 🇯🇵 Japan</option>
-                                        <option value="82">+82 🇰🇷 South Korea</option>
-                                        <option value="65">+65 🇸🇬 Singapore</option>
-                                        <option value="60">+60 🇲🇾 Malaysia</option>
-                                        <option value="62">+62 🇮🇩 Indonesia</option>
-                                        <option value="63">+63 🇵🇭 Philippines</option>
-                                        <option value="66">+66 🇹🇭 Thailand</option>
-                                        <option value="84">+84 🇻🇳 Vietnam</option>
-                                        <option disabled>──────────</option>
-                                        {/* Europe */}
-                                        <option value="49">+49 🇩🇪 Germany</option>
-                                        <option value="33">+33 🇫🇷 France</option>
-                                        <option value="39">+39 🇮🇹 Italy</option>
-                                        <option value="34">+34 🇪🇸 Spain</option>
-                                        <option value="31">+31 🇳🇱 Netherlands</option>
-                                        <option value="41">+41 🇨🇭 Switzerland</option>
-                                        <option value="46">+46 🇸🇪 Sweden</option>
-                                        <option value="47">+47 🇳🇴 Norway</option>
-                                        <option value="45">+45 🇩🇰 Denmark</option>
-                                        <option value="32">+32 🇧🇪 Belgium</option>
-                                        <option value="48">+48 🇵🇱 Poland</option>
-                                        <option value="7">+7 🇷🇺 Russia</option>
-                                        <option disabled>──────────</option>
-                                        {/* Africa */}
-                                        <option value="27">+27 🇿🇦 South Africa</option>
-                                        <option value="234">+234 🇳🇬 Nigeria</option>
-                                        <option value="254">+254 🇰🇪 Kenya</option>
-                                        <option value="20">+20 🇪🇬 Egypt</option>
-                                        <option disabled>──────────</option>
-                                        {/* Americas */}
-                                        <option value="55">+55 🇧🇷 Brazil</option>
-                                        <option value="52">+52 🇲🇽 Mexico</option>
-                                        <option value="54">+54 🇦🇷 Argentina</option>
-                                        <option value="57">+57 🇨🇴 Colombia</option>
+                                        {COUNTRIES.map((c, i) => (
+                                            c.divider ? (
+                                                <option key={`divider-${i}`} disabled>──────────</option>
+                                            ) : (
+                                                <option key={c.code} value={c.code}>
+                                                    +{c.code} {c.flag} {c.name}
+                                                </option>
+                                            )
+                                        ))}
                                     </select>
                                     <input
                                         type="tel"

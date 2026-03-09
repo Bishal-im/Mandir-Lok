@@ -19,18 +19,29 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, message: "Invalid token" }, { status: 401 });
         }
 
-        const { cartItems } = await req.json();
+        let body: any = {};
+        try {
+            body = await req.json();
+        } catch {
+            // Empty or malformed body — treat as empty cart
+            body = { cartItems: [] };
+        }
+        const { cartItems } = body;
 
         // Clear existing cart for user and replace with new items
         // This is a simple sync strategy
         await CartItem.deleteMany({ userId: decoded.userId });
 
         if (cartItems && cartItems.length > 0) {
-            const itemsToSave = cartItems.map((item: any) => ({
-                ...item,
-                userId: decoded.userId,
-                date: new Date(item.date),
-            }));
+            const itemsToSave = cartItems.map((item: any) => {
+                // Remove client-side _id if present to avoid duplicate key errors
+                const { _id, ...rest } = item;
+                return {
+                    ...rest,
+                    userId: decoded.userId,
+                    date: new Date(item.date),
+                };
+            });
             await CartItem.insertMany(itemsToSave);
         }
 

@@ -77,9 +77,31 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (isInitialLoad) return; // Don't sync until we've loaded initial state
 
-        localStorage.setItem("mandirlok_cart", JSON.stringify(cart));
+        // 1. Limit local cart size to prevent quota overflow
+        let cartToStore = cart;
+        if (cart.length > 50) {
+            cartToStore = cart.slice(-50); // Keep only the latest 50 items locally
+        }
 
-        // Sync with backend (Always attempt, backend will ignore if not logged in)
+        // 2. Safely save to localStorage
+        try {
+            localStorage.setItem("mandirlok_cart", JSON.stringify(cartToStore));
+        } catch (e: any) {
+            if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                console.warn("Storage quota exceeded. Clearing older data and relying on backend.");
+                // Fallback: Clear the oldest half of the cart to make room
+                try {
+                    localStorage.removeItem("mandirlok_cart");
+                    localStorage.setItem("mandirlok_cart", JSON.stringify(cart.slice(-20)));
+                } catch (retryError) {
+                    console.error("Critical storage failure:", retryError);
+                }
+            } else {
+                console.error("Storage error:", e);
+            }
+        }
+
+        // 3. Sync with backend (Always attempt, backend will ignore if not logged in)
         const syncCart = async () => {
             try {
                 await fetch("/api/cart/sync", {

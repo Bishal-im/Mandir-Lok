@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getSettings } from "@/lib/actions/admin";
+import { getSettings, getPendingPayoutCount } from "@/lib/actions/admin";
 import {
     LayoutDashboard,
     MapPin,
@@ -49,6 +49,7 @@ export default function AdminSidebar() {
     const [sideOpen, setSideOpen] = useState(false);
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [pendingPayoutCount, setPendingPayoutCount] = useState(0);
 
     useEffect(() => {
         async function loadLogo() {
@@ -63,15 +64,18 @@ export default function AdminSidebar() {
     }, []);
 
     useEffect(() => {
-        const fetchCount = async () => {
-            const res = await getUnreadAdminNotificationCount();
-            if (res.success) {
-                setUnreadCount(res.data);
-            }
+        const fetchCounts = async () => {
+            const [notifRes, payoutRes] = await Promise.all([
+                getUnreadAdminNotificationCount(),
+                getPendingPayoutCount()
+            ]);
+
+            if (notifRes.success) setUnreadCount(notifRes.data);
+            if (payoutRes.success) setPendingPayoutCount(payoutRes.count);
         };
 
-        fetchCount();
-        const interval = setInterval(fetchCount, 30000); // 30 seconds
+        fetchCounts();
+        const interval = setInterval(fetchCounts, 30000); // 30 seconds
         return () => clearInterval(interval);
     }, []);
 
@@ -155,6 +159,11 @@ export default function AdminSidebar() {
                                 {item.label === "Notifications" && unreadCount > 0 && (
                                     <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] flex items-center justify-center">
                                         {unreadCount > 9 ? "9+" : unreadCount}
+                                    </span>
+                                )}
+                                {item.label === "Payouts" && pendingPayoutCount > 0 && (
+                                    <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] flex items-center justify-center animate-pulse">
+                                        {pendingPayoutCount > 9 ? "9+" : pendingPayoutCount}
                                     </span>
                                 )}
                             </Link>

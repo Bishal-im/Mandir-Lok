@@ -11,10 +11,20 @@ export async function PATCH(req: Request) {
     // Only allow specific fields to be updated
     const allowedUpdates = ["name", "email", "bio", "languages", "photo", "whatsapp"];
     const updates: any = {};
+    // Normalize phone numbers — strip all '+' and non-digits, re-add single leading '+'
+    const normalizePhone = (num: string) => {
+      if (!num) return num;
+      const digits = num.replace(/\D/g, '');
+      return digits ? `+${digits}` : num;
+    };
 
     Object.keys(body).forEach(key => {
       if (allowedUpdates.includes(key)) {
-        updates[key] = body[key];
+        if (key === 'whatsapp') {
+          updates[key] = normalizePhone(body[key]);
+        } else {
+          updates[key] = body[key];
+        }
       }
     });
 

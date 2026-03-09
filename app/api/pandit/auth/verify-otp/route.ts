@@ -51,8 +51,10 @@ export async function POST(req: Request) {
     // Delete used OTP
     await Otp.deleteOne({ _id: otpRecord._id });
 
-    // Check if phone or whatsapp is missing
-    const needsPhoneUpdate = !pandit.phone || !pandit.whatsapp;
+    // Check if phone or whatsapp is missing OR malformed (e.g. +91+977... double prefix)
+    const isMalformed = (num: string) => (num.match(/\+/g) || []).length > 1;
+    const needsPhoneUpdate = !pandit.phone || !pandit.whatsapp
+      || isMalformed(pandit.phone || '') || isMalformed(pandit.whatsapp || '');
 
     // Generate JWT
     const token = generateToken({ panditId: pandit._id.toString() });

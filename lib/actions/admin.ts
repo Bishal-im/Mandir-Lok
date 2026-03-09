@@ -289,7 +289,19 @@ export async function createPandit(data: any) {
 export async function updatePandit(id: string, data: any) {
     try {
         await connectDB();
-        const pandit = await Pandit.findByIdAndUpdate(id, data, { new: true });
+
+        // Normalize phone numbers — strip all '+' and non-digits, re-add single leading '+'
+        const normalizePhone = (num: string) => {
+            if (!num) return num;
+            const digits = num.replace(/\D/g, '');
+            return digits ? `+${digits}` : num;
+        };
+
+        const cleanData = { ...data };
+        if (cleanData.phone) cleanData.phone = normalizePhone(cleanData.phone);
+        if (cleanData.whatsapp) cleanData.whatsapp = normalizePhone(cleanData.whatsapp);
+
+        const pandit = await Pandit.findByIdAndUpdate(id, cleanData, { new: true });
         revalidatePath("/admin/pandits");
         return { success: true, pandit: JSON.parse(JSON.stringify(pandit)) };
     } catch (error: any) {
@@ -476,6 +488,18 @@ export async function getPayoutsAdmin() {
     } catch (error: any) {
         console.error("getPayoutsAdmin error:", error);
         return [];
+    }
+}
+
+export async function getPendingPayoutCount() {
+    await connectDB();
+    try {
+        const Payout = mongoose.models.Payout || mongoose.model("Payout");
+        const count = await Payout.countDocuments({ status: "requested" });
+        return { success: true, count };
+    } catch (error: any) {
+        console.error("getPendingPayoutCount error:", error);
+        return { success: false, count: 0 };
     }
 }
 

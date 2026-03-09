@@ -8,6 +8,7 @@ import {
   Building, Percent, ShieldCheck, Save
 } from 'lucide-react'
 import CloudinaryUploader from '@/components/admin/CloudinaryUploader'
+import { COUNTRIES } from '@/lib/countries'
 
 export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
@@ -21,21 +22,60 @@ export default function ProfilePage() {
     photo: '',
     whatsapp: ''
   })
+  const [whatsappCountryCode, setWhatsappCountryCode] = useState('91')
+  const [normalizedPhone, setNormalizedPhone] = useState('')
   const [message, setMessage] = useState({ type: '', text: '' })
 
   useEffect(() => {
-    fetch('/api/pandit/me')
+    fetch('/api/pandit/me', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
           setPandit(data.data)
+          let wa = data.data.whatsapp || ''
+          let phoneRaw = data.data.phone || ''
+          let cc = '91'
+
+          // Parse a phone string that may have one or two '+' prefixes (e.g. "+91+9779860804988")
+          // Strategy: split on '+', check each non-empty chunk, find which one matches a known
+          // country code longest-first. The LAST matching chunk is the authoritative number.
+          const parsePhone = (raw: string): { code: string; local: string } => {
+            const chunks = raw.split('+').filter(Boolean)
+            const sortedCountries = COUNTRIES
+              .filter(c => !c.divider && 'code' in c && c.code)
+              .sort((a: any, b: any) => (b.code?.length ?? 0) - (a.code?.length ?? 0))
+
+            let bestCode = '91'
+            let bestLocal = raw.replace(/\D/g, '')
+
+            for (const chunk of chunks) {
+              const match = sortedCountries.find((c: any) => chunk.startsWith(c.code))
+              if (match && 'code' in match && match.code) {
+                bestCode = match.code
+                bestLocal = chunk.slice(match.code.length)
+              }
+            }
+            return { code: bestCode, local: bestLocal }
+          }
+
+          const parsed = parsePhone(wa)
+          cc = parsed.code
+          wa = parsed.local
+
+          // Also normalize the phone number for display
+          const phoneParsed = parsePhone(data.data.phone || '')
+          setNormalizedPhone(phoneParsed.code && phoneParsed.local
+            ? `+${phoneParsed.code}${phoneParsed.local}`
+            : data.data.phone || '—')
+
+          setWhatsappCountryCode(cc)
           setFormData({
             name: data.data.name || '',
             email: data.data.email || '',
             bio: data.data.bio || '',
             languages: (data.data.languages || []).join(', '),
             photo: data.data.photo || '',
-            whatsapp: data.data.whatsapp || ''
+            whatsapp: wa
           })
         }
       })
@@ -48,11 +88,16 @@ export default function ProfilePage() {
     setMessage({ type: '', text: '' })
 
     try {
+      const cleanWa = formData.whatsapp.startsWith(whatsappCountryCode)
+        ? formData.whatsapp.slice(whatsappCountryCode.length)
+        : formData.whatsapp;
+
       const res = await fetch('/api/pandit/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          whatsapp: `+${whatsappCountryCode}${cleanWa}`,
           languages: formData.languages.split(',').map(s => s.trim()).filter(Boolean)
         }),
       })
@@ -189,18 +234,35 @@ export default function ProfilePage() {
                   <div className="space-y-4">
                     <div className="opacity-60 bg-gray-50 rounded-2xl p-4 border border-gray-100 cursor-not-allowed">
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2"><Phone size={12} /> Registered Phone</label>
-                      <p className="font-bold text-gray-900">{pandit?.phone}</p>
+                      <p className="font-bold text-gray-900">{normalizedPhone || pandit?.phone}</p>
                       <p className="text-[9px] text-gray-400 mt-1">Cannot change (used for login)</p>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><Phone size={14} /> WhatsApp Number</label>
-                      <input
-                        type="tel"
-                        value={formData.whatsapp}
-                        onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                        className="input-divine w-full"
-                        placeholder="+91..."
-                      />
+                      <div className="flex gap-2">
+                        <select
+                          value={whatsappCountryCode}
+                          onChange={e => setWhatsappCountryCode(e.target.value)}
+                          className="px-2 py-2 bg-[#fff8f0] border border-[#f0dcc8] rounded-xl text-[#6b5b45] text-xs font-medium outline-none"
+                        >
+                          {COUNTRIES.map((c, i) => (
+                            c.divider ? (
+                              <option key={`divider-${i}`} disabled>──────────</option>
+                            ) : (
+                              <option key={c.code} value={c.code}>
+                                +{c.code} {c.flag}
+                              </option>
+                            )
+                          ))}
+                        </select>
+                        <input
+                          type="tel"
+                          value={formData.whatsapp}
+                          onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value.replace(/\D/g, '') })}
+                          className="input-divine flex-1"
+                          placeholder="Phone number"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><Languages size={14} /> Languages (Comma Separated)</label>
