@@ -29,6 +29,28 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // 0. Sync Initial Language from Cookie (Server-safe)
+    const getCookie = (name: string) => {
+      try {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+          const cookieVal = parts.pop()?.split(";").shift();
+          if (cookieVal) return decodeURIComponent(cookieVal);
+        }
+      } catch (err) {
+        console.error("Error reading cookie:", err);
+      }
+      return null;
+    };
+
+    const cookieValue = getCookie("googtrans");
+    if (cookieValue) {
+      const code = cookieValue.split("/").pop();
+      const lang = LANGUAGES.find((l) => l.code === code);
+      if (lang) setCurrentLang(lang);
+    }
+
     // 1. Initialize Google Translate
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
@@ -128,22 +150,6 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
 
     // 6. Poll as a safety-net (handles cases where GT loads after the observer)
     const interval = setInterval(suppressBanner, 500);
-
-    // 7. Persistence: Check cookie to set initial language
-    const getCookie = (name: string) => {
-      const decodeValue = decodeURIComponent(document.cookie);
-      const parts = decodeValue.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift();
-      const partsNoSpace = decodeValue.split(`${name}=`);
-      if (partsNoSpace.length === 2) return partsNoSpace.pop()?.split(";").shift();
-    };
-
-    const cookieValue = getCookie("googtrans");
-    if (cookieValue) {
-      const code = cookieValue.split("/").pop();
-      const lang = LANGUAGES.find((l) => l.code === code);
-      if (lang) setCurrentLang(lang);
-    }
 
     return () => {
       observer.disconnect();

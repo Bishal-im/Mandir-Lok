@@ -158,10 +158,6 @@ function PujaCard({ puja }: { puja: Pooja }) {
         {/* Duration + CTA */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-auto">
           <div className="flex items-center justify-between sm:justify-start sm:gap-4 w-full sm:w-auto">
-            <div className="flex flex-col">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Starting from</p>
-              <span className="text-amber-700 font-bold">{formatCurrency(currency === "USD" ? convertINRtoUSD(puja.price, exchangeRate) : puja.price, currency)}</span>
-            </div>
             <p className="text-xs text-gray-400">{puja.duration}</p>
           </div>
           <Link

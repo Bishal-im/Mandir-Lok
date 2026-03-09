@@ -311,14 +311,8 @@ function PujaCard({ puja }: { puja: Pooja }) {
         </p>
 
         <div className="mt-auto flex flex-col gap-4">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/50 border border-orange-100/50">
-            <div>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Price</p>
-              <p className="font-bold text-gray-900 text-sm">
-                <span className="text-amber-700 font-bold">{formatCurrency(currency === "USD" ? convertINRtoUSD(puja.price, exchangeRate) : puja.price, currency)}</span>
-              </p>
-            </div>
-            <div className="text-right">
+          <div className="flex items-center justify-center p-4 rounded-2xl bg-orange-50/50 border border-orange-100/50">
+            <div className="text-center">
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Schedule</p>
               <p className="font-bold text-orange-600 text-sm">{puja.availableDays || "Daily"}</p>
             </div>
