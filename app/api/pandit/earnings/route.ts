@@ -15,19 +15,6 @@ export async function GET(req: Request) {
     const payouts = await Payout.find({ panditId })
       .sort({ createdAt: -1 });
 
-    const latestPayout = payouts[0];
-    const joinDate = new Date(pandit.createdAt);
-    const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-
-    let nextPayoutDate = new Date(joinDate.getTime() + ONE_WEEK);
-
-    if (latestPayout) {
-      const lastPayoutDate = new Date(latestPayout.createdAt);
-      nextPayoutDate = new Date(lastPayoutDate.getTime() + ONE_WEEK);
-    }
-
-    const canRequestPayout = new Date() >= nextPayoutDate;
-
     return NextResponse.json({
       success: true,
       data: {
@@ -35,8 +22,7 @@ export async function GET(req: Request) {
         unpaidEarnings: pandit.unpaidEarnings,
         paidOut: pandit.totalEarnings - pandit.unpaidEarnings,
         payouts: payouts.slice(0, 10),
-        nextPayoutDate,
-        canRequestPayout
+        canRequestPayout: true
       }
     });
   } catch (error: any) {

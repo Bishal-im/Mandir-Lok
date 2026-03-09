@@ -39,22 +39,7 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // Frequency Validation (Weekly)
-    const latestPayout = await Payout.findOne({ panditId }).sort({ createdAt: -1 });
-    const joinDate = new Date(pandit.createdAt);
-    const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
-    let nextPayoutDate = new Date(joinDate.getTime() + ONE_WEEK);
-    if (latestPayout) {
-      nextPayoutDate = new Date(new Date(latestPayout.createdAt).getTime() + ONE_WEEK);
-    }
-
-    if (new Date() < nextPayoutDate) {
-      return NextResponse.json({
-        success: false,
-        message: `Payouts are limited to once a week. Next payout available after ${nextPayoutDate.toLocaleDateString('en-IN')}`
-      }, { status: 400 });
-    }
 
     const payout = await Payout.create({
       panditId,

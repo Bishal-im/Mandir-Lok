@@ -111,19 +111,10 @@ export default function EarningsPage() {
                         setShowPayoutModal(true)
                         setPayoutAmount(data.unpaidEarnings.toString())
                       }}
-                      disabled={!data?.canRequestPayout}
-                      className={`w-full py-3 flex items-center justify-center gap-2 rounded-xl font-bold transition-all shadow-lg ${data?.canRequestPayout
-                        ? 'bg-[#ff7f0a] text-white hover:bg-[#e66e00] shadow-orange-500/20'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none border border-gray-200'}`}
+                      className="w-full py-3 flex items-center justify-center gap-2 rounded-xl font-bold transition-all shadow-lg bg-[#ff7f0a] text-white hover:bg-[#e66e00] shadow-orange-500/20"
                     >
-                      <ArrowUpRight size={18} /> {data?.canRequestPayout ? 'Request Payout' : 'Payout Locked'}
+                      <ArrowUpRight size={18} /> Request Payout
                     </button>
-
-                    {!data?.canRequestPayout && data?.nextPayoutDate && (
-                      <p className="text-[10px] text-center font-bold text-orange-600 bg-orange-50 py-2 px-3 rounded-lg border border-orange-100 animate-pulse">
-                        🕒 Next payout available on {new Date(data.nextPayoutDate).toLocaleDateString()}
-                      </p>
-                    )}
                   </div>
                 )}
               </div>
