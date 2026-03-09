@@ -329,26 +329,26 @@ function CheckoutContent() {
         <>
             <div className="container-app py-8">
                 {/* Step Indicator */}
-                <div className="flex items-center justify-center gap-0 mb-8 max-w-md mx-auto">
-                    {["Sankalp Details", "Payment"].map((label, i) => (
-                        <div key={label} className="flex items-center flex-1">
+                <div className="flex items-center justify-center gap-0 mb-6 sm:mb-10 max-w-lg mx-auto px-4 sm:px-2">
+                    {["Sankalp", "Payment"].map((label, i) => (
+                        <div key={label} className="flex items-center flex-1 last:flex-none last:w-auto">
                             <div className="flex flex-col items-center">
                                 <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${step > i + 1
+                                    className={`w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[10px] sm:text-sm font-bold transition-all shadow-sm ${step > i + 1
                                         ? "bg-green-500 text-white"
                                         : step === i + 1
-                                            ? "bg-[#ff7f0a] text-white"
-                                            : "bg-[#f0dcc8] text-[#6b5b45]"
+                                            ? "bg-[#ff7f0a] text-white ring-2 sm:ring-4 ring-orange-100"
+                                            : "bg-white border sm:border-2 border-[#f0dcc8] text-[#6b5b45]"
                                         }`}
                                 >
                                     {step > i + 1 ? "✓" : i + 1}
                                 </div>
-                                <p className={`text-xs mt-1 ${step === i + 1 ? "text-[#ff7f0a] font-semibold" : "text-[#6b5b45]"}`}>
+                                <p className={`text-[10px] sm:text-xs mt-1 sm:mt-1.5 font-bold uppercase tracking-wider ${step === i + 1 ? "text-[#ff7f0a]" : "text-[#6b5b45]/40"}`}>
                                     {label}
                                 </p>
                             </div>
                             {i < 1 && (
-                                <div className={`flex-1 h-0.5 mx-2 ${step > 1 ? "bg-green-400" : "bg-[#f0dcc8]"}`} />
+                                <div className={`flex-1 h-[2px] mx-2 sm:mx-4 rounded-full ${step > 1 ? "bg-green-400" : "bg-[#f0dcc8]"}`} />
                             )}
                         </div>
                     ))}
@@ -387,11 +387,11 @@ function CheckoutContent() {
                                                     setCountryCode(e.target.value);
                                                     if (sameAsPhone) setWhatsappCountryCode(e.target.value);
                                                 }}
-                                                className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none max-w-[100px]"
+                                                className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none w-20 sm:w-28 shrink-0 appearance-none"
                                             >
                                                 {COUNTRIES.map((c) => (
                                                     <option key={`${c.name}-${c.code}`} value={c.code}>
-                                                        {c.flag} +{c.code} ({c.name})
+                                                        +{c.code}
                                                     </option>
                                                 ))}
                                             </select>
@@ -416,11 +416,11 @@ function CheckoutContent() {
                                                 value={sameAsPhone ? countryCode : whatsappCountryCode}
                                                 disabled={sameAsPhone}
                                                 onChange={(e) => setWhatsappCountryCode(e.target.value)}
-                                                className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none disabled:opacity-70 max-w-[100px]"
+                                                className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none disabled:opacity-70 w-20 sm:w-28 shrink-0 appearance-none"
                                             >
                                                 {COUNTRIES.map((c) => (
                                                     <option key={`wa-${c.name}-${c.code}`} value={c.code}>
-                                                        {c.flag} +{c.code}
+                                                        +{c.code}
                                                     </option>
                                                 ))}
                                             </select>
@@ -459,12 +459,12 @@ function CheckoutContent() {
                                     </div>
                                 </div>
 
-                                <div className="mt-6 flex items-center justify-between">
-                                    <button onClick={() => router.back()} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
+                                <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <button onClick={() => router.back()} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1">← Back to previous</button>
                                     <button
                                         onClick={() => setStep(2)}
                                         disabled={!isStep1Valid}
-                                        className={`btn-saffron text-sm px-8 ${!isStep1Valid ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        className={`btn-saffron w-full sm:w-auto text-base px-10 py-4 rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 ${!isStep1Valid ? "opacity-50 cursor-not-allowed grayscale" : ""}`}
                                     >
                                         Proceed to Payment →
                                     </button>
@@ -492,10 +492,10 @@ function CheckoutContent() {
                                     </div>
                                 )}
 
-                                <div className="flex items-center justify-between">
-                                    <button onClick={() => setStep(1)} className="text-sm text-[#6b5b45] hover:text-[#ff7f0a]">← Back</button>
-                                    <button onClick={handlePay} disabled={paying} className="btn-saffron text-sm px-8 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                                        {paying ? <><Loader2 size={14} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(orderItem.totalPrice) : orderItem.totalPrice, currency)} →</>}
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <button onClick={() => setStep(1)} className="text-sm font-bold text-[#6b5b45] hover:text-[#ff7f0a] order-2 sm:order-1">← Modify Details</button>
+                                    <button onClick={handlePay} disabled={paying} className="btn-saffron w-full sm:w-auto text-base px-10 py-4 rounded-2xl shadow-xl shadow-orange-200 order-1 sm:order-2 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                                        {paying ? <><Loader2 size={18} className="animate-spin" /> Processing…</> : <>Pay {formatCurrency(currency === "USD" ? convertINRtoUSD(orderItem.totalPrice, exchangeRate) : orderItem.totalPrice, currency)} →</>}
                                     </button>
                                 </div>
                                 <p className="text-center text-xs text-[#6b5b45] mt-4 flex items-center justify-center gap-1">

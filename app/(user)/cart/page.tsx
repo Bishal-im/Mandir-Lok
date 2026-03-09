@@ -206,26 +206,26 @@ function CartContent() {
     <>
       <div className="container-app py-8">
         {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-0 mb-6 sm:mb-10 max-w-lg mx-auto px-1 sm:px-2">
+        <div className="flex items-center justify-center gap-0 mb-6 sm:mb-10 max-w-lg mx-auto px-4 sm:px-2">
           {["Sankalp", "Payment"].map((label, i) => (
             <div key={label} className="flex items-center flex-1 last:flex-none last:w-auto">
               <div className="flex flex-col items-center">
                 <div
-                  className={`w-6 h-6 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[10px] sm:text-sm font-bold transition-all shadow-sm ${step > i + 1
+                  className={`w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[10px] sm:text-sm font-bold transition-all shadow-sm ${step > i + 1
                     ? "bg-green-500 text-white"
                     : step === i + 1
-                      ? "bg-[#ff7f0a] text-white ring-2 sm:ring-4 ring-orange-50"
+                      ? "bg-[#ff7f0a] text-white ring-2 sm:ring-4 ring-orange-100"
                       : "bg-white border sm:border-2 border-[#f0dcc8] text-[#6b5b45]"
                     }`}
                 >
                   {step > i + 1 ? "✓" : i + 1}
                 </div>
-                <p className={`text-[9px] sm:text-xs mt-1 sm:mt-1.5 font-bold uppercase tracking-wider ${step === i + 1 ? "text-[#ff7f0a]" : "text-[#6b5b45]/40"}`}>
+                <p className={`text-[10px] sm:text-xs mt-1 sm:mt-1.5 font-bold uppercase tracking-wider ${step === i + 1 ? "text-[#ff7f0a]" : "text-[#6b5b45]/40"}`}>
                   {label}
                 </p>
               </div>
               {i < 1 && (
-                <div className={`flex-1 h-[1px] sm:h-0.5 mx-1 sm:mx-4 rounded-full ${step > 1 ? "bg-green-400" : "bg-[#f0dcc8]"}`} />
+                <div className={`flex-1 h-[2px] mx-2 sm:mx-4 rounded-full ${step > 1 ? "bg-green-400" : "bg-[#f0dcc8]"}`} />
               )}
             </div>
           ))}
@@ -243,40 +243,55 @@ function CartContent() {
                 {cart.map((item) => (
                   <div key={item.id} className="bg-white border border-[#f0dcc8] rounded-2xl p-3.5 sm:p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-4 transition-all hover:border-[#ff7f0a]/30 group relative overflow-hidden">
                     {/* Checkbox and Image row for Mobile */}
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <div className="pt-2 sm:pt-4 shrink-0 flex items-center">
+                    <div className="flex flex-row items-center sm:items-start gap-3 sm:gap-4 w-full">
+                      <div className="shrink-0 flex items-center">
                         <input
                           type="checkbox"
                           checked={item.selected}
                           onChange={() => toggleSelectItem(item.id)}
-                          className="w-4 h-4 sm:w-5 sm:h-5 accent-[#ff7f0a] cursor-pointer rounded border-[#f0dcc8]"
+                          className="w-5 h-5 accent-[#ff7f0a] cursor-pointer rounded border-[#f0dcc8]"
                         />
                       </div>
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#fff8f0] rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-105 transition-transform shrink-0 overflow-hidden shadow-inner border border-orange-100/50">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#fff8f0] rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-105 transition-transform shrink-0 overflow-hidden shadow-inner border border-orange-100/50">
                         {item.poojaImage ? (
                           <img src={item.poojaImage} alt={item.poojaName} className="w-full h-full object-cover" />
                         ) : (
                           item.poojaEmoji
                         )}
                       </div>
-                      <div className="flex-1 sm:hidden pr-6">
-                        <h3 className="font-bold text-[#1a1209] text-sm leading-[1.3] line-clamp-2">{item.poojaName}</h3>
-                        <p className="font-bold text-[#ff7f0a] text-base mt-1">
-                          {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
-                        </p>
+                      <div className="flex-1 min-w-0 pr-8">
+                        <div className="flex flex-col justify-between h-full">
+                          <div>
+                            <h3 className="font-bold text-[#1a1209] text-sm sm:text-lg leading-tight line-clamp-2">{item.poojaName}</h3>
+                            <div className="flex items-center gap-1.5 mt-1 text-[#6b5b45]">
+                              <MapPin size={10} className="text-[#ff7f0a] shrink-0" />
+                              <span className="text-[10px] sm:text-xs truncate font-medium">{item.templeName}</span>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            <p className="font-bold text-[#ff7f0a] text-base sm:text-xl">
+                              {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
+                            </p>
+                            <div className="sm:hidden flex gap-1">
+                              <span className="text-[9px] bg-orange-50 text-[#ff7f0a] px-1.5 py-0.5 rounded-full font-bold flex items-center gap-1 border border-orange-100/50">
+                                <Calendar size={9} /> {new Date(item.date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="sm:hidden text-[#6b5b45]/30 hover:text-red-500 transition-colors p-1 absolute top-2 right-2"
+                        className="text-[#6b5b45]/30 hover:text-red-500 transition-colors p-1.5 absolute top-2 right-2 bg-white/80 rounded-full sm:hidden"
                         title="Remove"
                       >
-                        <X size={16} />
+                        <X size={18} />
                       </button>
                     </div>
 
-                    {/* Content for Tablet/Desktop or expanded info on Mobile */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="hidden sm:flex justify-between items-start">
+                    {/* Content for Tablet/Desktop */}
+                    <div className="hidden sm:flex flex-1 min-w-0 flex-col justify-center">
+                      <div className="flex justify-between items-start">
                         <h3 className="font-bold text-[#1a1209] text-lg lg:text-xl truncate pr-8">{item.poojaName}</h3>
                         <p className="font-bold text-[#ff7f0a] text-lg shrink-0">
                           {formatCurrency(currency === "USD" ? convertINRtoUSD(item.totalPrice, exchangeRate) : item.totalPrice, currency)}
@@ -338,20 +353,20 @@ function CartContent() {
                   <div>
                     <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">Mobile Number *</label>
                     <div className="flex">
-                      <select
-                        value={countryCode}
-                        onChange={(e) => {
-                          setCountryCode(e.target.value);
-                          if (sameAsPhone) setWhatsappCountryCode(e.target.value);
-                        }}
-                        className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none w-24 sm:w-28 shrink-0 appearance-none"
-                      >
-                        {COUNTRIES.map((c) => (
-                          <option key={`${c.name}-${c.code}`} value={c.code}>
-                            +{c.code} ({c.name})
-                          </option>
-                        ))}
-                      </select>
+                        <select
+                          value={countryCode}
+                          onChange={(e) => {
+                            setCountryCode(e.target.value);
+                            if (sameAsPhone) setWhatsappCountryCode(e.target.value);
+                          }}
+                          className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none w-20 sm:w-28 shrink-0 appearance-none"
+                        >
+                          {COUNTRIES.map((c) => (
+                            <option key={`${c.name}-${c.code}`} value={c.code}>
+                              +{c.code}
+                            </option>
+                          ))}
+                        </select>
                       <input
                         name="phone"
                         value={form.phone}
@@ -369,18 +384,18 @@ function CartContent() {
                       WhatsApp Number * <span className="text-[#25D366]">(Video will be sent here)</span>
                     </label>
                     <div className="flex">
-                      <select
-                        value={sameAsPhone ? countryCode : whatsappCountryCode}
-                        disabled={sameAsPhone}
-                        onChange={(e) => setWhatsappCountryCode(e.target.value)}
-                        className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none disabled:opacity-70 w-24 sm:w-28 shrink-0 appearance-none"
-                      >
-                        {COUNTRIES.map((c) => (
-                          <option key={`wa-${c.name}-${c.code}`} value={c.code}>
-                            +{c.code}
-                          </option>
-                        ))}
-                      </select>
+                        <select
+                          value={sameAsPhone ? countryCode : whatsappCountryCode}
+                          disabled={sameAsPhone}
+                          onChange={(e) => setWhatsappCountryCode(e.target.value)}
+                          className="px-2 border border-r-0 border-[#f0dcc8] rounded-l-xl text-xs text-[#6b5b45] bg-[#fdf6ee] outline-none disabled:opacity-70 w-20 sm:w-28 shrink-0 appearance-none"
+                        >
+                          {COUNTRIES.map((c) => (
+                            <option key={`wa-${c.name}-${c.code}`} value={c.code}>
+                              +{c.code}
+                            </option>
+                          ))}
+                        </select>
                       <input
                         name="whatsapp"
                         value={form.whatsapp}
