@@ -225,7 +225,7 @@ export default function ProfilePage() {
                                                         type="text"
                                                         value={name}
                                                         onChange={(e) => setName(e.target.value)}
-                                                        className="input-divine w-full pl-12"
+                                                        className="input-divine w-full !pl-12"
                                                         placeholder="Your Name"
                                                         required
                                                     />
@@ -243,7 +243,7 @@ export default function ProfilePage() {
                                                         type="email"
                                                         value={email}
                                                         onChange={(e) => setEmail(e.target.value)}
-                                                        className="input-divine w-full pl-12"
+                                                        className="input-divine w-full !pl-12"
                                                         placeholder="email@example.com"
                                                         required
                                                     />
