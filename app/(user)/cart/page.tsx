@@ -243,7 +243,7 @@ function CartContent() {
                 {cart.map((item) => (
                   <div key={item.id} className="bg-white border border-[#f0dcc8] rounded-2xl p-3.5 sm:p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-4 transition-all hover:border-[#ff7f0a]/30 group relative overflow-hidden">
                     {/* Checkbox and Image row for Mobile */}
-                    <div className="flex flex-row items-center sm:items-start gap-3 sm:gap-4 w-full">
+                    <div className="flex flex-row items-center sm:items-start gap-3 sm:gap-4 w-full sm:w-auto">
                       <div className="shrink-0 flex items-center">
                         <input
                           type="checkbox"
@@ -259,7 +259,7 @@ function CartContent() {
                           item.poojaEmoji
                         )}
                       </div>
-                      <div className="flex-1 min-w-0 pr-8">
+                      <div className="flex-1 min-w-0 pr-8 sm:hidden">
                         <div className="flex flex-col justify-between h-full">
                           <div>
                             <h3 className="font-bold text-[#1a1209] text-sm sm:text-lg leading-tight line-clamp-2">{item.poojaName}</h3>
