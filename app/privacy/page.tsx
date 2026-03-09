@@ -59,8 +59,8 @@ export default function PrivacyPage() {
               <h2 className="font-display font-bold text-xl text-[#1a0500] mb-3">4. Payment Data</h2>
               <div className="bg-[#f0fdf4] border border-green-200 rounded-xl p-4 text-sm text-[#6b5b45]">
                 <p>
-                  <strong className="text-[#1a1209]">🔒 We do not store your payment card details.</strong> All payments are processed securely by Razorpay, a PCI-DSS compliant payment gateway. Mandirlok only receives a payment confirmation and transaction ID. Please refer to{" "}
-                  <a href="https://razorpay.com/privacy/" target="_blank" rel="noreferrer" className="text-[#ff7f0a] hover:underline">Razorpay's Privacy Policy</a>{" "}
+                  <strong className="text-[#1a1209]">🔒 We do not store your payment card details.</strong> All payments are processed securely by Cashfree, a PCI-DSS compliant payment gateway. Mandirlok only receives a payment confirmation and transaction ID. Please refer to{" "}
+                  <a href="https://www.cashfree.com/privacypolicy/" target="_blank" rel="noreferrer" className="text-[#ff7f0a] hover:underline">Cashfree's Privacy Policy</a>{" "}
                   for details on how they handle your payment data.
                 </p>
               </div>

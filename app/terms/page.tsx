@@ -45,7 +45,7 @@ export default function TermsPage() {
             <section>
               <h2 className="font-display font-bold text-xl text-[#1a0500] mb-3">3. Payments</h2>
               <p className="text-sm text-[#6b5b45] leading-relaxed">
-                All payments are processed securely through Razorpay. We accept UPI, credit/debit cards, and net banking. Prices are displayed in Indian Rupees (₹) and are inclusive of all applicable charges. Mandirlok does not store your payment card details.
+                All payments are processed securely through Cashfree. We accept UPI, credit/debit cards, and net banking. Prices are displayed in Indian Rupees (₹) and are inclusive of all applicable charges. Mandirlok does not store your payment card details.
               </p>
             </section>
 

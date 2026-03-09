@@ -257,7 +257,7 @@ function HowItWorksBanner() {
     },
     {
       title: "Secure Payment",
-      desc: "Pay securely via UPI, card or net banking through Razorpay",
+      desc: "Pay securely via UPI, card or net banking through Cashfree",
     },
     {
       title: "Get Puja Video",

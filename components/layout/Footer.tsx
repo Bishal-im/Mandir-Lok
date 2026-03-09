@@ -62,18 +62,7 @@ export default function Footer() {
             Connect with holy pilgrimage sites and divine temples of India. Book
             pooja from the comfort of your home.
           </p>
-          {/* Social */}
-          <div className="flex gap-3">
-            {["wa", "fb", "in", "yt"].map((s) => (
-              <a
-                key={s}
-                href="#"
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#ff7f0a] flex items-center justify-center transition-colors text-sm font-bold uppercase"
-              >
-                {s === "wa" ? <Phone size={14} /> : s === "fb" ? "fb" : s === "in" ? "ig" : "yt"}
-              </a>
-            ))}
-          </div>
+
         </div>
 
         {/* Popular Temples */}
@@ -150,7 +139,7 @@ export default function Footer() {
             in India
           </p>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1"><Lock size={11} className="text-green-400" /> Razorpay Secured</span>
+            <span className="flex items-center gap-1"><Lock size={11} className="text-green-400" /> Cashfree Secured</span>
             <span className="flex items-center gap-1"><MessageCircle size={11} className="text-green-400" /> WhatsApp Updates</span>
             <span className="flex items-center gap-1"><CheckCircle2 size={11} className="text-green-400" /> Verified Pandits</span>
           </div>
