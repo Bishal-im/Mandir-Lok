@@ -27,29 +27,38 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(LANGUAGES[0]);
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // 0. Sync Initial Language from Cookie (Server-safe)
-    const getCookie = (name: string) => {
+    setMounted(true);
+    // 0. Sync Initial Language from LocalStorage or Cookie (Server-safe)
+    const getStoredLang = () => {
       try {
+        // Try localStorage first (fastest and most reliable for UI)
+        const savedCode = localStorage.getItem("selected_lang");
+        if (savedCode) {
+          const lang = LANGUAGES.find((l) => l.code === savedCode);
+          if (lang) return lang;
+        }
+
+        // Fallback to cookie (for Google Translate sync)
         const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
+        const parts = value.split(`; googtrans=`);
         if (parts.length === 2) {
           const cookieVal = parts.pop()?.split(";").shift();
-          if (cookieVal) return decodeURIComponent(cookieVal);
+          if (cookieVal) {
+            const code = decodeURIComponent(cookieVal).split("/").pop();
+            const lang = LANGUAGES.find((l) => l.code === code);
+            if (lang) return lang;
+          }
         }
       } catch (err) {
-        console.error("Error reading cookie:", err);
+        console.error("Error reading storage/cookie:", err);
       }
-      return null;
+      return LANGUAGES[0];
     };
 
-    const cookieValue = getCookie("googtrans");
-    if (cookieValue) {
-      const code = cookieValue.split("/").pop();
-      const lang = LANGUAGES.find((l) => l.code === code);
-      if (lang) setCurrentLang(lang);
-    }
+    setCurrentLang(getStoredLang());
 
     // 1. Initialize Google Translate
     window.googleTranslateElementInit = () => {
@@ -165,6 +174,13 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
 
     setIsLoading(true);
 
+    // Save to localStorage
+    try {
+      localStorage.setItem("selected_lang", lang.code);
+    } catch (e) {
+      console.error("Failed to save language to localStorage", e);
+    }
+
     const hostname = window.location.hostname;
     const cookieString = `googtrans=/en/${lang.code}; path=/;`;
     
@@ -188,6 +204,12 @@ export default function GoogleTranslate({ align = "right" }: GoogleTranslateProp
       window.location.reload();
     }, 300);
   };
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-orange-200/50 bg-white/70 h-[34px] w-[130px] animate-pulse" />
+    );
+  }
 
   return (
     <div className="notranslate skiptranslate relative inline-block text-left z-50">
