@@ -20,7 +20,7 @@ Database:
 - MongoDB
 
 Payment Integration:
-- Razorpay
+- Cashfree
 
 Storage:
 - AWS S3 (for pooja video uploads)

@@ -79,7 +79,7 @@ export default async function TransactionsPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 font-mono text-xs text-gray-500 uppercase">
-                                        {tx.razorpayPaymentId || "N/A"}
+                                        {tx.cashfreePaymentId || "N/A"}
                                     </td>
                                 </tr>
                             ))}

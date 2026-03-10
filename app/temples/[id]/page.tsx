@@ -667,7 +667,7 @@ export default function TempleDetailPage() {
                 {[
                   "Verified, experienced pandits only",
                   "HD video proof of pooja",
-                  "100% secure Razorpay payment",
+                  "100% secure Cashfree payment",
                   "Real-time WhatsApp updates",
                   "Authentic Vedic rituals",
                   "Full refund if cancelled 24h before",

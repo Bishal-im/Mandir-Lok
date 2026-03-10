@@ -844,18 +844,18 @@ export default function SettingsPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-gray-900">Payment Configuration</h3>
-                                            <p className="text-xs text-gray-500">Manage Razorpay keys and platform commission.</p>
+                                            <p className="text-xs text-gray-500">Manage Cashfree keys and platform commission.</p>
                                         </div>
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-4 p-4 rounded-2xl border border-gray-100 bg-gray-50/50">
-                                            <h4 className="text-sm font-bold text-gray-700">Razorpay Integration</h4>
+                                            <h4 className="text-sm font-bold text-gray-700">Cashfree Integration</h4>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Key ID</label>
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">App ID</label>
                                                 <input
                                                     readOnly
-                                                    value={process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_..."}
+                                                    value={process.env.NEXT_PUBLIC_CASHFREE_APP_ID || "app_id_..."}
                                                     className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200 bg-white font-mono"
                                                 />
                                                 <p className="text-[10px] text-gray-400 italic">Managed via environment variables for security.</p>

@@ -30,6 +30,7 @@ export default function AartiPage() {
     const [isLampGlowing, setIsLampGlowing] = useState(false);
     const [conchPlaying, setConchPlaying] = useState(false);
     const [isAartiPerforming, setIsAartiPerforming] = useState(false);
+    const [isFlowerActive, setIsFlowerActive] = useState(false);
     const [direction, setDirection] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const shankhAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -55,6 +56,7 @@ export default function AartiPage() {
         }
 
         // Stop flowers
+        setIsFlowerActive(false);
         if (flowerIntervalRef.current) {
             clearInterval(flowerIntervalRef.current);
             flowerIntervalRef.current = null;
@@ -140,6 +142,7 @@ export default function AartiPage() {
     };
 
     const handlePushpaClick = (customDuration?: number) => {
+        setIsFlowerActive(true);
         // Clear existing interval if any
         if (flowerIntervalRef.current) {
             clearInterval(flowerIntervalRef.current);
@@ -153,6 +156,7 @@ export default function AartiPage() {
             if (Date.now() - startTime > duration) {
                 clearInterval(interval);
                 flowerIntervalRef.current = null;
+                setIsFlowerActive(false);
                 return;
             }
             const batch = Array.from({ length: 8 }).map((_, i) => {
@@ -464,20 +468,20 @@ export default function AartiPage() {
                         {/* Left Interaction Buttons */}
                         <div className="absolute left-4 sm:left-6 bottom-24 sm:bottom-32 flex flex-col gap-4 sm:gap-6 z-30">
                             <button onClick={handleDeepClick} className="group flex flex-col items-center gap-1">
-                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-orange-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
-                                    🪔
+                                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 flex items-center justify-center shadow-lg group-hover:scale-110 active:scale-95 transition-all ${isLampGlowing ? "border-orange-400 ring-2 ring-orange-400/50 brightness-125 shadow-[0_0_15px_rgba(251,146,60,0.6)]" : "border-orange-400/50"}`}>
+                                    <img src="/images/aarti/diya.png" alt="Diya" className="w-8 h-8 sm:w-11 sm:h-11 object-contain" />
                                 </div>
                             </button>
 
                             <button onClick={() => handlePushpaClick()} className="group flex flex-col items-center gap-1">
-                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-rose-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
-                                    🌸
+                                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 flex items-center justify-center shadow-lg group-hover:scale-110 active:scale-95 transition-all ${isFlowerActive ? "border-rose-400 ring-2 ring-rose-400/50 brightness-125 shadow-[0_0_15px_rgba(244,63,94,0.6)]" : "border-rose-400/50"}`}>
+                                    <img src="/images/aarti/flower_icon.png" alt="Flower" className="w-8 h-8 sm:w-11 sm:h-11 object-contain" />
                                 </div>
                             </button>
 
                             <button onClick={handleShankhClick} className="group flex flex-col items-center gap-1">
-                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-blue-400/50 flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 active:scale-95 transition-all">
-                                    🐚
+                                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/40 backdrop-blur-md border-2 flex items-center justify-center shadow-lg group-hover:scale-110 active:scale-95 transition-all ${conchPlaying ? "border-blue-400 ring-2 ring-blue-400/50 brightness-125 shadow-[0_0_15px_rgba(96,165,250,0.6)]" : "border-blue-400/50"}`}>
+                                    <img src="/images/aarti/shankh_icon.png" alt="Shankh" className="w-8 h-8 sm:w-11 sm:h-11 object-contain" />
                                 </div>
                             </button>
                         </div>

@@ -576,7 +576,7 @@ export default function PoojaDetailPage() {
 
                 <p className="text-center text-xs text-[#6b5b45] flex items-center justify-center gap-1">
                   <Shield size={12} className="text-green-500" />
-                  Secured by Razorpay · 100% Safe
+                  Secured by Cashfree · 100% Safe
                 </p>
 
               </div>
