@@ -16,7 +16,8 @@ import {
   Phone,
   Loader2,
   Sparkles,
-  ShoppingBag
+  ShoppingBag,
+  User
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -53,6 +54,8 @@ export default function PoojaDetailPage() {
   const [selectedTempleId, setSelectedTempleId] = useState<string | null>(null);
   const [selectedPackageIndex, setSelectedPackageIndex] = useState<number | null>(null);
   const [addedOfferings, setAddedOfferings] = useState<string[]>([]);
+  const [pandits, setPandits] = useState<any[]>([]);
+  const [assignedPandits, setAssignedPandits] = useState<any[]>([]);
   const [showValidation, setShowValidation] = useState(false);
 
   useEffect(() => {
@@ -64,6 +67,7 @@ export default function PoojaDetailPage() {
         if (data.success) {
           setPooja(data.data.pooja);
           setOfferings(data.data.chadhavaItems || []);
+          setPandits(data.data.pandits || []);
           if (data.data.pooja.templeIds?.length > 0) {
             setSelectedTempleId(data.data.pooja.templeIds[0]._id);
           }
@@ -71,9 +75,26 @@ export default function PoojaDetailPage() {
           setError(data.message || "Failed to load pooja details");
         }
       })
-      .catch(() => setError("Something went wrong"))
+      .catch((err) => {
+          console.error("Fetch pooja error:", err);
+          setError("Something went wrong");
+      })
       .finally(() => setLoading(false));
   }, [id]);
+
+  // Update assigned pandits when temple changes
+  useEffect(() => {
+    if (selectedTempleId && pandits.length > 0) {
+      const assigned = pandits.filter(p => 
+        p.assignedTemples?.some((tId: any) => 
+          (typeof tId === 'string' ? tId : tId._id) === selectedTempleId
+        )
+      );
+      setAssignedPandits(assigned);
+    } else {
+      setAssignedPandits([]);
+    }
+  }, [selectedTempleId, pandits]);
 
   const toggleOffering = (offeringId: string) => {
     setAddedOfferings((prev) =>
@@ -378,6 +399,44 @@ export default function PoojaDetailPage() {
                       </button>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Assigned Pandits */}
+              {assignedPandits.length > 0 && (
+                <div className="bg-white border border-[#f0dcc8] rounded-2xl p-5 shadow-card animate-in fade-in slide-in-from-bottom-2 duration-300 mt-6">
+                  <h3 className="font-display font-semibold text-[#1a1209] mb-4 flex items-center gap-2">
+                    <User size={18} className="text-[#ff7f0a]" />
+                    Experienced Pandits at this Temple
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {assignedPandits.map((pandit) => (
+                      <div key={pandit._id} className="flex items-center gap-4 p-4 rounded-xl border border-[#fdf6ee] bg-[#fffcf9] hover:border-orange-200 transition-colors">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-orange-100 flex-shrink-0 bg-orange-50">
+                          {pandit.photo ? (
+                            <img src={pandit.photo} alt={pandit.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-orange-200">
+                              <User size={32} />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-[#1a1209] text-sm">{pandit.name}</h4>
+                          <p className="text-[#ff7f0a] text-xs font-semibold">{pandit.experienceYears}+ Years Experience</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {pandit.languages?.slice(0, 3).map((lang: string) => (
+                              <span key={lang} className="text-[9px] px-1.5 py-0.5 bg-white border border-orange-50 text-[#6b5b45] rounded-md">{lang}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-[#6b5b45] mt-3 italic flex items-center gap-1">
+                    <Sparkles size={10} className="text-[#ff7f0a]" />
+                    These experienced pandits are assigned to perform your pooja with full vedic rituals.
+                  </p>
                 </div>
               )}
 

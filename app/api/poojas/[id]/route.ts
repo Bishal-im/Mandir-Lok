@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Pooja from "@/models/Pooja";
 import Chadhava from "@/models/Chadhava";
+import Pandit from "@/models/Pandit";
 import mongoose from "mongoose";
 
 export async function GET(
@@ -28,16 +29,25 @@ export async function GET(
     }
 
     // Also fetch chadhava items for temples associated with this pooja
-    const chadhavaItems = await Chadhava.find({
-      templeId: { $in: pooja.templeIds.map((t: any) => t._id) },
-      isActive: true,
-    });
+    const templeIds = pooja.templeIds.map((t: any) => t._id);
+    
+    const [chadhavaItems, pandits] = await Promise.all([
+      Chadhava.find({
+        templeId: { $in: templeIds },
+        isActive: true,
+      }),
+      Pandit.find({
+        assignedTemples: { $in: templeIds },
+        isActive: true,
+      }).select("name photo experienceYears languages bio assignedTemples"),
+    ]);
 
     return NextResponse.json({
       success: true,
       data: {
         pooja,
         chadhavaItems,
+        pandits,
       },
     });
   } catch (error) {
