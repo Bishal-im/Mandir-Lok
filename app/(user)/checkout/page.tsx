@@ -62,7 +62,6 @@ function CheckoutContent() {
     const { currency, exchangeRate } = useCurrency();
 
     const [form, setForm] = useState({
-        name: "",
         gotra: "",
         dob: "",
         phone: "",
@@ -70,6 +69,7 @@ function CheckoutContent() {
         whatsapp: "",
         address: "",
     });
+    const [names, setNames] = useState<string[]>([""]);
     const [countryCode, setCountryCode] = useState("91");
     const [whatsappCountryCode, setWhatsappCountryCode] = useState("91");
     const [sameAsPhone, setSameAsPhone] = useState(true);
@@ -87,6 +87,7 @@ function CheckoutContent() {
         const templeId = searchParams.get("templeId");
         const date = searchParams.get("date");
         const packageIndexStr = searchParams.get("packageIndex");
+        const packageMembersStr = searchParams.get("packageMembers") || "1";
         const offeringsStr = searchParams.get("offerings");
         const qtyStr = searchParams.get("qty") || "1";
         const customAmountStr = searchParams.get("customAmount") || "0";
@@ -155,7 +156,8 @@ function CheckoutContent() {
                         totalPrice: customAmount,
                         isDonation,
                         extraDonation: customAmount,
-                        qty: 1
+                        qty: 1,
+                        packageMembers: 1
                     });
                     setLoadingParam(false);
                     return;
@@ -198,6 +200,7 @@ function CheckoutContent() {
                             packageIndex,
                             packageName,
                             packagePrice,
+                            packageMembers: pkg ? pkg.members : 1,
                             offerings: selectedOfferingItems,
                             totalPrice: total,
                         });
@@ -213,11 +216,28 @@ function CheckoutContent() {
         fetchDetails();
     }, [searchParams]);
 
+    // Sync names array with package members
+    useEffect(() => {
+        if (orderItem) {
+            const members = orderItem.packageMembers || 1;
+            setNames(prev => {
+                if (prev.length === members) return prev;
+                const next = [...prev];
+                if (next.length < members) {
+                    while (next.length < members) next.push("");
+                } else {
+                    next.splice(members);
+                }
+                return next;
+            });
+        }
+    }, [orderItem]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
     };
 
-    const isStep1Valid = form.name && form.phone && form.whatsapp && orderItem;
+    const isStep1Valid = names.every(n => n.trim() !== "") && form.phone && form.whatsapp && orderItem;
 
     const handlePay = async () => {
         if (!orderItem) return;
@@ -231,7 +251,7 @@ function CheckoutContent() {
             // For direct checkout, we use standard single-item checkout logic
             const reqBody: any = {
                 isBulk: false,
-                name: form.name,
+                name: names.join(", "),
                 phone: `+${countryCode}${form.phone}`,
             };
 
@@ -272,7 +292,7 @@ function CheckoutContent() {
             query.set("templeId", orderItem.templeId);
             query.set("bookingDate", orderItem.date);
             query.set("qty", (orderItem.qty || 1).toString());
-            query.set("sankalpName", form.name);
+            query.set("sankalpName", names.join(", "));
             query.set("gotra", form.gotra);
             query.set("dob", form.dob);
             query.set("phone", `+${countryCode}${form.phone}`);
@@ -364,12 +384,23 @@ function CheckoutContent() {
                                 </p>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="sm:col-span-2">
-                                        <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">
-                                            Full Name (for Sankalp) *
-                                        </label>
-                                        <input name="name" value={form.name} onChange={handleChange} placeholder="Enter your full name" className="input-divine" />
-                                    </div>
+                                    {names.map((name, idx) => (
+                                        <div key={idx} className={names.length === 1 ? "sm:col-span-2" : ""}>
+                                            <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">
+                                                {names.length > 1 ? `${idx === 0 ? 'First' : idx === 1 ? 'Second' : idx === 2 ? 'Third' : `${idx + 1}th`} Member Name *` : 'Full Name (for Sankalp) *'}
+                                            </label>
+                                            <input 
+                                                value={name} 
+                                                onChange={(e) => {
+                                                    const newNames = [...names];
+                                                    newNames[idx] = e.target.value;
+                                                    setNames(newNames);
+                                                }} 
+                                                placeholder={`Enter name of member ${idx + 1}`} 
+                                                className="input-divine" 
+                                            />
+                                        </div>
+                                    ))}
                                     <div>
                                         <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">Gotra</label>
                                         <input name="gotra" value={form.gotra} onChange={handleChange} placeholder="e.g., Kashyap, Bharadwaj" className="input-divine" />
@@ -480,7 +511,7 @@ function CheckoutContent() {
                                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-4 mb-6">
                                     <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Your Sankalp Details</h4>
                                     <div className="grid grid-cols-2 gap-2 text-xs text-[#6b5b45]">
-                                        <span>Name: <strong className="text-[#1a1209]">{form.name}</strong></span>
+                                        <span className="col-span-2">Name: <strong className="text-[#1a1209]">{names.join(", ")}</strong></span>
                                         <span>Gotra: <strong className="text-[#1a1209]">{form.gotra || "—"}</strong></span>
                                         <span>Mobile: <strong className="text-[#1a1209]">+{countryCode} {form.phone}</strong></span>
                                         <span>WhatsApp: <strong className="text-[#1a1209]">+{sameAsPhone ? countryCode : whatsappCountryCode} {form.whatsapp}</strong></span>

@@ -129,6 +129,7 @@ export default function PoojaDetailPage() {
   }
   if (selectedPackageIndex !== null) {
     checkoutQuery.set("packageIndex", selectedPackageIndex.toString());
+    checkoutQuery.set("packageMembers", pooja.packages[selectedPackageIndex].members.toString());
   }
   if (addedOfferings.length > 0) {
     checkoutQuery.set("offerings", addedOfferings.join(","));
@@ -186,6 +187,7 @@ export default function PoojaDetailPage() {
       packageIndex: selectedPackageIndex,
       packageName: pkg.name,
       packagePrice: pkg.price,
+      packageMembers: pkg.members,
       offeringIds: addedOfferings,
       offerings: selectedOfferingItems,
       totalPrice: pkg.price + selectedOfferingItems.reduce((sum, o) => sum + o.price, 0)

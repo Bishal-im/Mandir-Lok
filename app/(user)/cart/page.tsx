@@ -58,7 +58,6 @@ function CartContent() {
 
   const [loadingConfig, setLoadingConfig] = useState(false);
   const [form, setForm] = useState({
-    name: "",
     gotra: "",
     dob: "",
     phone: "",
@@ -66,6 +65,7 @@ function CartContent() {
     whatsapp: "",
     address: "",
   });
+  const [names, setNames] = useState<string[]>([""]);
   const [countryCode, setCountryCode] = useState("91");
   const [whatsappCountryCode, setWhatsappCountryCode] = useState("91");
   const [sameAsPhone, setSameAsPhone] = useState(true);
@@ -80,6 +80,7 @@ function CartContent() {
     const templeId = searchParams.get("templeId");
     const date = searchParams.get("date");
     const packageIndexStr = searchParams.get("packageIndex");
+    const packageMembersStr = searchParams.get("packageMembers") || "1";
     const offeringsStr = searchParams.get("offerings");
 
     if (poojaId && templeId && date && !loadingParam) {
@@ -124,6 +125,7 @@ function CartContent() {
                 packageIndex,
                 packageName: pkg.name,
                 packagePrice: pkg.price,
+                packageMembers: pkg.members,
                 offeringIds: selectedOfferingIds,
                 offerings: selectedOfferingItems,
                 totalPrice: pkg.price + selectedOfferingItems.reduce((sum: number, o: any) => sum + o.price, 0)
@@ -142,7 +144,26 @@ function CartContent() {
   };
 
   const selectedItems = cart.filter(item => item.selected);
-  const isStep1Valid = form.name && form.phone && form.whatsapp && selectedItems.length > 0;
+
+  // Sync names array with max package members among selected items
+  useEffect(() => {
+    const maxMembers = selectedItems.length > 0 
+      ? Math.max(...selectedItems.map(item => item.packageMembers || 1)) 
+      : 1;
+    
+    setNames(prev => {
+        if (prev.length === maxMembers) return prev;
+        const next = [...prev];
+        if (next.length < maxMembers) {
+            while (next.length < maxMembers) next.push("");
+        } else {
+            next.splice(maxMembers);
+        }
+        return next;
+    });
+  }, [selectedItems]);
+
+  const isStep1Valid = names.every(n => n.trim() !== "") && form.phone && form.whatsapp && selectedItems.length > 0;
 
   const totalAmount = selectedItems.reduce((sum: number, item: CartItem) => sum + item.totalPrice, 0);
 
@@ -162,7 +183,7 @@ function CartContent() {
           isBulk: true,
           amount: totalAmount,
           phone: `+${countryCode}${form.phone}`,
-          name: form.name,
+          name: names.join(", "),
           selectedItemIds: selectedItems.map(i => i.id) // Pass selected IDs to sync logic in verify
         }),
       });
@@ -177,7 +198,7 @@ function CartContent() {
 
       await cashfree.checkout({
         paymentSessionId: payment_session_id,
-        returnUrl: `${window.location.origin}/api/payment/verify?order_id=${order_id}&isBulk=true&sankalpName=${encodeURIComponent(form.name)}&gotra=${encodeURIComponent(form.gotra)}&dob=${form.dob}&phone=${encodeURIComponent('+' + countryCode + form.phone)}&whatsapp=${encodeURIComponent('+' + (sameAsPhone ? countryCode : whatsappCountryCode) + form.whatsapp)}&sankalp=${encodeURIComponent(form.sankalp)}&address=${encodeURIComponent(form.address)}&selectedItemIds=${encodeURIComponent(selectedItems.map(i => i.id).join(","))}`,
+        returnUrl: `${window.location.origin}/api/payment/verify?order_id=${order_id}&isBulk=true&sankalpName=${encodeURIComponent(names.join(", "))}&gotra=${encodeURIComponent(form.gotra)}&dob=${form.dob}&phone=${encodeURIComponent('+' + countryCode + form.phone)}&whatsapp=${encodeURIComponent('+' + (sameAsPhone ? countryCode : whatsappCountryCode) + form.whatsapp)}&sankalp=${encodeURIComponent(form.sankalp)}&address=${encodeURIComponent(form.address)}&selectedItemIds=${encodeURIComponent(selectedItems.map(i => i.id).join(","))}`,
       });
 
     } catch (err: any) {
@@ -336,12 +357,23 @@ function CartContent() {
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">
-                      Full Name (for Sankalp) *
-                    </label>
-                    <input name="name" value={form.name} onChange={handleChange} placeholder="Enter your full name" className="input-divine" />
-                  </div>
+                  {names.map((name, idx) => (
+                      <div key={idx} className={names.length === 1 ? "sm:col-span-2" : ""}>
+                          <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">
+                              {names.length > 1 ? `${idx === 0 ? 'First' : idx === 1 ? 'Second' : idx === 2 ? 'Third' : `${idx + 1}th`} Member Name *` : 'Full Name (for Sankalp) *'}
+                          </label>
+                          <input 
+                              value={name} 
+                              onChange={(e) => {
+                                  const newNames = [...names];
+                                  newNames[idx] = e.target.value;
+                                  setNames(newNames);
+                              }} 
+                              placeholder={`Enter name of member ${idx + 1}`} 
+                              className="input-divine" 
+                          />
+                      </div>
+                  ))}
                   <div>
                     <label className="block text-xs font-semibold text-[#6b5b45] mb-1.5 uppercase tracking-wide">Gotra</label>
                     <input name="gotra" value={form.gotra} onChange={handleChange} placeholder="e.g., Kashyap, Bharadwaj" className="input-divine" />
@@ -451,7 +483,7 @@ function CartContent() {
                 <div className="bg-[#fff8f0] border border-[#ffd9a8] rounded-xl p-4 mb-6">
                   <h4 className="font-semibold text-sm text-[#1a1209] mb-2">Your Sankalp Details</h4>
                   <div className="grid grid-cols-2 gap-2 text-xs text-[#6b5b45]">
-                    <span>Name: <strong className="text-[#1a1209]">{form.name}</strong></span>
+                    <span className="col-span-2">Name: <strong className="text-[#1a1209]">{names.join(", ")}</strong></span>
                     <span>Gotra: <strong className="text-[#1a1209]">{form.gotra || "—"}</strong></span>
                     <span>Mobile: <strong className="text-[#1a1209]">+{countryCode} {form.phone}</strong></span>
                     <span>WhatsApp: <strong className="text-[#1a1209]">+{sameAsPhone ? countryCode : whatsappCountryCode} {form.whatsapp}</strong></span>

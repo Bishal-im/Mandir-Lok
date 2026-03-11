@@ -13,6 +13,7 @@ export interface CartItem {
     packageIndex: number | null;
     packageName?: string;
     packagePrice: number;
+    packageMembers: number; // member count from pooja package
     offeringIds: string[];
     offerings: { id: string; name: string; price: number; emoji: string; quantity: number }[];
     totalPrice: number;

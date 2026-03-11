@@ -12,6 +12,7 @@ export interface ICartItem extends Document {
     packageIndex: number;
     packageName: string;
     packagePrice: number;
+    packageMembers: number;
     offeringIds: Types.ObjectId[];
     offerings: {
         id: Types.ObjectId;
@@ -41,6 +42,7 @@ const CartItemSchema = new Schema<ICartItem>(
         packageIndex: { type: Number, required: true },
         packageName: { type: String, required: true },
         packagePrice: { type: Number, required: true },
+        packageMembers: { type: Number, required: true },
         offeringIds: [{ type: Schema.Types.ObjectId, ref: "Chadhava" }],
         offerings: [
             {
