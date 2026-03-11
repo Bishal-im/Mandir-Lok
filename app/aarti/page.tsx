@@ -36,6 +36,7 @@ export default function AartiPage() {
     const shankhAudioRef = useRef<HTMLAudioElement | null>(null);
     const aartiTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const flowerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const shankhTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -68,6 +69,10 @@ export default function AartiPage() {
         if (shankhAudioRef.current) {
             shankhAudioRef.current.pause();
             shankhAudioRef.current.currentTime = 0;
+        }
+        if (shankhTimeoutRef.current) {
+            clearTimeout(shankhTimeoutRef.current);
+            shankhTimeoutRef.current = null;
         }
     };
 
@@ -126,6 +131,7 @@ export default function AartiPage() {
 
         // Start playing from beginning if not playing
         audioRef.current.currentTime = 0;
+        audioRef.current.volume = isPlaying ? 0.2 : 1.0;
         audioRef.current.play().catch(err => console.log("Audio play failed:", err));
 
         aartiTimeoutRef.current = setTimeout(() => {
@@ -187,6 +193,11 @@ export default function AartiPage() {
     };
 
     const handleShankhClick = () => {
+        // Clear previous timeout if it exists
+        if (shankhTimeoutRef.current) {
+            clearTimeout(shankhTimeoutRef.current);
+        }
+
         setCounts((prev) => ({ ...prev, shankh: prev.shankh + 1 }));
         setConchPlaying(true);
 
@@ -194,12 +205,21 @@ export default function AartiPage() {
             shankhAudioRef.current = new Audio("/sounds/shankh.mp3");
         }
 
-        // Stop and restart to prevent overlap
+        // Stop and restart to prevent overlap and fix repetition
         shankhAudioRef.current.pause();
         shankhAudioRef.current.currentTime = 0;
+        shankhAudioRef.current.volume = isPlaying ? 0.2 : 1.0;
         shankhAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
 
-        setTimeout(() => setConchPlaying(false), 5000);
+        // Auto-stop after 5 seconds (one full blast)
+        shankhTimeoutRef.current = setTimeout(() => {
+            setConchPlaying(false);
+            if (shankhAudioRef.current) {
+                shankhAudioRef.current.pause();
+                shankhAudioRef.current.currentTime = 0;
+            }
+            shankhTimeoutRef.current = null;
+        }, 5000);
     };
 
     // Keyboard Navigation
