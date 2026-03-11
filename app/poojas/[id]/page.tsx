@@ -561,7 +561,7 @@ export default function PoojaDetailPage() {
                 <Link
                   href={checkoutLink}
                   onClick={handleProceedClick}
-                  className={`btn-saffron w-full text-center text-sm block mb-3 transition-all ${showValidation && (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) ? "bg-red-500 border-red-500 shadow-none scale-[0.98]" : ""}`}
+                  className={`btn-saffron w-full text-center text-lg py-4 font-bold block mb-3 transition-all shadow-premium hover:shadow-hover hover:-translate-y-1 ${showValidation && (selectedDate === null || selectedPackageIndex === null || selectedTempleId === null) ? "bg-red-500 border-red-500 shadow-none scale-[0.98] hover:translate-y-0" : ""}`}
                 >
                   Proceed to Book →
                 </Link>
