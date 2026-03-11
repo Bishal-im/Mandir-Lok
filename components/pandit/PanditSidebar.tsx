@@ -133,7 +133,7 @@ export default function PanditSidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 bg-[#1a1209] text-white flex-col sticky top-0 h-screen border-r border-white/5">
+      <aside className="hidden lg:flex w-64 bg-[#1a1209] text-white flex-col lg:static lg:h-screen border-r border-white/5">
         <SidebarContent />
       </aside>
 
