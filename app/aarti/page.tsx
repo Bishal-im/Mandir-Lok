@@ -211,7 +211,7 @@ export default function AartiPage() {
         shankhAudioRef.current.volume = isPlaying ? 0.2 : 1.0;
         shankhAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
 
-        // Auto-stop after 5 seconds (one full blast)
+        // Auto-stop after 4 seconds (one full blast)
         shankhTimeoutRef.current = setTimeout(() => {
             setConchPlaying(false);
             if (shankhAudioRef.current) {
@@ -219,7 +219,7 @@ export default function AartiPage() {
                 shankhAudioRef.current.currentTime = 0;
             }
             shankhTimeoutRef.current = null;
-        }, 5000);
+        }, 4000);
     };
 
     // Keyboard Navigation
