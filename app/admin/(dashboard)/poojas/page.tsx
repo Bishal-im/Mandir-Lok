@@ -31,7 +31,7 @@ export default function PoojasAdminPage() {
         if (search) {
             result = result.filter(p =>
                 p.name.toLowerCase().includes(search.toLowerCase()) ||
-                (p.templeId?.name || "Deleted Temple").toLowerCase().includes(search.toLowerCase())
+                (p.templeIds?.[0]?.name || p.templeId?.name || "Deleted Temple").toLowerCase().includes(search.toLowerCase())
             );
         }
         if (selectedTemple !== "All") {
@@ -129,10 +129,15 @@ export default function PoojasAdminPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                                            <p className="flex items-center gap-1"><MapPin size={12} className="text-gray-400" /> {pooja.templeId?.name}</p>
+                                            <p className="flex items-center gap-1"><MapPin size={12} className="text-gray-400" /> {pooja.templeIds?.[0]?.name || pooja.templeId?.name || "Deleted Temple"}{pooja.templeIds?.length > 1 ? ` +${pooja.templeIds.length - 1}` : ""}</p>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <p className="font-bold text-gray-900 flex items-center gap-0.5"><IndianRupee size={12} />{pooja.price.toLocaleString()}</p>
+                                            <p className="font-bold text-gray-900 flex items-center gap-0.5">
+                                                <IndianRupee size={12} />
+                                                {pooja.packages && pooja.packages.length > 0 
+                                                    ? `Starting from ${Math.min(...pooja.packages.map((p: any) => p.price)).toLocaleString()}` 
+                                                    : (pooja.price || 0).toLocaleString()}
+                                            </p>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${pooja.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>

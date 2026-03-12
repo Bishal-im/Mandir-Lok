@@ -32,8 +32,12 @@ export async function POST(req: Request) {
         if (packageIndex !== undefined && packageIndex !== null && pooja.packages?.length > packageIndex) {
           poojaAmount = pooja.packages[packageIndex].price;
           poojaName = `${pooja.name} - ${pooja.packages[packageIndex].name}`;
+        } else if (pooja.packages?.length > 0) {
+          // Fallback to first package if no index provided and global price is missing
+          poojaAmount = pooja.price ? pooja.price * qty : pooja.packages[0].price * qty;
+          poojaName = pooja.name;
         } else {
-          poojaAmount = pooja.price * qty;
+          poojaAmount = (pooja.price || 0) * qty;
           poojaName = pooja.name;
         }
       }

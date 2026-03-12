@@ -41,7 +41,8 @@ interface Pooja {
   slug: string;
   emoji: string;
   description: string;
-  price: number;
+  price?: number;
+  packages?: { name: string; price: number; members: number }[];
   duration: string;
   tag: string;
   tagColor: string;
@@ -124,11 +125,7 @@ function PoojaRow({
           <p className="text-[10px] text-[#6b5b45]">{pooja.duration}</p>
         </div>
       </div>
-      {showPrice && (
-        <span className="text-xs font-bold text-[#ff7f0a] shrink-0 ml-2">
-          {formatCurrency(currency === "USD" ? convertINRtoUSD(pooja.price, exchangeRate) : pooja.price, currency)}
-        </span>
-      )}
+      {/* Price removed from row view */}
     </Link>
   );
 }

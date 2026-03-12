@@ -14,16 +14,32 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "50");
     const page = parseInt(searchParams.get("page") || "1");
 
-    const query: Record<string, unknown> = { isActive: true };
+    const query: Record<string, any> = { isActive: true };
     if (featured === "true") query.isFeatured = true;
-    if (templeId) query.templeId = templeId;
+    if (templeId) {
+      query.$or = [
+        { templeId: templeId },
+        { templeIds: templeId }
+      ];
+    }
     if (deity && deity !== "all") query.deity = deity;
     if (search) {
-      query.$or = [
+      const searchTerms = [
         { name: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
         { deity: { $regex: search, $options: "i" } },
       ];
+      if (query.$or) {
+        // If we already have an $or (from templeId), we need to $and it with the search $or
+        const existingOr = query.$or;
+        delete query.$or;
+        query.$and = [
+          { $or: existingOr },
+          { $or: searchTerms }
+        ];
+      } else {
+        query.$or = searchTerms;
+      }
     }
 
     const skip = (page - 1) * limit;
@@ -71,25 +87,23 @@ export async function GET(req: NextRequest) {
       { $sort: { isFeatured: -1, rating: -1 } }
     ];
 
-    // Note: aggregate doesn't support .populate() directly, so we need to $lookup the temple info
+    // Lookup temple info for templeIds array
     pipeline.splice(1, 0, {
       $lookup: {
         from: "temples",
-        localField: "templeId",
+        localField: "templeIds",
         foreignField: "_id",
-        as: "templeId"
+        as: "templeIds"
       }
     }, {
-      $unwind: "$templeId"
-    }, {
       $project: {
-        "templeId.description": 0,
-        "templeId.about": 0,
-        "templeId.images": 0,
-        "templeId.openTime": 0,
-        "templeId.phone": 0,
-        "templeId.website": 0,
-        "templeId.mapUrl": 0
+        "templeIds.description": 0,
+        "templeIds.about": 0,
+        "templeIds.images": 0,
+        "templeIds.openTime": 0,
+        "templeIds.phone": 0,
+        "templeIds.website": 0,
+        "templeIds.mapUrl": 0
       }
     });
 

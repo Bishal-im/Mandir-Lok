@@ -33,14 +33,6 @@ interface Chadhava {
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const CATEGORIES = [
-  { id: "all", name: "All Offerings", icon: "" },
-  { id: "Bhog", name: "Prasad & Bhog", icon: "" },
-  { id: "Vastra", name: "Shringar & Vastra", icon: "" },
-  { id: "Deep Daan", name: "Deep & Oil", icon: "" },
-  { id: "Flowers", name: "Pushpa & Mala", icon: "" },
-  { id: "Seva", name: "Special Seva", icon: "" },
-];
 
 // ── Chadhava Card ─────────────────────────────────────────────────────────────
 function ChadhavaCard({
@@ -268,6 +260,27 @@ export default function ChadhavaPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [bannerBg, setBannerBg] = useState("");
+  const [categories, setCategories] = useState<{ id: string; name: string; icon: string }[]>([]);
+
+  useEffect(() => {
+    async function fetchFilters() {
+      try {
+        const res = await fetch("/api/filters");
+        const data = await res.json();
+        if (data.success && data.data.chadhava) {
+          const dynamicCats = data.data.chadhava.map((cat: string) => ({
+            id: cat,
+            name: cat,
+            icon: ""
+          }));
+          setCategories([{ id: "all", name: "All Offerings", icon: "" }, ...dynamicCats]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch filters", err);
+      }
+    }
+    fetchFilters();
+  }, []);
 
   useEffect(() => {
     async function fetchBanner() {
@@ -361,7 +374,7 @@ export default function ChadhavaPage() {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               {/* Categories */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}

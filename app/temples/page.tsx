@@ -29,26 +29,6 @@ interface Temple {
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const CATEGORIES = [
-  "All Temples",
-  "Jyotirlinga",
-  "Shaktipeeth",
-  "Vaishnavite",
-  "Char Dham",
-  "Famous Temples",
-];
-
-const STATES = [
-  "All States",
-  "Uttar Pradesh",
-  "Gujarat",
-  "Rajasthan",
-  "Uttarakhand",
-  "Maharashtra",
-  "Tamil Nadu",
-  "Himachal Pradesh",
-  "Madhya Pradesh",
-];
 
 // ── Image Placeholder ─────────────────────────────────────────────────────────
 function ImagePlaceholder({ label = "", className = "" }: { label?: string; className?: string }) {
@@ -221,6 +201,24 @@ export default function TemplesPage() {
   const [search, setSearch] = useState("");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const [bannerBg, setBannerBg] = useState("");
+  const [categories, setCategories] = useState<string[]>(["All Temples"]);
+  const [states, setStates] = useState<string[]>(["All States"]);
+
+  useEffect(() => {
+    async function fetchFilters() {
+      try {
+        const res = await fetch("/api/filters");
+        const data = await res.json();
+        if (data.success && data.data.temples) {
+          setCategories(["All Temples", ...data.data.temples.categories]);
+          setStates(["All States", ...data.data.temples.states]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch filters", err);
+      }
+    }
+    fetchFilters();
+  }, []);
 
   // Fetch settings on mount
   useEffect(() => {
@@ -306,7 +304,7 @@ export default function TemplesPage() {
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-2 overflow-x-auto py-3 no-scrollbar">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
@@ -345,7 +343,7 @@ export default function TemplesPage() {
               onChange={(e) => setActiveState(e.target.value)}
               className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white text-gray-700"
             >
-              {STATES.map((s) => <option key={s}>{s}</option>)}
+              {states.map((s) => <option key={s}>{s}</option>)}
             </select>
 
             {/* Featured Toggle */}

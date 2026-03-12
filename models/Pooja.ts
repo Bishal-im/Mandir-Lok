@@ -15,7 +15,7 @@ export interface IPooja extends Document {
   emoji: string;
   description: string;
   about: string;
-  price: number;
+  price?: number;
   duration: string;
   benefits: string[];
   includes: string[];
@@ -42,7 +42,7 @@ const PoojaSchema = new Schema<IPooja>(
     emoji: { type: String, default: "🪔" },
     description: { type: String, required: true },
     about: { type: String, default: "" },
-    price: { type: Number, required: true, min: 0 },
+    price: { type: Number, required: false, min: 0 },
     duration: { type: String, required: true },
     benefits: [{ type: String }],
     includes: [{ type: String }],

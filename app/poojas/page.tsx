@@ -24,7 +24,8 @@ interface Pooja {
   deity: string;
   emoji: string;
   description: string;
-  price: number;
+  price?: number;
+  packages?: { name: string; price: number; members: number }[];
   duration: string;
   benefits: string[];
   tag: string;
@@ -36,15 +37,6 @@ interface Pooja {
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const FILTERS = [
-  "All Pujas",
-  "Shiva",
-  "Vishnu",
-  "Devi",
-  "Ganesha",
-  "Surya",
-  "Navgraha",
-];
 const SORT_OPTIONS = [
   "Most Popular",
   "Price: Low to High",
@@ -155,9 +147,9 @@ function PujaCard({ puja }: { puja: Pooja }) {
           ))}
         </div>
 
-        {/* Duration + CTA */}
+        {/* Duration + Price + CTA */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-auto">
-          <div className="flex items-center justify-between sm:justify-start sm:gap-4 w-full sm:w-auto">
+          <div className="flex flex-col">
             <p className="text-xs text-gray-400">{puja.duration}</p>
           </div>
           <Link
@@ -291,6 +283,22 @@ export default function PoojasPage() {
   const [sortBy, setSortBy] = useState("Most Popular");
   const [search, setSearch] = useState("");
   const [bannerBg, setBannerBg] = useState("");
+  const [filters, setFilters] = useState<string[]>(["All Pujas"]);
+
+  useEffect(() => {
+    async function fetchFilters() {
+      try {
+        const res = await fetch("/api/filters");
+        const data = await res.json();
+        if (data.success && data.data.poojas) {
+          setFilters(["All Pujas", ...data.data.poojas]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch filters", err);
+      }
+    }
+    fetchFilters();
+  }, []);
 
   // Fetch poojas from API
   useEffect(() => {
@@ -321,10 +329,12 @@ export default function PoojasPage() {
           let result: Pooja[] = data.data;
 
           // Client-side sorting
+          const getMinPrice = (p: Pooja) => p.packages && p.packages.length > 0 ? Math.min(...p.packages.map(pkg => pkg.price)) : (p.price || 0);
+
           if (sortBy === "Price: Low to High")
-            result = [...result].sort((a, b) => a.price - b.price);
+            result = [...result].sort((a, b) => getMinPrice(a) - getMinPrice(b));
           if (sortBy === "Price: High to Low")
-            result = [...result].sort((a, b) => b.price - a.price);
+            result = [...result].sort((a, b) => getMinPrice(b) - getMinPrice(a));
           if (sortBy === "A-Z")
             result = [...result].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -354,7 +364,7 @@ export default function PoojasPage() {
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-2 overflow-x-auto py-3 no-scrollbar">
-              {FILTERS.map((f) => (
+              {filters.map((f) => (
                 <button
                   key={f}
                   onClick={() => setActiveFilter(f)}
