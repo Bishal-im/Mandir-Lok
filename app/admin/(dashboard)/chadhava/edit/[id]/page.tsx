@@ -5,7 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, Save, IndianRupee, Info, Image as ImageIcon, Upload } from "lucide-react";
 import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
-import { getChadhavaById, updateChadhava, getTemplesAdmin } from "@/lib/actions/admin";
+import { getChadhavaById, updateChadhava, getTemplesAdmin, getChadhavaCategoriesAdmin, createChadhavaCategory } from "@/lib/actions/admin";
+import { Plus, X, Check, Tag } from "lucide-react";
 
 export default function EditChadhavaPage() {
     const { id } = useParams() as { id: string };
@@ -14,10 +15,13 @@ export default function EditChadhavaPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [temples, setTemples] = useState([]);
-
+    const [categories, setCategories] = useState([]);
+    const [isAddingCategory, setIsAddingCategory] = useState(false);
+    const [newCategoryData, setNewCategoryData] = useState({ name: "" });
     const [formData, setFormData] = useState({
         name: "",
         templeId: "",
+        category: "",
         emoji: "🌸",
         image: "",
         price: 0,
@@ -29,8 +33,13 @@ export default function EditChadhavaPage() {
         async function fetchData() {
             setLoading(true);
             try {
-                const [item, t] = await Promise.all([getChadhavaById(id), getTemplesAdmin()]);
+                const [item, t, c] = await Promise.all([
+                    getChadhavaById(id), 
+                    getTemplesAdmin(),
+                    getChadhavaCategoriesAdmin()
+                ]);
                 setTemples(t);
+                setCategories(c.filter((cat: any) => cat.isActive));
                 if (item) {
                     const { _id, createdAt, updatedAt, __v, ...cleanData } = item;
                     setFormData({ ...formData, ...cleanData });
@@ -68,6 +77,20 @@ export default function EditChadhavaPage() {
             setError(err.message || "Something went wrong");
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleQuickAddCategory = async () => {
+        if (!newCategoryData.name) return;
+        const res = await createChadhavaCategory(newCategoryData);
+        if (res.success) {
+            const updatedCats = await getChadhavaCategoriesAdmin();
+            setCategories(updatedCats.filter((cat: any) => cat.isActive));
+            setFormData({ ...formData, category: newCategoryData.name });
+            setIsAddingCategory(false);
+            setNewCategoryData({ name: "" });
+        } else {
+            alert(res.error);
         }
     };
 
@@ -128,11 +151,49 @@ export default function EditChadhavaPage() {
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase">Temple Assignment</label>
-                        <select name="templeId" value={formData.templeId} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white">
-                            {temples.map((t: any) => <option key={t._id} value={t._id}>{t.name}</option>)}
-                        </select>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-500 uppercase">Temple Assignment</label>
+                            <select name="templeId" value={formData.templeId} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white">
+                                {temples.map((t: any) => <option key={t._id} value={t._id}>{t.name}</option>)}
+                            </select>
+                        </div>
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><Tag size={12} /> Category</label>
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsAddingCategory(!isAddingCategory)}
+                                    className="text-[10px] font-bold text-[#ff7f0a] hover:underline flex items-center gap-0.5"
+                                >
+                                    {isAddingCategory ? <><X size={10} /> Cancel</> : <><Plus size={10} /> Add New</>}
+                                </button>
+                            </div>
+                            
+                            {isAddingCategory ? (
+                                <div className="flex gap-2 animate-in fade-in slide-in-from-top-1">
+                                    <input 
+                                        value={newCategoryData.name} 
+                                        onChange={e => setNewCategoryData({...newCategoryData, name: e.target.value})}
+                                        className="flex-1 px-4 py-3 rounded-xl border border-orange-200 outline-none focus:ring-2 focus:ring-orange-100"
+                                        placeholder="New Category Name"
+                                        autoFocus
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={handleQuickAddCategory}
+                                        className="p-3 bg-orange-500 text-white rounded-xl"
+                                    >
+                                        <Check size={18} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <select name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white">
+                                    <option value="">Select Category...</option>
+                                    {categories.map((c: any) => <option key={c._id} value={c.name}>{c.name}</option>)}
+                                </select>
+                            )}
+                        </div>
                     </div>
 
                     <div className="space-y-1.5">

@@ -2,18 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Save, MapPin, IndianRupee, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, Save, MapPin, IndianRupee, Image as ImageIcon, Tag } from "lucide-react";
 import CloudinaryUploader from "@/components/admin/CloudinaryUploader";
 import Link from "next/link";
-import { createChadhava, getTemplesAdmin } from "@/lib/actions/admin";
+import { createChadhava, getTemplesAdmin, getChadhavaCategoriesAdmin, createChadhavaCategory } from "@/lib/actions/admin";
+import { Plus, X, Check } from "lucide-react";
 
 export default function AddChadhavaPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [temples, setTemples] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [isAddingCategory, setIsAddingCategory] = useState(false);
+    const [newCategoryData, setNewCategoryData] = useState({ name: "" });
     const [formData, setFormData] = useState({
         name: "",
         templeId: "",
+        category: "",
         emoji: "🌸",
         image: "",
         price: 0,
@@ -23,8 +28,9 @@ export default function AddChadhavaPage() {
 
     useEffect(() => {
         async function fetch() {
-            const data = await getTemplesAdmin();
-            setTemples(data);
+            const [t, c] = await Promise.all([getTemplesAdmin(), getChadhavaCategoriesAdmin()]);
+            setTemples(t);
+            setCategories(c.filter((cat: any) => cat.isActive));
         }
         fetch();
     }, []);
@@ -35,6 +41,20 @@ export default function AddChadhavaPage() {
         await createChadhava(formData);
         setLoading(false);
         router.push("/admin/chadhava");
+    };
+
+    const handleQuickAddCategory = async () => {
+        if (!newCategoryData.name) return;
+        const res = await createChadhavaCategory(newCategoryData);
+        if (res.success) {
+            const updatedCats = await getChadhavaCategoriesAdmin();
+            setCategories(updatedCats.filter((cat: any) => cat.isActive));
+            setFormData({ ...formData, category: newCategoryData.name });
+            setIsAddingCategory(false);
+            setNewCategoryData({ name: "" });
+        } else {
+            alert(res.error);
+        }
     };
 
     return (
@@ -78,12 +98,48 @@ export default function AddChadhavaPage() {
                         <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><IndianRupee size={12} /> Price</label>
                         <input type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} className="w-full px-4 py-3 rounded-xl border border-gray-200" />
                     </div>
-                    <div className="col-span-2 space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1"><MapPin size={12} /> Map to Temple</label>
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><MapPin size={12} /> Map to Temple</label>
                         <select required value={formData.templeId} onChange={e => setFormData({ ...formData, templeId: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white">
                             <option value="">Select Temple...</option>
                             {temples.map((t: any) => <option key={t._id} value={t._id}>{t.name}</option>)}
                         </select>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><Tag size={12} /> Category</label>
+                            <button 
+                                type="button"
+                                onClick={() => setIsAddingCategory(!isAddingCategory)}
+                                className="text-[10px] font-bold text-[#ff7f0a] hover:underline flex items-center gap-0.5"
+                            >
+                                {isAddingCategory ? <><X size={10} /> Cancel</> : <><Plus size={10} /> Add New</>}
+                            </button>
+                        </div>
+                        
+                        {isAddingCategory ? (
+                            <div className="flex gap-2 animate-in fade-in slide-in-from-top-1">
+                                <input 
+                                    value={newCategoryData.name} 
+                                    onChange={e => setNewCategoryData({...newCategoryData, name: e.target.value})}
+                                    className="flex-1 px-4 py-3 rounded-xl border border-orange-200 outline-none focus:ring-2 focus:ring-orange-100"
+                                    placeholder="New Category Name"
+                                    autoFocus
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={handleQuickAddCategory}
+                                    className="p-3 bg-orange-500 text-white rounded-xl"
+                                >
+                                    <Check size={18} />
+                                </button>
+                            </div>
+                        ) : (
+                            <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm">
+                                <option value="">Select Category...</option>
+                                {categories.map((c: any) => <option key={c._id} value={c.name}>{c.name}</option>)}
+                            </select>
+                        )}
                     </div>
                 </div>
                 
