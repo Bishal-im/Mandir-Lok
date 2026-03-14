@@ -3,6 +3,7 @@ import '../styles/globals.css'
 import RootMusicProvider from '@/components/RootMusicProvider'
 import { CartProvider } from '@/context/CartContext'
 import { CurrencyProvider } from '@/context/CurrencyContext'
+import CustomCursor from '@/components/CustomCursor'
 
 export const metadata: Metadata = {
   title: 'Mandirlok – Online Pooja & Temple Booking',
@@ -33,6 +34,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[#fdf6ee] text-[#1a1209] antialiased">
+        <CustomCursor />
         <CartProvider>
           <CurrencyProvider>
             <RootMusicProvider>
