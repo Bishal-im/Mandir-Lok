@@ -268,9 +268,9 @@ export default function ChadhavaPage() {
         const res = await fetch("/api/filters");
         const data = await res.json();
         if (data.success && data.data.chadhava) {
-          const dynamicCats = data.data.chadhava.map((cat: string) => ({
-            id: cat,
-            name: cat,
+          const dynamicCats = data.data.chadhava.map((catName: string) => ({
+            id: catName,
+            name: catName,
             icon: ""
           }));
           setCategories([{ id: "all", name: "All Offerings", icon: "" }, ...dynamicCats]);
@@ -375,15 +375,14 @@ export default function ChadhavaPage() {
               {/* Categories */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
                 {categories.map((cat) => (
-                  <button
+                    <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-300 ${activeCategory === cat.id
+                    className={`shrink-0 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-300 ${activeCategory === cat.id
                       ? "bg-amber-500 text-white shadow-lg shadow-amber-200"
                       : "bg-white text-gray-600 hover:bg-amber-50 border border-amber-100 shadow-sm"
                       }`}
                   >
-                    <span>{cat.icon}</span>
                     <span>{cat.name}</span>
                   </button>
                 ))}

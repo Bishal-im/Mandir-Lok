@@ -5,6 +5,7 @@ import { connectDB } from "../db";
 import Temple from "../../models/Temple";
 import Pooja from "../../models/Pooja";
 import Chadhava from "../../models/Chadhava";
+import ChadhavaCategory from "../../models/ChadhavaCategory";
 import Pandit from "../../models/Pandit";
 import Order from "../../models/Order";
 import User from "../../models/User";
@@ -264,6 +265,51 @@ export async function getChadhavaById(id: string) {
     await connectDB();
     const item = await Chadhava.findById(id).lean();
     return item ? JSON.parse(JSON.stringify(item)) : null;
+}
+
+// =======================
+// CHADHAVA CATEGORY CRUD
+// =======================
+export async function getChadhavaCategoriesAdmin() {
+    await connectDB();
+    const categories = await ChadhavaCategory.find().sort({ name: 1 }).lean();
+    return JSON.parse(JSON.stringify(categories));
+}
+
+export async function createChadhavaCategory(data: any) {
+    try {
+        await connectDB();
+        const category = await ChadhavaCategory.create(data);
+        revalidatePath("/admin/chadhava-categories");
+        revalidatePath("/chadhava");
+        return { success: true, category: JSON.parse(JSON.stringify(category)) };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function updateChadhavaCategory(id: string, data: any) {
+    try {
+        await connectDB();
+        const category = await ChadhavaCategory.findByIdAndUpdate(id, data, { new: true });
+        revalidatePath("/admin/chadhava-categories");
+        revalidatePath("/chadhava");
+        return { success: true, category: JSON.parse(JSON.stringify(category)) };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function deleteChadhavaCategory(id: string) {
+    try {
+        await connectDB();
+        await ChadhavaCategory.findByIdAndDelete(id);
+        revalidatePath("/admin/chadhava-categories");
+        revalidatePath("/chadhava");
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
 }
 
 // =======================

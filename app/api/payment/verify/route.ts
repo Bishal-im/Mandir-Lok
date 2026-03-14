@@ -182,7 +182,7 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
             const dbPackage = pooja.packages?.find((p: any) => p.name === packageSelected.name);
             poojaAmount = dbPackage ? dbPackage.price : packageSelected.price;
           } else {
-            poojaAmount = pooja.price * qty;
+            poojaAmount = (pooja.price || 0) * qty;
           }
           poojaName = pooja.name;
           poojaImage = pooja.images?.[0] || "";

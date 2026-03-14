@@ -171,7 +171,7 @@ function CheckoutContent() {
                         const pooja = data.data.pooja;
                         const packageIndex = packageIndexStr ? parseInt(packageIndexStr) : 0;
                         const pkg = pooja.packages ? pooja.packages[packageIndex] : null;
-                        const packagePrice = pkg ? pkg.price : pooja.price;
+                        const packagePrice = pkg ? pkg.price : (pooja.price || 0);
                         const packageName = pkg ? pkg.name : undefined;
 
                         const selectedOfferingIds = offeringsStr ? offeringsStr.split(",") : [];

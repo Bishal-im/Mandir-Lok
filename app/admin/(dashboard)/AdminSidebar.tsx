@@ -20,6 +20,7 @@ import {
     MessageCircle,
     Bell,
     Music,
+    Tag,
 } from "lucide-react";
 import AdminNotificationBell from "@/components/admin/AdminNotificationBell";
 import { getUnreadAdminNotificationCount } from "@/lib/actions/notifications";
@@ -31,6 +32,7 @@ const navItems = [
     { label: "Temples", href: "/admin/temples", icon: <MapPin size={18} /> },
     { label: "Poojas", href: "/admin/poojas", icon: <Star size={18} /> },
     { label: "Chadhava", href: "/admin/chadhava", icon: <Flower size={18} /> },
+    { label: "Chadhava Categories", href: "/admin/chadhava-categories", icon: <Tag size={18} /> },
     { label: "Pandits", href: "/admin/pandits", icon: <Users size={18} /> },
     {
         label: "Payments",
