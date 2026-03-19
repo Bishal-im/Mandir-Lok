@@ -13,6 +13,7 @@ import { sendWhatsApp } from "@/lib/whatsapp";
 import { verifyCashfreePayment } from "@/lib/cashfree";
 
 async function processVerification(req: Request, searchParams?: URLSearchParams) {
+  console.log(`[Verification] Request received. Method: ${req.method}${searchParams ? ' (Redirect)' : ' (POST)'}`);
   try {
     await connectDB();
 
@@ -80,6 +81,7 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
       isBulk,
       selectedItemIds,
     } = params;
+    console.log(`[Verification] Params:`, { cashfreeOrderId, whatsapp, poojaId, templeId, isBulk });
 
     // 2. Verify Cashfree Payment
     const cashfreeOrder = await verifyCashfreePayment(cashfreeOrderId);
@@ -261,6 +263,7 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
 
 // Helper to handle notifications and pandit assignment
 async function handleOrderPostProcess(order: any, poojaName: string, userId: string, sankalpName: string) {
+  console.log(`[OrderProcess] Starting post-process for order: ${order.bookingId}, WhatsApp: ${order.whatsapp}`);
   try {
     // 1. Notify User (In-app)
     try {
@@ -278,7 +281,9 @@ async function handleOrderPostProcess(order: any, poojaName: string, userId: str
 
     // 2. Notify User (WhatsApp)
     try {
-      await sendWhatsApp(order.whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}\nPUJA: ${poojaName}`);
+      console.log(`[OrderProcess] Sending WhatsApp to: ${order.whatsapp}`);
+      const waResult = await sendWhatsApp(order.whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}\nPUJA: ${poojaName}`);
+      console.log(`[OrderProcess] WhatsApp result:`, waResult);
     } catch (err: any) {
       console.error("[Notification Error] User WhatsApp failed", err);
     }
