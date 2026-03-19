@@ -1,78 +1,116 @@
 import twilio from "twilio";
+import fs from "fs";
+import path from "path";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const fromPhoneNumber = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
+const defaultContentSid = process.env.TWILIO_CONTENT_SID;
 
 /**
  * Send a WhatsApp message using Twilio.
  * Supports both plain text and Twilio Templates (Content API).
  * @param to - The recipient's phone number (with country code, e.g., "91XXXXXXXXXX")
- * @param message - The text content of the message (used as body or fallback)
- * @param options - Optional template settings
+ * @param messageOrSid - The text content OR the Twilio Content SID (HX...)
+ * @param optionsOrVariables - Optional template variables or settings { contentSid?, contentVariables? }
  */
 export async function sendWhatsApp(
   to: string, 
-  message: string, 
-  options?: { contentSid?: string; contentVariables?: Record<string, string> }
+  messageOrSid: string, 
+  optionsOrVariables?: any
 ) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const fromPhoneNumber = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
-  const defaultContentSid = process.env.TWILIO_CONTENT_SID;
+  const from = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
 
-  const cleanFrom = fromPhoneNumber.trim();
-  // Clean the phone number: remove any non-digit characters except for a potentially leading plus
-  const digitsOnly = to.replace(/\D/g, '');
-  const formattedTo = `whatsapp:+${digitsOnly}`;
+  const cleanTo = to.replace(/[^0-9]/g, "");
+  const formattedTo = `whatsapp:+${cleanTo}`;
 
-  // Ensure 'from' starts with whatsapp: prefix and has +
+  const cleanFrom = from.trim();
   const formattedFrom = cleanFrom.startsWith("whatsapp:")
     ? cleanFrom
     : `whatsapp:${cleanFrom.startsWith('+') ? '' : '+'}${cleanFrom}`;
 
-  console.log(`[WhatsApp] Attempting send: From=${formattedFrom} To=${formattedTo}`);
+  const logFile = path.join(process.cwd(), 'whatsapp_debug.log');
+  
+  // Trimming variables for safety
+  const cleanVariables: Record<string, string> = {};
+  let contentSid: string | undefined = undefined;
+
+  // Handle both signatures:
+  // 1. (to, sid, { contentSid, contentVariables })
+  // 2. (to, sid, { "1": "val1", "2": "val2" })
+  if (optionsOrVariables) {
+    if (optionsOrVariables.contentVariables) {
+      // Style 1 (Remote)
+      contentSid = optionsOrVariables.contentSid;
+      for (const [key, val] of Object.entries(optionsOrVariables.contentVariables)) {
+        cleanVariables[key] = (val || "").toString().trim();
+      }
+    } else {
+      // Style 2 (Local)
+      for (const [key, val] of Object.entries(optionsOrVariables)) {
+        cleanVariables[key] = (val || "").toString().trim();
+      }
+    }
+  }
+
+  // Detect if messageOrSid is actually a SID
+  const isContentSid = (messageOrSid || "").startsWith("HX");
+  if (isContentSid && !contentSid) {
+    contentSid = messageOrSid;
+  }
+
+  // File logging (if needed)
+  try {
+     fs.appendFileSync(logFile, `\n[${new Date().toISOString()}] Attempt: From=${formattedFrom} To=${formattedTo}\nSID/Body: ${messageOrSid}\nVars: ${JSON.stringify(cleanVariables)}\n`);
+  } catch (e) {
+     console.warn("[WhatsApp Log Error]", e);
+  }
 
   if (!accountSid || !authToken) {
-    console.warn("[WhatsApp] Twilio credentials missing. Logging message below:");
-    console.log(`Message: ${message}`);
+    console.warn("[WhatsApp] Credentials missing, mocking success.");
     return { success: true, mocked: true };
   }
 
   try {
     const client = twilio(accountSid, authToken);
-    
-    const messageDetails: any = {
+    const payload: any = {
       from: formattedFrom,
       to: formattedTo,
     };
 
-    // Template logic
-    if (options?.contentSid) {
-      messageDetails.contentSid = options.contentSid;
-      if (options.contentVariables) {
-        messageDetails.contentVariables = JSON.stringify(options.contentVariables);
+    if (contentSid) {
+      payload.contentSid = contentSid;
+      if (Object.keys(cleanVariables).length > 0) {
+        payload.contentVariables = JSON.stringify(cleanVariables);
       }
     } else if (defaultContentSid) {
-      // If a default template is configured, use it for all messages
-      messageDetails.contentSid = defaultContentSid;
-      
-      const isStatic = process.env.TWILIO_TEMPLATE_IS_STATIC === "true";
-      if (!isStatic) {
-        // This assumes the template has a single variable {{1}} for the message body
-        messageDetails.contentVariables = JSON.stringify({ "1": message });
-      }
-      // If isStatic is true, we send just the contentSid, matching Option B
+       // Support remote's default template logic
+       payload.contentSid = defaultContentSid;
+       const isStatic = process.env.TWILIO_TEMPLATE_IS_STATIC === "true";
+       if (!isStatic) {
+         payload.contentVariables = JSON.stringify({ "1": messageOrSid });
+       }
     } else {
-      // Legacy behavior: plain text body
-      messageDetails.body = message;
+      payload.body = messageOrSid;
     }
 
-    const result = await client.messages.create(messageDetails);
-    console.log(`[WhatsApp] Message sent. SID: ${result.sid} | Status: ${result.status} | Error: ${result.errorCode || 'none'} - ${result.errorMessage || 'none'}`);
+    const result = await client.messages.create(payload);
+    // Log success
+    try {
+        fs.appendFileSync(logFile, `[${new Date().toISOString()}] SUCCESS: ${result.sid} | Status: ${result.status}\n`);
+    } catch (e) {}
+    
+    console.log(`[WhatsApp] Message sent. SID: ${result.sid} | Status: ${result.status}`);
     return { success: true, sid: result.sid, status: result.status };
-  } catch (error) {
-    console.error("[WhatsApp] Twilio API Error:", error);
+  } catch (error: any) {
+    // Log error
+    try {
+        fs.appendFileSync(logFile, `[${new Date().toISOString()}] ERROR: ${error.message}\n`);
+    } catch (e) {}
+    
+    console.error("[WhatsApp Error]", error);
     throw error;
   }
 }

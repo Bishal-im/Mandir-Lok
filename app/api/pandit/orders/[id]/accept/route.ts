@@ -26,10 +26,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         // Notify devotee
         try {
             const poojaName = (order.poojaId as any)?.name || "Pooja";
-            await sendWhatsApp(
-                order.whatsapp,
-                `🙏 *Jai Shri Ram!*\n\n*Update:* Your pooja booking has been confirmed by the Pandit.\n\n📿 *Pooja:* ${poojaName}\n📋 *Booking ID:* ${order.bookingId}\n\nStay blessed! 🛕`
-            );
+            if (process.env.TWILIO_SID_PANDIT_ACCEPTED) {
+                await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_PANDIT_ACCEPTED, {
+                    "1": poojaName.trim(),
+                    "2": order.bookingId.trim()
+                });
+            }
         } catch (e) {
             console.error("[WhatsApp acceptOrder API notification failed]", e);
         }

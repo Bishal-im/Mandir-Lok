@@ -434,10 +434,15 @@ export async function assignPanditToOrder(orderId: string, panditId: string) {
             const panditName = pandit?.name || "Panditji";
             const panditWhatsapp = pandit?.whatsapp;
             try {
-                await sendWhatsApp(
-                    order.whatsapp,
-                    `🙏 *Jai Shri Ram!*\n\n*Update:* A Pandit has been assigned for your pooja.\n\n📿 *Pooja:* ${poojaName}\n🧘 *Pandit:* ${panditName}\n📋 *Booking ID:* ${order.bookingId}\n\nYou will receive another update when the pooja starts.\n\n🛕 *Mandirlok — Divine Blessings Delivered*`
-                );
+                if (process.env.TWILIO_SID_ADMIN_ASSIGNED) {
+                    await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_ADMIN_ASSIGNED, {
+                        "1": poojaName.trim(),
+                        "2": panditName.trim(),
+                        "3": (pandit?.phone || "").trim(),
+                        "4": order.bookingId.trim(),
+                        "5": new Date(order.bookingDate).toLocaleDateString("en-IN")
+                    });
+                }
             } catch (e) {
                 console.error("[WhatsApp pandit assigned notification failed]", e);
             }
@@ -445,10 +450,12 @@ export async function assignPanditToOrder(orderId: string, panditId: string) {
             // Notify Pandit via WhatsApp
             if (panditWhatsapp) {
                 try {
-                    await sendWhatsApp(
-                        panditWhatsapp,
-                        `🛕 *New Pooja Assigned — Mandirlok*\n\n📿 *Pooja:* ${poojaName}\n📅 *Date:* ${new Date(order.bookingDate).toLocaleDateString("en-IN")}\n📋 *Booking ID:* ${order.bookingId}\n\nPlease log in to your Pandit Portal to view full details.`
-                    );
+                    if (process.env.TWILIO_SID_NEW_POOJA_ASSIGNED) {
+                        await sendWhatsApp(panditWhatsapp, process.env.TWILIO_SID_NEW_POOJA_ASSIGNED, {
+                            "1": order.bookingId.trim(),
+                            "2": (order.sankalpName || "").trim()
+                        });
+                    }
                 } catch (waError) {
                     console.error("[WhatsApp pandit assignment notification failed]", waError);
                 }
@@ -487,10 +494,15 @@ export async function updateOrderVideo(orderId: string, videoUrl: string) {
 
         if (order) {
             try {
-                await sendWhatsApp(
-                    order.whatsapp,
-                    `🙏 *Jai Shri Ram!*\n\n*Update:* Your pooja has been successfully completed.\n\n📿 *Pooja:* ${(order.poojaId as any)?.name}\n📋 *Booking ID:* ${order.bookingId}\n📹 *Video Link:* ${videoUrl}\n\nMay the deities bless you and your family.\n\n🛕 *Mandirlok — Divine Blessings Delivered*`
-                );
+                if (process.env.TWILIO_SID_POOJA_COMPLETED) {
+                    await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_POOJA_COMPLETED, {
+                        "1": (order.sankalpName || "").trim(),
+                        "2": ((order.poojaId as any)?.name || "").trim(),
+                        "3": ((order.templeId as any)?.name || "").trim(),
+                        "4": (videoUrl || "").trim(),
+                        "5": order.bookingId.trim()
+                    });
+                }
             } catch (e) {
                 console.error("[WhatsApp pooja completed notification failed]", e);
             }

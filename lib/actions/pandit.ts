@@ -18,10 +18,12 @@ export async function acceptOrder(orderId: string) {
 
         // Notify devotee
         try {
-            await sendWhatsApp(
-                order.whatsapp,
-                `🙏 *Jai Shri Ram!*\n\n*Update:* Your pooja booking has been confirmed by the Pandit.\n\n📿 *Pooja:* ${(order.poojaId as any)?.name}\n📋 *Booking ID:* ${order.bookingId}\n\nStay blessed! 🛕`
-            );
+            if (process.env.TWILIO_SID_PANDIT_ACCEPTED) {
+                await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_PANDIT_ACCEPTED, {
+                    "1": ((order.poojaId as any)?.name || "Pooja").trim(),
+                    "2": order.bookingId.trim()
+                });
+            }
         } catch (e) {
             console.error("[WhatsApp acceptOrder notification failed]", e);
         }

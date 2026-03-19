@@ -37,10 +37,12 @@ export async function POST(
       // Re-fetch or populate to get pooja name
       const orderWithPooja = await Order.findById(order._id).populate("poojaId", "name");
       if (orderWithPooja) {
-        await sendWhatsApp(
-          orderWithPooja.whatsapp,
-          `🙏 *Jai Shri Ram!*\n\n*Update:* Your pooja has started.\n\n📿 *Pooja:* ${(orderWithPooja.poojaId as any)?.name}\n📋 *Booking ID:* ${orderWithPooja.bookingId}\n\nYou can expect the video completion update shortly.\n\n🛕 *Mandirlok — Divine Blessings Delivered*`
-        );
+        if (process.env.TWILIO_SID_POOJA_STARTED) {
+          await sendWhatsApp(orderWithPooja.whatsapp, process.env.TWILIO_SID_POOJA_STARTED, {
+            "1": ((orderWithPooja.poojaId as any)?.name || "").trim(),
+            "2": orderWithPooja.bookingId.trim()
+          });
+        }
       }
     } catch (e) {
       console.error("[WhatsApp pooja started notification failed]", e);

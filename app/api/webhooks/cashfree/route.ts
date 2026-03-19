@@ -93,8 +93,11 @@ export async function POST(req: Request) {
 
         // 2. Notify Devotee (WhatsApp)
         try {
-          if (dbOrder.whatsapp) {
-            await sendWhatsApp(dbOrder.whatsapp, `🙏 *Jai Shri Ram!*\n\nYour booking #${dbOrder.bookingId} has been confirmed successfully.\n\nThank you for choosing MandirLok.\n\n🛕 *Mandirlok*`);
+          if (dbOrder.whatsapp && process.env.TWILIO_SID_BOOKING_CONFIRMED) {
+            await sendWhatsApp(dbOrder.whatsapp, process.env.TWILIO_SID_BOOKING_CONFIRMED, {
+              "1": dbOrder.bookingId.trim(),
+              "2": ((dbOrder.poojaId as any)?.name || "Pooja").trim()
+            });
           }
         } catch (err: any) {
           console.error("[Webhook Notification Error] User WhatsApp failed", err);
@@ -135,8 +138,11 @@ export async function POST(req: Request) {
                 link: `/pandit/orders/${dbOrder._id}`
               });
 
-              if (assignedPandit.whatsapp) {
-                await sendWhatsApp(assignedPandit.whatsapp, `🛕 *New Pooja Assigned!*\n\nBooking ID: ${dbOrder.bookingId}\nDevotee: ${dbOrder.sankalpName}\n\nPlease check your panel for details.\n\n🚩 *Mandirlok*`);
+              if (assignedPandit.whatsapp && process.env.TWILIO_SID_NEW_POOJA_ASSIGNED) {
+                await sendWhatsApp(assignedPandit.whatsapp, process.env.TWILIO_SID_NEW_POOJA_ASSIGNED, {
+                  "1": dbOrder.bookingId.trim(),
+                  "2": (dbOrder.sankalpName || "").trim()
+                });
               }
             }
           } catch (err: any) {

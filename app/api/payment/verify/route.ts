@@ -11,11 +11,16 @@ import Chadhava from "@/models/Chadhava";
 import Pandit from "@/models/Pandit";
 import { sendWhatsApp } from "@/lib/whatsapp";
 import { verifyCashfreePayment } from "@/lib/cashfree";
+import fs from "fs";
+import path from "path";
+
+const flowLog = path.join(process.cwd(), "verification_flow.log");
 
 async function processVerification(req: Request, searchParams?: URLSearchParams) {
   console.log(`[Verification] Request received. Method: ${req.method}${searchParams ? ' (Redirect)' : ' (POST)'}`);
   try {
     await connectDB();
+    fs.appendFileSync(flowLog, `\n[${new Date().toISOString()}] Verification Start for order_id: ${searchParams?.get("order_id") || "POST request"}\n`);
 
     // 1. Get logged in user from JWT cookie
     const token = cookies().get("mandirlok_token")?.value;
@@ -263,8 +268,9 @@ async function processVerification(req: Request, searchParams?: URLSearchParams)
 
 // Helper to handle notifications and pandit assignment
 async function handleOrderPostProcess(order: any, poojaName: string, userId: string, sankalpName: string) {
-  console.log(`[OrderProcess] Starting post-process for order: ${order.bookingId}, WhatsApp: ${order.whatsapp}`);
   try {
+    fs.appendFileSync(flowLog, `[${new Date().toISOString()}] PostProcess Start for: ${order.bookingId} to ${order.whatsapp}\n`);
+    
     // 1. Notify User (In-app)
     try {
       await Notification.create({
@@ -281,9 +287,12 @@ async function handleOrderPostProcess(order: any, poojaName: string, userId: str
 
     // 2. Notify User (WhatsApp)
     try {
-      console.log(`[OrderProcess] Sending WhatsApp to: ${order.whatsapp}`);
-      const waResult = await sendWhatsApp(order.whatsapp, `🙏 Booking Confirmed! ID: ${order.bookingId}\nPUJA: ${poojaName}`);
-      console.log(`[OrderProcess] WhatsApp result:`, waResult);
+      if (process.env.TWILIO_SID_BOOKING_CONFIRMED) {
+        await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_BOOKING_CONFIRMED, {
+          "1": order.bookingId.trim(),
+          "2": poojaName.trim()
+        });
+      }
     } catch (err: any) {
       console.error("[Notification Error] User WhatsApp failed", err);
     }
@@ -323,8 +332,11 @@ async function handleOrderPostProcess(order: any, poojaName: string, userId: str
             link: `/pandit/orders/${order._id}`
           });
 
-          if (assignedPandit.whatsapp) {
-            await sendWhatsApp(assignedPandit.whatsapp, `🛕 New Pooja Assigned!\nID: ${order.bookingId}\nDevotee: ${sankalpName}`);
+          if (assignedPandit.whatsapp && process.env.TWILIO_SID_NEW_POOJA_ASSIGNED) {
+            await sendWhatsApp(assignedPandit.whatsapp, process.env.TWILIO_SID_NEW_POOJA_ASSIGNED, {
+              "1": order.bookingId.trim(),
+              "2": sankalpName.trim()
+            });
           }
         }
       } catch (err: any) {

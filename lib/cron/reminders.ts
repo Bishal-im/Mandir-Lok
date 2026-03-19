@@ -29,7 +29,7 @@ export async function sendBookingReminders() {
         }).populate("userId");
 
         for (const order of paidOrders) {
-            const message = `🙏 Namaste! Your booking for pooja (ID: ${order.bookingId}) is scheduled for tomorrow (${order.bookingDate.toLocaleDateString()}). Please be ready!`;
+            const message = `🙏 Namaste! Your booking for pooja (ID: ${order.bookingId}) is scheduled for tomorrow. Please be ready! Jai Shree Ram 🛕`;
 
             if (order.whatsapp) {
                 await sendWhatsApp(order.whatsapp, message);
@@ -58,7 +58,7 @@ export async function sendBookingReminders() {
         for (const item of cartItems) {
             const user: any = item.userId;
             if (user && user.whatsapp) {
-                const message = `🪔 Reminder: You have a pooja (${item.poojaName}) in your cart for tomorrow. Complete your booking now to ensure it's performed!`;
+                const message = `🪔 Reminder: You have a pooja (${item.poojaName}) in your cart for tomorrow. Complete your booking now! Jai Shree Ram 🛕`;
                 await sendWhatsApp(user.whatsapp, message);
             }
 

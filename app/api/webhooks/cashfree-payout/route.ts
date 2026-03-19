@@ -49,7 +49,7 @@ export async function POST(req: Request) {
                     if (pandit.whatsapp) {
                         await sendWhatsApp(
                             pandit.whatsapp,
-                            `🙏 *Jai Shri Ram, Panditji!*\n\n*Update:* Your payout has been successfully processed.\n\n💰 *Amount:* ₹${payout.amount}\n✅ *Status:* Paid\n🏦 *UTR:* ${utr || 'N/A'}\n\nThe amount has been credited to your account. Thank you for your service.\n\n🛕 *Mandirlok — Divine Blessings Delivered*`
+                            `🙏 Namaste Panditji,\nYour payout request of ₹${payout.amount} has been processed. Status: Paid. UTR: ${utr || 'N/A'}. Jai Shree Ram 🛕`
                         );
                     }
                 } catch (err) {

@@ -83,7 +83,7 @@ export async function POST(req: Request) {
           const { sendWhatsApp } = await import("@/lib/whatsapp");
           await sendWhatsApp(
             pandit.whatsapp,
-            `🙏 Namaste ${pandit.name}ji,\n\nYour Mandirlok Pandit Portal login OTP is: *${otp}*\n\nThis OTP expires in 10 minutes.\n\nJai Shree Ram 🛕`
+            `🙏 Namaste ${pandit.name} ji, Your login OTP is: ${otp}. It expires in 10 minutes. Jai Shree Ram 🛕`
           );
         } catch (e) {
           console.error("WhatsApp OTP send failed, OTP logged above:", e);

@@ -31,20 +31,27 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     // Notify devotee
     try {
-      await sendWhatsApp(
-        order.whatsapp,
-        `🙏 *Update on your Mandirlok Booking*\n\nYour *${poojaName}* has been assigned to:\n👤 *Pandit ${pandit.name}*\n📱 ${pandit.phone}\n\n📋 Booking ID: ${order.bookingId}\n📅 Date: ${new Date(order.bookingDate).toLocaleDateString("en-IN")}\n\n*Your pooja will be performed as scheduled. Stay blessed!* 🛕`
-      );
+      if (process.env.TWILIO_SID_ADMIN_ASSIGNED) {
+        await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_ADMIN_ASSIGNED, {
+          "1": poojaName.trim(),
+          "2": pandit.name.trim(),
+          "3": pandit.phone.trim(),
+          "4": order.bookingId.trim(),
+          "5": new Date(order.bookingDate).toLocaleDateString("en-IN")
+        });
+      }
     } catch (e) {
       console.error("[WhatsApp pandit assign - devotee]", e);
     }
 
     // Notify pandit
     try {
-      await sendWhatsApp(
-        pandit.whatsapp,
-        `🛕 *New Pooja Assigned — Mandirlok*\n\n📿 *Pooja:* ${poojaName}\n👤 *Devotee:* ${order.sankalpName}\n📅 *Date:* ${new Date(order.bookingDate).toLocaleDateString("en-IN")}\n📋 *Booking ID:* ${order.bookingId}\n\nPlease log in to your Pandit Portal to view full details.`
-      );
+      if (process.env.TWILIO_SID_NEW_POOJA_ASSIGNED) {
+        await sendWhatsApp(pandit.whatsapp, process.env.TWILIO_SID_NEW_POOJA_ASSIGNED, {
+          "1": order.bookingId.trim(),
+          "2": order.sankalpName.trim()
+        });
+      }
     } catch (e) {
       console.error("[WhatsApp pandit assign - pandit]", e);
     }

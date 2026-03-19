@@ -56,14 +56,15 @@ export async function POST(
 
     // Send WhatsApp Notification to User
     try {
-      const message = `🙏 Namaste ${order.sankalpName}ji,\n\n` +
-        `Your ${(order.poojaId as any).name} at ${(order.templeId as any).name} has been ` +
-        `completed with full vidhi.\n\n` +
-        `📹 Watch your pooja video: ${videoUrl}\n\n` +
-        `Booking ID: ${order.bookingId}\n` +
-        `Jai Shree Ram 🛕`;
-
-      await sendWhatsApp(order.whatsapp, message);
+      if (process.env.TWILIO_SID_POOJA_COMPLETED) {
+        await sendWhatsApp(order.whatsapp, process.env.TWILIO_SID_POOJA_COMPLETED, {
+          "1": order.sankalpName.trim(),
+          "2": ((order.poojaId as any)?.name || "").trim(),
+          "3": ((order.templeId as any)?.name || "").trim(),
+          "4": videoUrl.trim(),
+          "5": order.bookingId.trim()
+        });
+      }
     } catch (waError) {
       console.error("Failed to send WhatsApp notification:", waError);
     }
