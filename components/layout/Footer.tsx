@@ -5,9 +5,16 @@ import Link from "next/link";
 import { getFooterData } from "@/lib/actions/footer";
 import { Building2, Sparkles, Phone, Lock, MessageCircle, CheckCircle2 } from "lucide-react";
 
-const links = [
+const mainLinks = [
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
+];
+
+const legalLinks = [
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Refund & Cancellation", href: "/refund" },
+  { label: "Shipping & Delivery", href: "/shipping" },
 ];
 
 export default function Footer() {
@@ -111,13 +118,23 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Company */}
+        {/* Support & Legal */}
         <div>
           <h4 className="text-white font-display font-semibold mb-4 text-sm tracking-wide uppercase">
-            Company
+            Support & Legal
           </h4>
           <ul className="space-y-2.5">
-            {links.map((l) => (
+            {mainLinks.map((l) => (
+              <li key={l.label}>
+                <Link
+                  href={l.href}
+                  className="text-sm text-[#b89b7a] hover:text-[#ff9b30] transition-colors"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+            {legalLinks.map((l) => (
               <li key={l.label}>
                 <Link
                   href={l.href}
@@ -129,13 +146,45 @@ export default function Footer() {
             ))}
           </ul>
         </div>
+
+        {/* Contact Info */}
+        <div className="lg:col-span-1">
+          <h4 className="text-white font-display font-semibold mb-4 text-sm tracking-wide uppercase">
+            Contact Us
+          </h4>
+          <div className="space-y-4 text-sm text-[#b89b7a]">
+            <div className="flex items-start gap-3">
+              <Phone size={14} className="text-[#ff7f0a] mt-1 shrink-0" />
+              <div>
+                <p className="text-white font-medium">+91 98765 43210</p>
+                <p className="text-xs">Mon-Sat, 9AM-7PM IST</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <MessageCircle size={14} className="text-[#ff7f0a] mt-1 shrink-0" />
+              <div>
+                <p className="text-white font-medium">support@mandirlok.com</p>
+                <p className="text-xs">Response in 24 hours</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Building2 size={14} className="text-[#ff7f0a] mt-1 shrink-0" />
+              <div>
+                <p className="font-medium text-white">Mandirlok Technologies Pvt. Ltd.</p>
+                <p className="text-xs leading-relaxed">
+                  Noida, Uttar Pradesh - 201301, India
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="container-app py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#7a6050]">
           <p>
-            © {new Date().getFullYear()} Mandirlok. All rights reserved. Made
+            © {new Date().getFullYear()} Mandirlok Technologies Pvt. Ltd. All rights reserved. Made
             in India
           </p>
           <div className="flex items-center gap-4">

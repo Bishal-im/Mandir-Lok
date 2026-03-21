@@ -1,0 +1,150 @@
+
+[2026-03-21T05:12:45.454Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779860804988
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMP1YTPN-WBS5","5":"14/3/2026"}
+[2026-03-21T05:12:47.371Z] SUCCESS: MMf233ed442a1d45e483d442ac879f0111 | Status: queued
+
+[2026-03-21T05:12:47.373Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMP1YTPN-WBS5","2":"Binod"}
+[2026-03-21T05:12:47.925Z] SUCCESS: MM4b93141413e389d8c25e030549556911 | Status: queued
+
+[2026-03-21T05:12:52.019Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779860804988
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMP1YTPN-WBS5","5":"14/3/2026"}
+[2026-03-21T05:12:52.604Z] SUCCESS: MM23f74072f6dcb1fd755057633e329397 | Status: queued
+
+[2026-03-21T05:12:52.605Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMP1YTPN-WBS5","2":"Binod"}
+[2026-03-21T05:12:53.130Z] SUCCESS: MMb912df97e156a1c09821af7f0771c913 | Status: queued
+
+[2026-03-21T05:16:44.019Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T05:16:47.741Z] SUCCESS: MMc4a7a5601a7d95b86bbd71c0fda3d3d3 | Status: queued
+
+[2026-03-21T05:16:47.745Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T05:16:48.296Z] SUCCESS: MM47a8805ee4b83885bd3a87f13a17872c | Status: queued
+
+[2026-03-21T05:20:53.420Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Binod pujari","3":"+9779860804988","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T05:20:53.424Z] Sending Payload: {"from":"whatsapp:+18146878594","to":"whatsapp:+9779867254605","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Binod pujari\",\"3\":\"+9779860804988\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en_US"}
+[2026-03-21T05:20:54.542Z] SUCCESS: MMf71cda5a8c5c6d9e1b9cf628984252ab | Status: queued
+
+[2026-03-21T05:20:54.546Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779860804988
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T05:20:54.548Z] Sending Payload: {"from":"whatsapp:+18146878594","to":"whatsapp:+9779860804988","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en_US"}
+[2026-03-21T05:20:55.605Z] SUCCESS: MMb1ce23809b48448c486d111ffadf6935 | Status: queued
+
+[2026-03-21T05:21:44.685Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T05:21:44.686Z] Sending Payload: {"from":"whatsapp:+18146878594","to":"whatsapp:+9779867254605","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Bishal\",\"3\":\"+9779867254605\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en_US"}
+[2026-03-21T05:21:46.913Z] SUCCESS: MM480f2fcb8f1fbb34c85b3492399c0259 | Status: queued
+
+[2026-03-21T05:21:46.915Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T05:21:46.915Z] Sending Payload: {"from":"whatsapp:+18146878594","to":"whatsapp:+9779867254605","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en_US"}
+[2026-03-21T05:21:47.419Z] SUCCESS: MMa31c9c9a17d240ba83d0be6da3dfe9e8 | Status: queued
+
+[2026-03-21T05:27:16.675Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Binod pujari","3":"+9779860804988","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T05:27:16.678Z] Sending Payload: {"from":"whatsapp:+18146878594","to":"whatsapp:+9779867254605","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Binod pujari\",\"3\":\"+9779860804988\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en_GB"}
+[2026-03-21T05:27:18.407Z] SUCCESS: MM3bd5e9da18626dbccc23a2a5d587ac4f | Status: queued
+
+[2026-03-21T05:27:18.412Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779860804988
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T05:27:18.414Z] Sending Payload: {"from":"whatsapp:+18146878594","to":"whatsapp:+9779860804988","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en_GB"}
+[2026-03-21T05:27:18.952Z] SUCCESS: MMa8574fd028502c5ba96ec832a4e5b32a | Status: queued
+
+[2026-03-21T05:41:02.573Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T05:41:02.575Z] Sending Payload: {"to":"whatsapp:+9779867254605","from":"whatsapp:+18146878594","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Bishal\",\"3\":\"+9779867254605\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","contentRetention":"discard","persistentAction":[]}
+[2026-03-21T05:41:05.922Z] SUCCESS: MM40b1fbc9df3a09d53151463ace8c53a7 | Status: queued
+
+[2026-03-21T05:41:05.923Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T05:41:05.924Z] Sending Payload: {"to":"whatsapp:+9779867254605","from":"whatsapp:+18146878594","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","contentRetention":"discard","persistentAction":[]}
+[2026-03-21T05:41:06.563Z] SUCCESS: MM8acd40df48b192ac2cc93d4aeab2008e | Status: queued
+
+[2026-03-21T05:52:01.277Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Binod pujari","3":"+9779860804988","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T05:52:01.280Z] Sending Payload: {"to":"whatsapp:+9779867254605","from":"whatsapp:+18146878594","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Binod pujari\",\"3\":\"+9779860804988\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en","contentRetention":"discard","persistentAction":[]}
+[2026-03-21T05:52:03.196Z] SUCCESS: MM1733daee7d001c9797afe4de7e557693 | Status: queued
+
+[2026-03-21T05:52:03.198Z] Attempt: From=whatsapp:+18146878594 To=whatsapp:+9779860804988
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T05:52:03.198Z] Sending Payload: {"to":"whatsapp:+9779860804988","from":"whatsapp:+18146878594","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en","contentRetention":"discard","persistentAction":[]}
+[2026-03-21T05:52:03.709Z] SUCCESS: MM882d4ce4da102ed68270dfe625ffe3e4 | Status: queued
+
+[2026-03-21T06:21:44.289Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T06:21:44.290Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Bishal\",\"3\":\"+9779867254605\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en","contentRetention":"discard","persistentAction":[]}
+[2026-03-21T06:21:46.470Z] SUCCESS: MM4749ca6bc5893bd5757c8c6da7983586 | Status: accepted
+
+[2026-03-21T06:21:46.472Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T06:21:46.473Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en","contentRetention":"discard","persistentAction":[]}
+[2026-03-21T06:21:46.995Z] SUCCESS: MMc60496823e1969a49fcaf765fd5c107a | Status: accepted
+
+[2026-03-21T06:33:02.895Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Binod pujari","3":"+9779860804988","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T06:33:02.897Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Binod pujari\",\"3\":\"+9779860804988\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en-US"}
+[2026-03-21T06:33:04.939Z] SUCCESS: MMecbc73df9e20c9daccf5c58b5522393f | Status: accepted
+
+[2026-03-21T06:33:04.941Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779860804988
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T06:33:04.942Z] Sending Payload: {"to":"whatsapp:+9779860804988","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en-US"}
+[2026-03-21T06:33:05.420Z] SUCCESS: MMe0a71d340667083d7a1f881043d1164f | Status: accepted
+
+[2026-03-21T06:34:03.310Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T06:34:03.311Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Bishal\",\"3\":\"+9779867254605\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en-US"}
+[2026-03-21T06:34:05.156Z] SUCCESS: MM50972b26869b1d6ae5f0534790dee11c | Status: accepted
+
+[2026-03-21T06:34:05.158Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T06:34:05.158Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en-US"}
+[2026-03-21T06:34:05.628Z] SUCCESS: MMef18cdf411ae5045058a963e562b639c | Status: accepted
+
+[2026-03-21T08:09:51.498Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T08:09:51.500Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":"{\"1\":\"Mahakaleshwar Rudrabhishek & Bhasma Aarti\",\"2\":\"Bishal\",\"3\":\"+9779867254605\",\"4\":\"BK-MMRL4472-AGNA\",\"5\":\"17/3/2026\"}","language":"en-US"}
+[2026-03-21T08:09:54.670Z] SUCCESS: MM523e96c1bae5151ff1bc367898c00a9b | Status: accepted
+
+[2026-03-21T08:09:54.671Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+919008332752
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T08:09:54.672Z] Sending Payload: {"to":"whatsapp:+919008332752","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":"{\"1\":\"BK-MMRL4472-AGNA\",\"2\":\"Bishal\"}","language":"en-US"}
+[2026-03-21T08:09:55.155Z] SUCCESS: MM8f0bb775376c5dda5ef2739e6144be0b | Status: accepted
+
+[2026-03-21T13:54:44.864Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+9779867254605
+SID/Body: HXda318f10e24726fb8a96935489749da7
+Vars: {"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"}
+[2026-03-21T13:54:44.866Z] Sending Payload: {"to":"whatsapp:+9779867254605","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HXda318f10e24726fb8a96935489749da7","contentVariables":{"1":"Mahakaleshwar Rudrabhishek & Bhasma Aarti","2":"Bishal","3":"+9779867254605","4":"BK-MMRL4472-AGNA","5":"17/3/2026"},"language":"en_US"}
+[2026-03-21T13:54:45.826Z] SUCCESS: MM94474fcc121bbddcc4f0041ac68ede89 | Status: accepted
+
+[2026-03-21T13:54:45.827Z] Attempt: From=MG47c8c8ede507f1a5942b60070b908f82 To=whatsapp:+919008332752
+SID/Body: HX725cc0b1453f7a480bfe5deaf5c72b01
+Vars: {"1":"BK-MMRL4472-AGNA","2":"Bishal"}
+[2026-03-21T13:54:45.830Z] Sending Payload: {"to":"whatsapp:+919008332752","messagingServiceSid":"MG47c8c8ede507f1a5942b60070b908f82","contentSid":"HX725cc0b1453f7a480bfe5deaf5c72b01","contentVariables":{"1":"BK-MMRL4472-AGNA","2":"Bishal"},"language":"en_US"}
+[2026-03-21T13:54:46.840Z] SUCCESS: MMa89d16bd3688100a101547c9bc3942a7 | Status: accepted

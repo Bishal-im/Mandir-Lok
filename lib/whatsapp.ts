@@ -27,9 +27,12 @@ export async function sendWhatsApp(
   const formattedTo = `whatsapp:+${cleanTo}`;
 
   const cleanFrom = from.trim();
-  const formattedFrom = cleanFrom.startsWith("whatsapp:")
-    ? cleanFrom
-    : `whatsapp:${cleanFrom.startsWith('+') ? '' : '+'}${cleanFrom}`;
+  const isMessagingService = cleanFrom.startsWith("MG");
+  const formattedFrom = isMessagingService 
+    ? cleanFrom 
+    : (cleanFrom.startsWith("whatsapp:")
+        ? cleanFrom
+        : `whatsapp:${cleanFrom.startsWith('+') ? '' : '+'}${cleanFrom}`);
 
   const logFile = path.join(process.cwd(), 'whatsapp_debug.log');
   
@@ -50,7 +53,9 @@ export async function sendWhatsApp(
     } else {
       // Style 2 (Local)
       for (const [key, val] of Object.entries(optionsOrVariables)) {
-        cleanVariables[key] = (val || "").toString().trim();
+        if (key !== "language") {
+          cleanVariables[key] = (val || "").toString().trim();
+        }
       }
     }
   }
@@ -60,6 +65,8 @@ export async function sendWhatsApp(
   if (isContentSid && !contentSid) {
     contentSid = messageOrSid;
   }
+
+  const language = optionsOrVariables?.language || process.env.TWILIO_WHATSAPP_LANGUAGE || "en_US";
 
   // File logging (if needed)
   try {
@@ -76,15 +83,20 @@ export async function sendWhatsApp(
   try {
     const client = twilio(accountSid, authToken);
     const payload: any = {
-      from: formattedFrom,
       to: formattedTo,
     };
 
+    if (isMessagingService) {
+      payload.messagingServiceSid = formattedFrom;
+    } else {
+      payload.from = formattedFrom;
+    }
+
     if (contentSid) {
       payload.contentSid = contentSid;
-      if (Object.keys(cleanVariables).length > 0) {
-        payload.contentVariables = JSON.stringify(cleanVariables);
-      }
+      payload.contentVariables = cleanVariables;
+      payload.language = language; 
+      // Removed contentRetention and persistentAction as fallback
     } else if (defaultContentSid) {
        // Support remote's default template logic
        payload.contentSid = defaultContentSid;
@@ -95,6 +107,11 @@ export async function sendWhatsApp(
     } else {
       payload.body = messageOrSid;
     }
+
+    // Log full payload for debugging
+    try {
+        fs.appendFileSync(logFile, `[${new Date().toISOString()}] Sending Payload: ${JSON.stringify(payload)}\n`);
+    } catch (e) {}
 
     const result = await client.messages.create(payload);
     // Log success
@@ -107,7 +124,14 @@ export async function sendWhatsApp(
   } catch (error: any) {
     // Log error
     try {
-        fs.appendFileSync(logFile, `[${new Date().toISOString()}] ERROR: ${error.message}\n`);
+        const errorDetails = {
+            message: error.message,
+            code: error.code,
+            status: error.status,
+            moreInfo: error.moreInfo,
+            details: error.details
+        };
+        fs.appendFileSync(logFile, `[${new Date().toISOString()}] ERROR: ${JSON.stringify(errorDetails)}\n`);
     } catch (e) {}
     
     console.error("[WhatsApp Error]", error);
